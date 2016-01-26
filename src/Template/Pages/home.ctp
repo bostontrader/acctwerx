@@ -15,6 +15,7 @@
                 <?php } else if($isAdmin) { ?>
                     <li><?= $this->Html->link(__('Books'),    ['controller' => 'Books']) ?></li>
                     <li><?= $this->Html->link(__('Accounts'), ['controller' => 'Accounts']) ?></li>
+                    <li><?= $this->Html->link(__('Transactions'), ['controller' => 'Transactions']) ?></li>
                 <?php } ?>
 
         </ul>
