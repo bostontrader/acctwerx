@@ -13,8 +13,8 @@
 
                 <?php if(is_null($currentUser)) { ?>
                 <?php } else if($isAdmin) { ?>
-                    <li><?= $this->Html->link(__('Books'),       ['controller' => 'Books'])       ?></li>
-
+                    <li><?= $this->Html->link(__('Books'),    ['controller' => 'Books']) ?></li>
+                    <li><?= $this->Html->link(__('Accounts'), ['controller' => 'Accounts']) ?></li>
                 <?php } ?>
 
         </ul>
