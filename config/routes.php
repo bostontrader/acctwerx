@@ -41,6 +41,18 @@ use Cake\Routing\Router;
  */
 Router::defaultRouteClass('DashedRoute');
 
+/*Router::scope('/', function ($routes) {
+    $routes->extensions(['json']);
+    $routes->resources('Books');
+});
+
+Router::scope('/api', function ($routes) {
+    $routes->resources('Articles', function ($routes) {
+        $routes->resources('Comments');
+    });
+});*/
+
+
 Router::scope('/', function ($routes) {
     /**
      * Here, we are connecting '/' (base path) to a controller called 'Pages',
@@ -70,7 +82,7 @@ Router::scope('/', function ($routes) {
      * You can remove these routes once you've connected the
      * routes you want in your application.
      */
-    $routes->fallbacks('DashedRoute');
+     $routes->fallbacks('DashedRoute');
 });
 
 /**

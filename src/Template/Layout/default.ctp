@@ -3,7 +3,7 @@
 <head>
     <?= $this->Html->charset(); ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DunceMaster</title>
+    <title>AcctWerx</title>
 
     <? // If you are using the CSS version, only link these 2 files, you may add app.css to use for your overrides if you like ?>
     <?= $this->Html->css('normalize.css'); ?>
@@ -38,7 +38,7 @@
     <nav class="top-bar" data-topbar role="navigation">
         <ul class="title-area">
             <li class="name">
-                <h1><a href="#">DunceMaster</a></h1>
+                <h1><a href="#">AcctWerx</a></h1>
             </li>
         </ul>
 
@@ -47,9 +47,6 @@
             <ul class="right">
                 <li><a href="#"><?= $userMsg ?></a></li>
                 <li><a href="#"><?= $loginLink ?></a></li>
-                <li><a href="#"><?= $this->Html->image("us_flag.gif", ['width' => 28, 'height' => 20, 'url' => ['controller' => 'I18n', 'action' => 'eng']]); ?></a></li>
-                <li><a href="#"><?= $this->Html->image("chinese_flag.gif", ['width' => 28, 'height' => 20, 'url' => ['controller' => 'I18n', 'action' => 'chi']]); ?></a></li>
-                <li><a href="#"><?= $this->Html->image("pinyin_flag.gif", ['width' => 28, 'height' => 20, 'url' => ['controller' => 'I18n', 'action' => 'pin']]); ?></a></li>
 
             </ul>
 

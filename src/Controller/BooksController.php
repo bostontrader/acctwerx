@@ -5,8 +5,6 @@ class BooksController extends AppController {
 
     const BOOK_SAVED = "The book has been saved.";
     const BOOK_NOT_SAVED = "The book could not be saved. Please, try again.";
-    //const NEED_SECTION_ID = "You need to include a 'section_id' parameter";
-    //const DNC = "That does not compute";
     const BOOK_DELETED = "The book has been deleted.";
     const CANNOT_DELETE_BOOK = "The book could not be deleted. Please, try again.";
 
