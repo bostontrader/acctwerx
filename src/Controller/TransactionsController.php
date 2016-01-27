@@ -55,7 +55,7 @@ class TransactionsController extends AppController {
 
     public function index() {
         $this->request->allowMethod(['get']);
-        $this->set('transactions', $this->Transactions->find()->contain('Books'));
+        $this->set('transactions', $this->Transactions->find()->contain('Books')->order('datetime'));
     }
 
     public function view($id = null) {
