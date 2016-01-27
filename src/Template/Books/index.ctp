@@ -26,7 +26,7 @@
                     <td><?= $book->title ?></td>
                     <td class="actions">
                         <?= $this->Html->link(__('Show'), ['action' => 'show', 'id'=>$book->id],['name'=>'BookShow']) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', 'id'=>$book->id],['name'=>'BookEdit']) ?>
+                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $book->id],['name'=>'BookEdit']) ?>
                         <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', 'id'=>$book->id], ['name'=>'BookDelete','confirm' => __('Are you sure you want to delete # {0}?', $book->id)]) ?>
                     </td>
                 </tr>

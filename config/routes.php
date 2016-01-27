@@ -60,10 +60,10 @@ Router::defaultRouteClass('DashedRoute');
 //PUT         /recipes/123.format BooksController::edit(123)
 //PATCH       /recipes/123.format BooksController::edit(123)
 //DELETE      /recipes/123.format BooksController::delete(123)
-Router::scope('/', function ($routes) {
-    $routes->extensions(['json']);
-    $routes->resources('Books');
-});
+//Router::scope('/', function ($routes) {
+    //$routes->extensions(['json']);
+    //$routes->resources('Books');
+//});
 
 
 /*Router::scope('/api', function ($routes) {
