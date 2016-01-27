@@ -17,6 +17,7 @@
             <thead>
                 <tr>
                     <th id="title" ><?= __('Book') ?></th>
+                    <th id="title" ><?= __('Date') ?></th>
                     <th id="title" ><?= __('Note') ?></th>
                     <th id="actions" class="actions"><?= __('Actions') ?></th>
                 </tr>
@@ -25,6 +26,7 @@
                 <?php foreach ($transactions as $transaction): ?>
                 <tr>
                     <td><?= $transaction->book->title ?></td>
+                    <td><?= $transaction->datetime ?></td>
                     <td><?= $transaction->note ?></td>
                     <td class="actions">
                         <?= $this->Html->link(__('View'), ['action' => 'view', $transaction->id],['name'=>'TransactionView']) ?>

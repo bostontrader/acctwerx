@@ -41,14 +41,34 @@ use Cake\Routing\Router;
  */
 Router::defaultRouteClass('DashedRoute');
 
-/*Router::scope('/', function ($routes) {
+// from http://thomasv.nl/2013/12/cakephp-restful-routes-basics/
+//GET 	    /projects 	        index 	    display all projects
+//GET 	    /projects/add 	    new 	    return a HTML Form to add a new project
+//POST 	    /projects 	        create 	    create a new project
+//GET 	    /projects/:id 	    show 	    display a specific project
+//GET 	    /projects/:id/edit 	edit 	    return a HTML Form to edit a project
+//PATCH/PUT /projects/:id 	    update 	    update a specific project
+//DELETE 	/projects/:id 	    destroy 	delete a specific project
+
+
+
+// from cookbook
+//HTTP format URL.format          Controller action invoked
+//GET         /recipes.format     BooksController::index()
+//GET         /recipes/123.format BooksController::view(123)
+//POST        /recipes.format     BooksController::add()
+//PUT         /recipes/123.format BooksController::edit(123)
+//PATCH       /recipes/123.format BooksController::edit(123)
+//DELETE      /recipes/123.format BooksController::delete(123)
+Router::scope('/', function ($routes) {
     $routes->extensions(['json']);
     $routes->resources('Books');
 });
 
-Router::scope('/api', function ($routes) {
-    $routes->resources('Articles', function ($routes) {
-        $routes->resources('Comments');
+
+/*Router::scope('/api', function ($routes) {
+    $routes->resources('Books', function ($routes) {
+        $routes->resources('Accounts');
     });
 });*/
 
@@ -83,10 +103,24 @@ Router::scope('/', function ($routes) {
      * routes you want in your application.
      */
      $routes->fallbacks('DashedRoute');
+
+
+    //$routes->connect('/account', ['controller' => 'Accounts', 'action' => 'index']);
+
+    //$routes->connect('/books', ['controller' => 'Books', 'action' => 'index']);
+    //$routes->connect('/books/add', ['controller' => 'Books', 'action' => 'new']);
+    //$routes->connect('/books/:id', ['controller' => 'Books', 'action' => 'show']);
+    //$routes->connect('/books/:id/edit', ['controller' => 'Books', 'action' => 'edit']);
+    //$routes->connect('/books/:id', ['controller' => 'Books', 'action' => 'destroy', 'method'=>'delete']);
+
+    //$routes->connect('/transactions', ['controller' => 'Transactions', 'action' => 'index']);
+
+
+
 });
 
 /**
  * Load all plugin routes.  See the Plugin documentation on
  * how to customize the loading of plugin routes.
  */
-Plugin::routes();
+//Plugin::routes();

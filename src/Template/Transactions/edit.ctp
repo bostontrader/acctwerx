@@ -12,7 +12,8 @@
             <legend><?= __('Edit Transaction') ?></legend>
             <?php
                 echo $this->Form->input('book_id', ['id'=>'TransactionBookId', 'options' => $books, 'empty' => '(none selected)']);
-                echo $this->Form->input('note',['id'=>'TransactionTitle']);
+                echo $this->Form->input('datetime',['id'=>'TransactionDate']);
+                echo $this->Form->input('note',['id'=>'TransactionNote']);
             ?>
         </fieldset>
         <?= $this->Form->button(__('Submit')) ?>
