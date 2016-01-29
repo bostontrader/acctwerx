@@ -8,7 +8,7 @@
     <nav class="large-3 medium-4 columns" id="actions-sidebar">
         <ul class="side-nav">
             <li class="heading"><?= __('Actions') ?></li>
-            <li><?= $this->Html->link(__('New Book'), ['action' => 'new'],['id'=>'BookNew']) ?></li>
+            <li><?= $this->Html->link(__('New Book'), ['action' => 'add'],['id'=>'BookAdd']) ?></li>
         </ul>
     </nav>
     <div class="books index large-9 medium-8 columns content">
@@ -25,9 +25,9 @@
                 <tr>
                     <td><?= $book->title ?></td>
                     <td class="actions">
-                        <?= $this->Html->link(__('Show'), ['action' => 'show', 'id'=>$book->id],['name'=>'BookShow']) ?>
+                        <?= $this->Html->link(__('View'), ['action' => 'view', $book->id],['name'=>'BookShow']) ?>
                         <?= $this->Html->link(__('Edit'), ['action' => 'edit', $book->id],['name'=>'BookEdit']) ?>
-                        <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', 'id'=>$book->id], ['name'=>'BookDelete','confirm' => __('Are you sure you want to delete # {0}?', $book->id)]) ?>
+                        <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $book->id], ['name'=>'BookDelete','confirm' => __('Are you sure you want to delete # {0}?', $book->id)]) ?>
                     </td>
                 </tr>
                 <?php endforeach; ?>

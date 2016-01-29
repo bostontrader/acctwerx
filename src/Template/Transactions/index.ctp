@@ -1,7 +1,6 @@
 <?php
 /**
- * @var \App\Model\Entity $transaction
- * @var \App\Model\Table $transactions
+ * @var \App\Model\Table\ $transactions
  */
 ?>
 <div id="TransactionsIndex">

@@ -56,6 +56,7 @@ class ConsoleShell extends Shell
 
         $psy = new PsyShell();
         $psy->run();
+        return 0;
     }
 
     /**

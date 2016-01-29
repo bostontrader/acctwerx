@@ -74,6 +74,10 @@ Router::defaultRouteClass('DashedRoute');
 
 
 Router::scope('/', function ($routes) {
+
+
+
+
     /**
      * Here, we are connecting '/' (base path) to a controller called 'Pages',
      * its action called 'display', and we pass a param to select the view file
@@ -102,13 +106,24 @@ Router::scope('/', function ($routes) {
      * You can remove these routes once you've connected the
      * routes you want in your application.
      */
-     $routes->fallbacks('DashedRoute');
+     //$routes->fallbacks('DashedRoute');
 
 
     //$routes->connect('/account', ['controller' => 'Accounts', 'action' => 'index']);
 
-    //$routes->connect('/books', ['controller' => 'Books', 'action' => 'index']);
-    //$routes->connect('/books/add', ['controller' => 'Books', 'action' => 'new']);
+    //$routes->resources('Cats');
+    //$routes->connect('/cats', ['controller' => 'Cats', 'action' => 'index']);
+    //$routes->connect('/cats/add', ['controller' => 'Cats', 'action' => 'add']);
+    //$routes->connect('/cats/delete/*', ['controller' => 'Cats', 'action' => 'delete']);
+    //$routes->connect('/cats/edit/*', ['controller' => 'Cats', 'action' => 'edit']);
+    //$routes->connect('/cats/view/*', ['controller' => 'Cats', 'action' => 'view']);
+
+    $routes->resources('Dogs');
+    $routes->connect('/dogs/add', ['controller' => 'Dogs', 'action' => 'add']);
+    $routes->connect('/dogs/edit/*', ['controller' => 'Dogs', 'action' => 'edit']);
+
+    //$routes->connect('/books/new_form', ['controller' => 'Books', 'action' => 'new_form']);
+    //$routes->connect('/books:_method', ['controller' => 'Books', 'action' => 'create', '_method'=>'post']);
     //$routes->connect('/books/:id', ['controller' => 'Books', 'action' => 'show']);
     //$routes->connect('/books/:id/edit', ['controller' => 'Books', 'action' => 'edit']);
     //$routes->connect('/books/:id', ['controller' => 'Books', 'action' => 'destroy', 'method'=>'delete']);

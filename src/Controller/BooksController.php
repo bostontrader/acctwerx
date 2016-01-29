@@ -9,7 +9,7 @@ class BooksController extends AppController {
     const CANNOT_DELETE_BOOK = "The book could not be deleted. Please, try again.";
 
     public function add() {
-        $this->request->allowMethod(['get', 'post']);
+        $this->request->allowMethod(['get','post']);
         $book = $this->Books->newEntity();
         if ($this->request->is('post')) {
             $book = $this->Books->patchEntity($book, $this->request->data);
