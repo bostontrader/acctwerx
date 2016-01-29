@@ -24,7 +24,7 @@
                 <tr>
                     <td><?= $dog->title ?></td>
                     <td class="actions">
-                        <?= $this->Html->link(__('Show'), ['action' => 'view', 'id'=>$dog->id],['name'=>'DogShow']) ?>
+                        <?= $this->Html->link(__('Show'), ['action' => 'vview', 'id'=>$dog->id],['name'=>'DogShow']) ?>
                         <?= $this->Html->link(__('Edit'), ['action' => 'edit', 'id'=>$dog->id],['name'=>'DogEdit']) ?>
                         <?php //$this->Form->postLink(__('Delete'), ['action' => 'delete', 'id'=>$dog->id], ['name'=>'DogDelete','confirm' => __('Are you sure you want to delete # {0}?', $dog->id)]) ?>
                     </td>
