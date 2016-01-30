@@ -15,7 +15,7 @@ class BooksController extends AppController {
             $book = $this->Books->patchEntity($book, $this->request->data);
             if ($this->Books->save($book)) {
                 $this->Flash->success(__(self::BOOK_SAVED));
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['controller'=>'books','action' => 'index','_method'=>'GET']);
             } else {
                 $this->Flash->error(__(self::BOOK_NOT_SAVED));
             }
@@ -42,7 +42,7 @@ class BooksController extends AppController {
             $book = $this->Books->patchEntity($book, $this->request->data);
             if ($this->Books->save($book)) {
                 $this->Flash->success(__(self::BOOK_SAVED));
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['controller'=>'books','action' => 'index','_method'=>'GET']);
             } else {
                 $this->Flash->error(__(self::BOOK_NOT_SAVED));
             }

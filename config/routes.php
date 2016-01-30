@@ -75,8 +75,15 @@ Router::defaultRouteClass('DashedRoute');
 
 Router::scope('/', function ($routes) {
 
+    $routes->resources('Books', function ($routes) {
+        $routes->resources('Accounts');
+    });
+    $routes->connect('/books/add', ['controller' => 'books', 'action' => 'add']);
+    $routes->connect('/books/edit/*', ['controller' => 'books', 'action' => 'edit']);
 
+//$n = Router::url(['controller'=>'Books','action' => 'add', '_method'=>'GET']);
 
+    //$routes->connect('/dogs/edit/*', ['controller' => 'Dogs', 'action' => 'edit']);
 
     /**
      * Here, we are connecting '/' (base path) to a controller called 'Pages',
@@ -118,9 +125,9 @@ Router::scope('/', function ($routes) {
     //$routes->connect('/cats/edit/*', ['controller' => 'Cats', 'action' => 'edit']);
     //$routes->connect('/cats/view/*', ['controller' => 'Cats', 'action' => 'view']);
 
-    $routes->resources('Dogs');
-    $routes->connect('/dogs/add', ['controller' => 'Dogs', 'action' => 'add']);
-    $routes->connect('/dogs/edit/*', ['controller' => 'Dogs', 'action' => 'edit']);
+    //$routes->resources('Dogs');
+    //$routes->connect('/dogs/add', ['controller' => 'Dogs', 'action' => 'add']);
+    //$routes->connect('/dogs/edit/*', ['controller' => 'Dogs', 'action' => 'edit']);
 
     //$routes->connect('/books/new_form', ['controller' => 'Books', 'action' => 'new_form']);
     //$routes->connect('/books:_method', ['controller' => 'Books', 'action' => 'create', '_method'=>'post']);
