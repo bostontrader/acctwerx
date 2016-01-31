@@ -18,6 +18,7 @@ namespace App\Test\Fixture;
 
 class FixtureConstants {
 
+    const accountTypical = 1;
     const bookTypical = 1;
 
 }

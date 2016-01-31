@@ -50,8 +50,6 @@ Router::defaultRouteClass('DashedRoute');
 //PATCH/PUT /projects/:id 	    update 	    update a specific project
 //DELETE 	/projects/:id 	    destroy 	delete a specific project
 
-
-
 // from cookbook
 //HTTP format URL.format          Controller action invoked
 //GET         /recipes.format     BooksController::index()
@@ -60,28 +58,19 @@ Router::defaultRouteClass('DashedRoute');
 //PUT         /recipes/123.format BooksController::edit(123)
 //PATCH       /recipes/123.format BooksController::edit(123)
 //DELETE      /recipes/123.format BooksController::delete(123)
-//Router::scope('/', function ($routes) {
-    //$routes->extensions(['json']);
-    //$routes->resources('Books');
-//});
-
-
-/*Router::scope('/api', function ($routes) {
-    $routes->resources('Books', function ($routes) {
-        $routes->resources('Accounts');
-    });
-});*/
-
 
 Router::scope('/', function ($routes) {
 
     $routes->resources('Books', function ($routes) {
         $routes->resources('Accounts');
+        $routes->connect('/accounts/add', ['controller' => 'accounts', 'action' => 'add']);
+        $routes->connect('/accounts/edit/*', ['controller' => 'accounts', 'action' => 'edit']);
     });
     $routes->connect('/books/add', ['controller' => 'books', 'action' => 'add']);
     $routes->connect('/books/edit/*', ['controller' => 'books', 'action' => 'edit']);
 
 //$n = Router::url(['controller'=>'Books','action' => 'add', '_method'=>'GET']);
+$n = Router::url('/books/1/accounts');
 
     //$routes->connect('/dogs/edit/*', ['controller' => 'Dogs', 'action' => 'edit']);
 

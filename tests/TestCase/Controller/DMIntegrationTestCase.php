@@ -70,18 +70,18 @@ class DMIntegrationTestCase extends IntegrationTestCase {
      * @param String $redirect_url The url to redirect to, after the deletion.
      * @param \Cake\ORM\Table $table The table to delete from.
      */
-    protected function deletePOST($user_id, $url, $delete_id, $redirect_url, $table) {
+    //protected function deletePOST($user_id, $url, $delete_id, $redirect_url, $table) {
 
         //$this->fakeLogin($user_id);
-        $this->post($url . $delete_id);
-        $this->assertResponseCode(302);
-        $this->assertRedirect($redirect_url);
+        //$this->post($url . $delete_id);
+        //$this->assertResponseCode(302);
+        //$this->assertRedirect($redirect_url);
 
         // Now verify that the record no longer exists
-        $query=new Query(ConnectionManager::get('test'),$table);
-        $query->find('all')->where(['id' => $delete_id]);
-        $this->assertEquals(0, $query->count());
-    }
+        //$query=new Query(ConnectionManager::get('test'),$table);
+        //$query->find('all')->where(['id' => $delete_id]);
+        //$this->assertEquals(0, $query->count());
+    //}
 
     /**
      * Login and submit a POST request to a $url that is expected to add a given record.
