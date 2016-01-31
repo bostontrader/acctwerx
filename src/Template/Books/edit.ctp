@@ -1,4 +1,4 @@
-<?php  /* @var \App\Model\Entity $book */ ?>
+<?php  /* @var \Cake\ORM\Entity $book $book */ ?>
 
 <div id="BooksEdit">
     <nav class="large-3 medium-4 columns" id="actions-sidebar">

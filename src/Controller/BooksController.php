@@ -24,16 +24,16 @@ class BooksController extends AppController {
         return null;
     }
 
-    public function delete($id = null) {
-        $this->request->allowMethod(['post', 'delete']);
-        $book = $this->Books->get($id);
-        if ($this->Books->delete($book)) {
-            $this->Flash->success(__(self::BOOK_DELETED));
-        } else {
-            $this->Flash->error(__(self::CANNOT_DELETE_BOOK));
-        }
-        return $this->redirect(['action' => 'index']);
-    }
+    //public function delete($id = null) {
+        //$this->request->allowMethod(['post', 'delete']);
+        //$book = $this->Books->get($id);
+        //if ($this->Books->delete($book)) {
+            //$this->Flash->success(__(self::BOOK_DELETED));
+        //} else {
+            //$this->Flash->error(__(self::CANNOT_DELETE_BOOK));
+        //}
+        //return $this->redirect(['action' => 'index']);
+    //}
 
     public function edit($id = null) {
         $this->request->allowMethod(['get', 'put']);
