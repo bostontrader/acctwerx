@@ -1,4 +1,9 @@
-<?php  /* @var \App\Model\Entity $transaction */ ?>
+<?php
+/**
+ * @var \Cake\ORM\Entity $book
+ * @var \Cake\ORM\Entity $transaction
+ *
+ */ ?>
 
 <div id="TransactionsEdit">
     <nav class="large-3 medium-4 columns" id="actions-sidebar">
@@ -9,11 +14,10 @@
     <div class="transactions form large-9 medium-8 columns content">
         <?= $this->Form->create($transaction,['id'=>'TransactionEditForm']) ?>
         <fieldset>
-            <legend><?= __('Edit Transaction') ?></legend>
+            <legend><?= __('Edit Transaction for '.$book->title) ?></legend>
             <?php
-                echo $this->Form->input('book_id', ['id'=>'TransactionBookId', 'options' => $books, 'empty' => '(none selected)']);
-                echo $this->Form->input('datetime',['id'=>'TransactionDate']);
-                echo $this->Form->input('note',['id'=>'TransactionNote']);
+                echo $this->Form->input('note',['id'=>'TransactionNote', 'type'=>'text']);
+                echo $this->Form->input('datetime',['id'=>'TransactionDatetime']);
             ?>
         </fieldset>
         <?= $this->Form->button(__('Submit')) ?>

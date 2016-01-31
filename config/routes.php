@@ -65,14 +65,13 @@ Router::scope('/', function ($routes) {
         $routes->resources('Accounts');
         $routes->connect('/accounts/add', ['controller' => 'accounts', 'action' => 'add']);
         $routes->connect('/accounts/edit/*', ['controller' => 'accounts', 'action' => 'edit']);
+
+        $routes->resources('Transactions');
+        $routes->connect('/transactions/add', ['controller' => 'transactions', 'action' => 'add']);
+        $routes->connect('/transactions/edit/*', ['controller' => 'transactions', 'action' => 'edit']);
     });
     $routes->connect('/books/add', ['controller' => 'books', 'action' => 'add']);
     $routes->connect('/books/edit/*', ['controller' => 'books', 'action' => 'edit']);
-
-//$n = Router::url(['controller'=>'Books','action' => 'add', '_method'=>'GET']);
-$n = Router::url('/books/1/accounts');
-
-    //$routes->connect('/dogs/edit/*', ['controller' => 'Dogs', 'action' => 'edit']);
 
     /**
      * Here, we are connecting '/' (base path) to a controller called 'Pages',
@@ -103,31 +102,6 @@ $n = Router::url('/books/1/accounts');
      * routes you want in your application.
      */
      //$routes->fallbacks('DashedRoute');
-
-
-    //$routes->connect('/account', ['controller' => 'Accounts', 'action' => 'index']);
-
-    //$routes->resources('Cats');
-    //$routes->connect('/cats', ['controller' => 'Cats', 'action' => 'index']);
-    //$routes->connect('/cats/add', ['controller' => 'Cats', 'action' => 'add']);
-    //$routes->connect('/cats/delete/*', ['controller' => 'Cats', 'action' => 'delete']);
-    //$routes->connect('/cats/edit/*', ['controller' => 'Cats', 'action' => 'edit']);
-    //$routes->connect('/cats/view/*', ['controller' => 'Cats', 'action' => 'view']);
-
-    //$routes->resources('Dogs');
-    //$routes->connect('/dogs/add', ['controller' => 'Dogs', 'action' => 'add']);
-    //$routes->connect('/dogs/edit/*', ['controller' => 'Dogs', 'action' => 'edit']);
-
-    //$routes->connect('/books/new_form', ['controller' => 'Books', 'action' => 'new_form']);
-    //$routes->connect('/books:_method', ['controller' => 'Books', 'action' => 'create', '_method'=>'post']);
-    //$routes->connect('/books/:id', ['controller' => 'Books', 'action' => 'show']);
-    //$routes->connect('/books/:id/edit', ['controller' => 'Books', 'action' => 'edit']);
-    //$routes->connect('/books/:id', ['controller' => 'Books', 'action' => 'destroy', 'method'=>'delete']);
-
-    //$routes->connect('/transactions', ['controller' => 'Transactions', 'action' => 'index']);
-
-
-
 });
 
 /**
