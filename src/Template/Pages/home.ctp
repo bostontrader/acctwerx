@@ -14,6 +14,7 @@
                 <?php if(is_null($currentUser)) { ?>
                 <?php } else if($isAdmin) { ?>
                     <li><?= $this->Html->link(__('Books'),    ['controller' => 'books', '_method'=>'GET']) ?></li>
+                    <li><?= $this->Html->link(__('Categories'),    ['controller' => 'categories', '_method'=>'GET']) ?></li>
                 <?php } ?>
 
         </ul>
