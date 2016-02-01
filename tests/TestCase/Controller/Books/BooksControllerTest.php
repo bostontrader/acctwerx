@@ -146,7 +146,7 @@ class BooksControllerTest extends DMIntegrationTestCase {
         // 1. Login, GET the url, observe the response, parse the response and send it back.
         $html=$this->loginRequestResponse(null,'/books'); // no login
 
-        // 2. Get a the count of all <A> tags that are presently unaccounted for.
+        // 2. Get the count of all <A> tags that are presently unaccounted for.
         $content = $html->find('div#BooksIndex',0);
         $this->assertNotNull($content);
         $unknownATag = count($content->find('a'));
@@ -215,17 +215,31 @@ class BooksControllerTest extends DMIntegrationTestCase {
         /* @var \simple_html_dom_node $table */
 
         // 1. Obtain a record to view, login, GET the url, parse the response and send it back.
-        //$record2View=$this->booksFixture->records[0];
         $book_id=FixtureConstants::bookTypical;
         $book=$this->books->get($book_id);
         $url='/books/' . $book_id;
         $html=$this->loginRequestResponse(null, $url); // no login
 
-        // 2.  Look for the table that contains the view fields.
+        // 2. Verify the <A> tags
+        // 2.1 Get the count of all <A> tags that are presently unaccounted for.
+        $content = $html->find('div#BooksView',0);
+        $this->assertNotNull($content);
+        $unknownATag = count($content->find('a'));
+
+        // 2.2 Look for specific tags
+        $this->assertEquals(1, count($html->find('a#BookAccounts')));
+        $unknownATag--;
+        $this->assertEquals(1, count($html->find('a#BookTransactions')));
+        $unknownATag--;
+
+        // 2.3. Ensure that all the <A> tags have been accounted for
+        $this->assertEquals(0, $unknownATag);
+
+        // 3.  Look for the table that contains the view fields.
         $table = $html->find('table#BookViewTable',0);
         $this->assertNotNull($table);
 
-        // 3. Now inspect the fields on the form.  We want to know that:
+        // 4. Now inspect the fields on the form.  We want to know that:
         // A. The correct fields are there and no other fields.
         // B. The fields have correct values.
         //
@@ -234,18 +248,12 @@ class BooksControllerTest extends DMIntegrationTestCase {
         // This is the count of the table rows that are presently unaccounted for.
         $unknownRowCnt = count($table->find('tr'));
 
-        // 3.1 title
+        // 4.1 title
         $field = $table->find('tr#title td',0);
         $this->assertEquals($book['title'], $field->plaintext);
         $unknownRowCnt--;
 
-        // 3.9 Have all the rows been accounted for?  Are there any extras?
+        // 4.9 Have all the rows been accounted for?  Are there any extras?
         $this->assertEquals(0, $unknownRowCnt);
-
-        // 4. Examine the <A> tags on this page.  There should be zero links.
-        $content = $html->find('div#BooksView',0);
-        $this->assertNotNull($content);
-        $links = $content->find('a');
-        $this->assertEquals(0,count($links));
     }
 }

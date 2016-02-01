@@ -2,6 +2,9 @@
 <div id="BooksView">
     <nav class="large-3 medium-4 columns" id="actions-sidebar">
         <ul class="side-nav">
+            <li class="heading"><?= __('Actions') ?></li>
+            <li><?= $this->Html->link(__('Accounts'), ['controller' => 'accounts', 'book_id' => $book->id, '_method'=>'GET'], ['id'=>'BookAccounts']) ?></li>
+            <li><?= $this->Html->link(__('Transactions'), ['controller' => 'transactions', 'book_id' => $book->id, '_method'=>'GET'], ['id'=>'BookTransactions']) ?></li>
         </ul>
     </nav>
     <div class="books view large-9 medium-8 columns content">
