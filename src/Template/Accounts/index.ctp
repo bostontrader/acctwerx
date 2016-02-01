@@ -17,6 +17,7 @@
         <table id="AccountsTable" cellpadding="0" cellspacing="0">
             <thead>
                 <tr>
+                    <th id="category" ><?= __('Category') ?></th>
                     <th id="sort" ><?= __('Sort') ?></th>
                     <th id="title" ><?= __('Title') ?></th>
                     <th id="actions" class="actions"><?= __('Actions') ?></th>
@@ -25,6 +26,7 @@
             <tbody>
                 <?php foreach ($accounts as $account): ?>
                 <tr>
+                    <td><?= $account->category->title ?></td>
                     <td><?= $account->sort ?></td>
                     <td><?= $account->title ?></td>
                     <td class="actions">

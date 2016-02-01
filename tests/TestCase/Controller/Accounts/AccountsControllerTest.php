@@ -3,13 +3,15 @@ namespace App\Test\TestCase\Controller;
 
 use App\Test\Fixture\FixtureConstants;
 use App\Test\Fixture\AccountsFixture;
+use App\Test\Fixture\CategoriesFixture;
 use Cake\ORM\TableRegistry;
 
 class AccountsControllerTest extends DMIntegrationTestCase {
 
     public $fixtures = [
         'app.accounts',
-        'app.books'
+        'app.books',
+        'app.categories'
     ];
 
     /** @var \Cake\ORM\Table */
@@ -18,13 +20,21 @@ class AccountsControllerTest extends DMIntegrationTestCase {
     /** @var \Cake\ORM\Table */
     private $Books;
 
+    /** @var \Cake\ORM\Table */
+    private $Categories;
+
     /** @var \App\Test\Fixture\AccountsFixture */
     private $accountsFixture;
 
+    /** @var \App\Test\Fixture\CategoriesFixture */
+    private $categoriesFixture;
+
     public function setUp() {
-        $this->Books = TableRegistry::get('Books');
         $this->Accounts = TableRegistry::get('Accounts');
+        $this->Books = TableRegistry::get('Books');
+        $this->Categories = TableRegistry::get('Categories');
         $this->accountsFixture = new accountsFixture();
+        $this->categoriesFixture = new categoriesFixture();
     }
 
     public function testGET_add() {
@@ -64,10 +74,14 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         // 4.2 Look for the hidden POST input
         if($this->lookForHiddenInput($form)) $unknownInputCnt--;
 
-        // 4.3 Ensure that there's an input field for sort, of type text, and that it is empty
+        // 4.3 Ensure that there's a select field for category_id, that it has no selection,
+        //    and that it has the correct quantity of available choices.
+        if($this->selectCheckerA($form, 'AccountCategoryId', 'categories')) $unknownSelectCnt--;
+
+        // 4.4 Ensure that there's an input field for sort, of type text, and that it is empty
         if($this->inputCheckerA($form,'input#AccountSort')) $unknownInputCnt--;
 
-        // 4.4 Ensure that there's an input field for title, of type text, and that it is empty
+        // 4.5 Ensure that there's an input field for title, of type text, and that it is empty
         if($this->inputCheckerA($form,'input#AccountTitle')) $unknownInputCnt--;
 
         // 5. Have all the input, select, and Atags been accounted for?
@@ -87,6 +101,7 @@ class AccountsControllerTest extends DMIntegrationTestCase {
 
         // 2. Now validate that record.
         $this->assertEquals($fromDbRecord['book_id'],$fixtureRecord['book_id']);
+        $this->assertEquals($fromDbRecord['category_id'],$fixtureRecord['category_id']);
         $this->assertEquals($fromDbRecord['sort'],$fixtureRecord['sort']);
         $this->assertEquals($fromDbRecord['title'],$fixtureRecord['title']);
     }
@@ -141,6 +156,13 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         // 5.2 Look for the hidden POST input
         if($this->lookForHiddenInput($form,'_method','PUT')) $unknownInputCnt--;
 
+        // 5.3 Ensure that there's a select field for category_id and that it is correctly set
+        // $category_id / $category['title'], from fixture
+        $category_id=$account['category_id'];
+        $category = $this->categoriesFixture->get($category_id);
+        if($this->inputCheckerB($form,'select#AccountCategoryId option[selected]',$category_id,$category['title']))
+            $unknownSelectCnt--;
+
         // 5.3 Ensure that there's an input field for sort, of type text, and that it is empty
         if($this->inputCheckerA($form,'input#AccountSort', $account['sort'])) $unknownInputCnt--;
 
@@ -169,6 +191,7 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         // 3. Now retrieve that 1 record and validate it.
         $fromDbRecord=$this->Accounts->get($account_id);
         $this->assertEquals($fromDbRecord['book_id'],$accountNew['book_id']);
+        $this->assertEquals($fromDbRecord['category_id'],$accountNew['category_id']);
         $this->assertEquals($fromDbRecord['sort'],$accountNew['sort']);
         $this->assertEquals($fromDbRecord['title'],$accountNew['title']);
     }
@@ -212,16 +235,18 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         //    headings, in the correct order, and nothing else.
         $thead = $table->find('thead',0);
         $thead_ths = $thead->find('tr th');
-        $this->assertEquals($thead_ths[0]->id, 'sort');
-        $this->assertEquals($thead_ths[1]->id, 'title');
-        $this->assertEquals($thead_ths[2]->id, 'actions');
+        $this->assertEquals($thead_ths[0]->id, 'category');
+        $this->assertEquals($thead_ths[1]->id, 'sort');
+        $this->assertEquals($thead_ths[2]->id, 'title');
+        $this->assertEquals($thead_ths[3]->id, 'actions');
         $column_count = count($thead_ths);
-        $this->assertEquals($column_count,3); // no other columns
+        $this->assertEquals($column_count,4); // no other columns
 
         // 7. Ensure that the tbody section has the correct quantity of rows.
         $dbRecords=$this->Accounts->find()
+            ->contain(['Categories'])
             ->where(['book_id'=>$book_id])
-            ->order(['sort']);
+            ->order(['category_id','sort']);
         $tbody = $table->find('tbody',0);
         $tbody_rows = $tbody->find('tr');
         $this->assertEquals(count($tbody_rows), $dbRecords->count());
@@ -239,11 +264,12 @@ class AccountsControllerTest extends DMIntegrationTestCase {
             $htmlColumns = $htmlRow->find('td');
 
             // 9.0 title
-            $this->assertEquals($fixtureRecord['Accounts__sort'],  $htmlColumns[0]->plaintext);
-            $this->assertEquals($fixtureRecord['Accounts__title'],  $htmlColumns[1]->plaintext);
+            $this->assertEquals($fixtureRecord['Categories__title'],  $htmlColumns[0]->plaintext);
+            $this->assertEquals($fixtureRecord['Accounts__sort'],  $htmlColumns[1]->plaintext);
+            $this->assertEquals($fixtureRecord['Accounts__title'],  $htmlColumns[2]->plaintext);
 
             // 9.1 Now examine the action links
-            $td = $htmlColumns[2];
+            $td = $htmlColumns[3];
             $actionLinks = $td->find('a');
             $this->assertEquals('AccountView', $actionLinks[0]->name);
             $unknownATag--;
@@ -271,7 +297,10 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         $account=$this->Accounts->get($account_id);
         $book_id=FixtureConstants::bookTypical;
         $book=$this->Books->get($book_id);
+        $category_id=FixtureConstants::categoryTypical;
+        $category=$this->Categories->get($category_id);
         $this->assertEquals($account['book_id'],$book['id']);
+        $this->assertEquals($account['category_id'],$category['id']);
 
         // 2. Submit request, examine response, observe no redirect, and parse the response.
         $this->get('/books/'.$book_id.'/accounts/'.$account_id);
@@ -297,12 +326,17 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         $this->assertEquals($book['title'], $field->plaintext);
         $unknownRowCnt--;
 
-        // 4.2 sort
+        // 4.2 category_title
+        $field = $table->find('tr#category_title td',0);
+        $this->assertEquals($category['title'], $field->plaintext);
+        $unknownRowCnt--;
+
+        // 4.3 sort
         $field = $table->find('tr#sort td',0);
         $this->assertEquals($account['sort'], $field->plaintext);
         $unknownRowCnt--;
 
-        // 4.3 title
+        // 4.4 title
         $field = $table->find('tr#title td',0);
         $this->assertEquals($account['title'], $field->plaintext);
         $unknownRowCnt--;

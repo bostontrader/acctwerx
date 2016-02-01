@@ -29,7 +29,8 @@ class AccountsController extends AppController {
                 $this->Flash->error(__(self::ACCOUNT_NOT_SAVED));
             }
         }
-        $this->set(compact('account','book'));
+        $categories = $this->Accounts->Categories->find('list');
+        $this->set(compact('account','book','categories'));
         return null;
     }
 
@@ -62,7 +63,8 @@ class AccountsController extends AppController {
                 $this->Flash->error(__(self::ACCOUNT_NOT_SAVED));
             }
         }
-        $this->set(compact('account','book'));
+        $categories = $this->Accounts->Categories->find('list');
+        $this->set(compact('account','book','categories'));
         return null;
     }
 
@@ -75,9 +77,9 @@ class AccountsController extends AppController {
         $this->request->allowMethod(['get']);
         $this->set(
             'accounts', $this->Accounts->find()
-                ->contain('Books')
+                ->contain(['Books','Categories'])
                 ->where(['book_id'=>$book_id])
-                ->order(['sort']));
+                ->order(['category_id','sort']));
         $this->set(compact('book','book_id'));
     }
 
@@ -88,7 +90,7 @@ class AccountsController extends AppController {
 
         $book_id=$this->get_book_id($this->request->params);
 
-        $account = $this->Accounts->get($id,['contain'=>'Books']);
+        $account = $this->Accounts->get($id,['contain'=>['Books','Categories']]);
         $this->set('account', $account);
         $this->set('book_id',$book_id);
     }

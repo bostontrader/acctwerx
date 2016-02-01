@@ -203,12 +203,12 @@ class DMIntegrationTestCase extends IntegrationTestCase {
      * @param String $expected_display. The expected value to be displayed.
      * @return boolean Return true if a matching input is found, else assertion errors.
      */
-    //protected function inputCheckerB($html_node,$css_finder,$expected_id,$expected_display){
-        //$option = $html_node->find($css_finder,0);
-        //$this->assertEquals($expected_id, $option->value);
-        //$this->assertEquals($expected_display, $option->plaintext);
-        //return true;
-    //}
+    protected function inputCheckerB($html_node,$css_finder,$expected_id,$expected_display){
+        $option = $html_node->find($css_finder,0);
+        $this->assertEquals($expected_id, $option->value);
+        $this->assertEquals($expected_display, $option->plaintext);
+        return true;
+    }
 
     /**
      * Look for a particular select input and ensure that:
@@ -220,14 +220,14 @@ class DMIntegrationTestCase extends IntegrationTestCase {
      * @param string $vvName the name of the view var that contains the into to populate the select
      * @return boolean
      */
-    //protected function selectCheckerA($form, $selectID, $vvName) {
-        //$option = $form->find('select#'.$selectID.' option[selected]', 0);
-        //$this->assertNull($option);
-        //$option_cnt = count($form->find('select#'.$selectID. ' option'));
-        //$record_cnt = $this->viewVariable($vvName)->count();
-        //$this->assertEquals($record_cnt + 1, $option_cnt);
-        //return true;
-    //}
+    protected function selectCheckerA($form, $selectID, $vvName) {
+        $option = $form->find('select#'.$selectID.' option[selected]', 0);
+        $this->assertNull($option);
+        $option_cnt = count($form->find('select#'.$selectID. ' option'));
+        $record_cnt = $this->viewVariable($vvName)->count();
+        $this->assertEquals($record_cnt + 1, $option_cnt);
+        return true;
+    }
 
     // Hack the session to make it look as if we're properly logged in.
     //protected function fakeLogin($userId) {

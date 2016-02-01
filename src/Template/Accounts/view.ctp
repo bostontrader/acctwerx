@@ -11,6 +11,10 @@
                 <th><?= __('Book Title') ?></th>
                 <td><?= $account->book->title ?></td>
             </tr>
+            <tr id="category_title">
+                <th><?= __('Category') ?></th>
+                <td><?= $account->category->title ?></td>
+            </tr>
             <tr id="sort">
                 <th><?= __('Sort') ?></th>
                 <td><?= $account->sort ?></td>
