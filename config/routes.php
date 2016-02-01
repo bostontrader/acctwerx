@@ -73,6 +73,10 @@ Router::scope('/', function ($routes) {
     $routes->connect('/books/add', ['controller' => 'books', 'action' => 'add']);
     $routes->connect('/books/edit/*', ['controller' => 'books', 'action' => 'edit']);
 
+    $routes->resources('Categories');
+    $routes->connect('/categories/add', ['controller' => 'categories', 'action' => 'add']);
+    $routes->connect('/categories/edit/*', ['controller' => 'categories', 'action' => 'edit']);
+
     /**
      * Here, we are connecting '/' (base path) to a controller called 'Pages',
      * its action called 'display', and we pass a param to select the view file
