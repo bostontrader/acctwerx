@@ -41,6 +41,7 @@ class AccountsControllerTest extends DMIntegrationTestCase {
 
         /* @var \simple_html_dom_node $form */
         /* @var \simple_html_dom_node $html */
+        /* @var \simple_html_dom_node $input */
         /* @var \simple_html_dom_node $legend */
 
         // 1. GET the url and parse the response.
@@ -71,17 +72,20 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         $unknownSelectCnt = count($form->find('select'));
         $unknownInputCnt = count($form->find('input'));
 
-        // 4.2 Look for the hidden POST input
+        // 4.2 Look for the hidden POST input.
         if($this->lookForHiddenInput($form)) $unknownInputCnt--;
 
-        // 4.3 Ensure that there's a select field for category_id, that it has no selection,
+        // 4.3 Look for the hidden book_id input, and validate its contents.
+        if($this->lookForHiddenInput($form,'book_id',$book_id)) $unknownInputCnt--;
+
+        // 4.4 Ensure that there's a select field for category_id, that it has no selection,
         //    and that it has the correct quantity of available choices.
         if($this->selectCheckerA($form, 'AccountCategoryId', 'categories')) $unknownSelectCnt--;
 
-        // 4.4 Ensure that there's an input field for sort, of type text, and that it is empty
+        // 4.5 Ensure that there's an input field for sort, of type text, and that it is empty
         if($this->inputCheckerA($form,'input#AccountSort')) $unknownInputCnt--;
 
-        // 4.5 Ensure that there's an input field for title, of type text, and that it is empty
+        // 4.6 Ensure that there's an input field for title, of type text, and that it is empty
         if($this->inputCheckerA($form,'input#AccountTitle')) $unknownInputCnt--;
 
         // 5. Have all the input, select, and Atags been accounted for?

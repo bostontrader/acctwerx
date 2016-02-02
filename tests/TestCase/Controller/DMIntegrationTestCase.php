@@ -255,12 +255,12 @@ class DMIntegrationTestCase extends IntegrationTestCase {
      * @param \simple_html_dom_node $form the form that contains the select
      * @param String $name the name attribute of the input
      * @param String $value the value of the input
-     * @return boolean
+     * @return boolean | \simple_html_dom_node
      */
     protected function lookForHiddenInput($form, $name='_method', $value='POST') {
         foreach($form->find('input[type=hidden]') as $input) {
             if($input->value == $value && $input->name == $name)
-                return true;
+                return $input;
         }
         return false;
     }
