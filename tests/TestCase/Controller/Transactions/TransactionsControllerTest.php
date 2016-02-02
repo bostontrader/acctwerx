@@ -61,13 +61,16 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
         $unknownSelectCnt = count($form->find('select'));
         $unknownInputCnt = count($form->find('input'));
 
-        // 4.2 Look for the hidden POST input
+        // 4.2 Look for the hidden POST input.
         if($this->lookForHiddenInput($form)) $unknownInputCnt--;
 
-        // 4.3 Ensure that there's an input field for note, of type text, and that it is empty
+        // 4.3 Look for the hidden book_id input, and validate its contents.
+        if($this->lookForHiddenInput($form,'book_id',$book_id)) $unknownInputCnt--;
+
+        // 4.4 Ensure that there's an input field for note, of type text, and that it is empty
         if($this->inputCheckerA($form,'input#TransactionNote')) $unknownInputCnt--;
 
-        // 4.4 Ensure that there's an input field for datetime, of type text, and that it is empty
+        // 4.5 Ensure that there's an input field for datetime, of type text, and that it is empty
         if($this->inputCheckerA($form,'input#TransactionDatetime')) $unknownInputCnt--;
 
         // 5. Have all the input, select, and Atags been transactioned for?
