@@ -80,7 +80,7 @@ class AccountsController extends AppController {
                 ->contain(['Books','Categories'])
                 ->where(['book_id'=>$book_id])
                 ->order(['category_id','sort']));
-        $this->set(compact('book','book_id'));
+        $this->set(compact('book'));
     }
 
     // GET /books/:book_id/accounts/:id

@@ -8,7 +8,7 @@
     <nav class="large-3 medium-4 columns" id="actions-sidebar">
         <ul class="side-nav">
             <li class="heading"><?= __('Actions') ?></li>
-            <li><?= $this->Html->link(__('New Account'), ['action' => 'add', 'book_id'=>'1', '_method'=>'GET'],['id'=>'AccountAdd']) ?></li>
+            <li><?= $this->Html->link(__('New Account'), ['book_id'=>$book['id'],'action'=>'add','_method'=>'GET'],['id'=>'AccountAdd']) ?></li>
             <li><?php //$this->Html->link(__('New Account'), '/books/'.$book_id.'/accounts',['id'=>'AccountAdd']) ?></li>
         </ul>
     </nav>
@@ -30,8 +30,8 @@
                     <td><?= $account->sort ?></td>
                     <td><?= $account->title ?></td>
                     <td class="actions">
-                        <?= $this->Html->link(__('View'), ['action' => 'view', 'id'=>$account->id, 'book_id'=>$book_id, '_method'=>'GET'],['name'=>'AccountView']) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $account->id, 'book_id'=>$book_id, '_method'=>'GET'],['name'=>'AccountEdit']) ?>
+                        <?= $this->Html->link(__('View'), ['book_id'=>$book['id'],'action'=>'view','id'=>$account->id,'_method'=>'GET'],['name'=>'AccountView']) ?>
+                        <?= $this->Html->link(__('Edit'), ['book_id'=>$book['id'],'action'=>'edit',$account->id,'_method'=>'GET'],['name'=>'AccountEdit']) ?>
                         <?php //$this->Form->postLink(__('Delete'), ['action' => 'delete', $account->id], ['name'=>'AccountDelete','confirm' => __('Are you sure you want to delete # {0}?', $account->id)]) ?>
                     </td>
                 </tr>
