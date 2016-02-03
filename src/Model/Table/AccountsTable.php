@@ -12,6 +12,7 @@ class AccountsTable extends Table {
 
         $this->belongsTo('Books');
         $this->belongsTo('Categories');
+        $this->hasMany('Distributions');
     }
 }
 

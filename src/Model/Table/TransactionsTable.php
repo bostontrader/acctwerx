@@ -11,6 +11,7 @@ class TransactionsTable extends Table {
         $this->displayField('title');
 
         $this->belongsTo('Books');
+        $this->hasMany('Distributions');
     }
 }
 
