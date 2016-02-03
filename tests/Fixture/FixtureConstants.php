@@ -21,6 +21,7 @@ class FixtureConstants {
     const accountTypical = 1;
     const bookTypical = 1;
     const categoryTypical = 1;
+    const distributionTypical = 1;
     const transactionTypical = 1;
 
 }

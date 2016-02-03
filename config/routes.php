@@ -66,7 +66,11 @@ Router::scope('/', function ($routes) {
         $routes->connect('/accounts/add', ['controller' => 'accounts', 'action' => 'add']);
         $routes->connect('/accounts/edit/*', ['controller' => 'accounts', 'action' => 'edit']);
 
-        $routes->resources('Transactions');
+        $routes->resources('Transactions', function ($routes) {
+            $routes->resources('Distributions');
+            $routes->connect('/distributions/add', ['controller' => 'distributions', 'action' => 'add']);
+            $routes->connect('/distributions/edit/*', ['controller' => 'distributions', 'action' => 'edit']);   
+        });
         $routes->connect('/transactions/add', ['controller' => 'transactions', 'action' => 'add']);
         $routes->connect('/transactions/edit/*', ['controller' => 'transactions', 'action' => 'edit']);
     });
