@@ -5,7 +5,7 @@
         </ul>
     </nav>
     <div class="books view large-9 medium-8 columns content">
-        <h3><?= h(__('Balance Sheet for ').$book->title) ?></h3>
+        <h3><?= h(__('Income Statement for ').$book->title) ?></h3>
         <table id="BookBalanceTable" class="vertical-table">
         </table>
     </div>
