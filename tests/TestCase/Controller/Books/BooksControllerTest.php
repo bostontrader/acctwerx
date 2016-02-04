@@ -73,6 +73,16 @@ class BooksControllerTest extends DMIntegrationTestCase {
         $this->assertEquals($fromDbRecord['title'],$fixtureRecord['title']);
     }
 
+    public function testGET_balance() {
+
+        // 1. Obtain a record to query, login, GET the url, and parse the response.
+        $book_id=FixtureConstants::bookTypical;
+        $this->get('/books/balance/'.$book_id);
+        $this->assertResponseCode(200);
+        $this->assertNoRedirect();
+        //$html = str_get_html($this->_response->body());
+    }
+
     //public function testDELETE() {
         //$this->deletePOST(
             //null, // no login
@@ -83,7 +93,7 @@ class BooksControllerTest extends DMIntegrationTestCase {
 
     public function testGET_edit() {
 
-        // 1. Obtain a record to edit, login, GET the url, parse the response and send it back.
+        // 1. Obtain a record to edit, login, GET the url, and parse the response.
         $book_id=FixtureConstants::bookTypical;
         $book=$this->books->get($book_id);
         $url='/books/edit/' . $book_id;

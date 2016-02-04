@@ -24,6 +24,12 @@ class BooksController extends AppController {
         return null;
     }
 
+    public function balance($id = null) {
+        $this->request->allowMethod(['get']);
+        $book = $this->Books->get($id);
+        $this->set('book', $book);
+    }
+
     //public function delete($id = null) {
         //$this->request->allowMethod(['post', 'delete']);
         //$book = $this->Books->get($id);
