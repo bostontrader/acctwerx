@@ -144,6 +144,16 @@ class BooksControllerTest extends DMIntegrationTestCase {
         $this->assertEquals($fromDbRecord['title'],$fixtureRecord['title']);
     }
 
+    public function testGET_income() {
+
+        // 1. Obtain a record to query, login, GET the url, and parse the response.
+        $book_id=FixtureConstants::bookTypical;
+        $this->get('/books/income/'.$book_id);
+        $this->assertResponseCode(200);
+        $this->assertNoRedirect();
+        //$html = str_get_html($this->_response->body());
+    }
+
     public function testGET_index() {
 
         /* @var \simple_html_dom_node $content */

@@ -77,6 +77,7 @@ Router::scope('/', function ($routes) {
     $routes->connect('/books/add', ['controller' => 'books', 'action' => 'add']);
     $routes->connect('/books/edit/*', ['controller' => 'books', 'action' => 'edit']);
     $routes->connect('/books/balance/*', ['controller' => 'books', 'action' => 'balance']);
+    $routes->connect('/books/income/*', ['controller' => 'books', 'action' => 'income']);
 
     $routes->resources('Categories');
     $routes->connect('/categories/add', ['controller' => 'categories', 'action' => 'add']);

@@ -57,6 +57,12 @@ class BooksController extends AppController {
         return null;
     }
 
+    public function income($id = null) {
+        $this->request->allowMethod(['get']);
+        $book = $this->Books->get($id);
+        $this->set('book', $book);
+    }
+
     public function index() {
         $this->request->allowMethod(['get']);
         $this->set('books', $this->Books->find());
