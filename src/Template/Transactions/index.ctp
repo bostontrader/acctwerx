@@ -8,7 +8,7 @@
     <nav class="large-3 medium-4 columns" id="actions-sidebar">
         <ul class="side-nav">
             <li class="heading"><?= __('Actions') ?></li>
-            <li><?= $this->Html->link(__('New Transaction'), ['action' => 'add', 'book_id'=>'1', '_method'=>'GET'],['id'=>'TransactionAdd']) ?></li>
+            <li><?= $this->Html->link(__('New Transaction'), ['book_id'=>$book['id'],'action'=>'add','_method'=>'GET'],['id'=>'TransactionAdd']) ?></li>
             <li><?php //$this->Html->link(__('New Transaction'), '/books/'.$book_id.'/transactions',['id'=>'TransactionAdd']) ?></li>
         </ul>
     </nav>
@@ -28,8 +28,8 @@
                     <td><?= $transaction->note ?></td>
                     <td><?= $transaction->datetime ?></td>
                     <td class="actions">
-                        <?= $this->Html->link(__('View'), ['action' => 'view', 'id'=>$transaction->id, 'book_id'=>$book_id, '_method'=>'GET'],['name'=>'TransactionView']) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $transaction->id, 'book_id'=>$book_id, '_method'=>'GET'],['name'=>'TransactionEdit']) ?>
+                        <?= $this->Html->link(__('View'), ['book_id'=>$book['id'],'action'=>'view','id'=>$transaction->id,'_method'=>'GET'],['name'=>'TransactionView']) ?>
+                        <?= $this->Html->link(__('Edit'), ['book_id'=>$book['id'],'action'=>'edit', $transaction->id, 'book_id'=>$book_id, '_method'=>'GET'],['name'=>'TransactionEdit']) ?>
                         <?php //$this->Form->postLink(__('Delete'), ['action' => 'delete', $transaction->id], ['name'=>'TransactionDelete','confirm' => __('Are you sure you want to delete # {0}?', $transaction->id)]) ?>
                     </td>
                 </tr>
