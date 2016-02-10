@@ -83,7 +83,12 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         //    and that it has the correct quantity of available choices.
         if($this->selectCheckerA($form, 'DistributionAccountId', 'accounts')) $unknownSelectCnt--;
 
-        // 4.5 Ensure that there's an input field for amount, of type text, and that it is empty
+        // 4.5 There should be a radio button for dr/cr, but let's skip that for now.
+        // But it does use one hidden input and one input for each of the two choices.
+        // So that's 3 of the inputs we're looking for.
+        $unknownInputCnt-=3;
+
+        // 4.6 Ensure that there's an input field for amount, of type text, and that it is empty
         if($this->inputCheckerA($form,'input#DistributionAmount')) $unknownInputCnt--;
 
         // 5. Have all the input, select, and Atags been distributioned for?
@@ -170,7 +175,12 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         if($this->inputCheckerB($form,'select#DistributionAccountId option[selected]',$account_id,$account['title']))
             $unknownSelectCnt--;
 
-        // 5.4 Ensure that there's an input field for amount, of type text, and that it is empty
+        // 5.4 There should be a radio button for dr/cr, but let's skip that for now.
+        // But it does use one hidden input and one input for each of the two choices.
+        // So that's 3 of the inputs we're looking for.
+        $unknownInputCnt-=3;
+
+        // 5.5 Ensure that there's an input field for amount, of type text, and that it is empty
         if($this->inputCheckerA($form,'input#DistributionAmount', $distribution['amount'])) $unknownInputCnt--;
 
         // 6. Have all the input, select, and Atags been distributioned for?
@@ -239,10 +249,11 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $thead = $table->find('thead',0);
         $thead_ths = $thead->find('tr th');
         $this->assertEquals($thead_ths[0]->id, 'account');
-        $this->assertEquals($thead_ths[1]->id, 'amount');
-        $this->assertEquals($thead_ths[2]->id, 'actions');
+        $this->assertEquals($thead_ths[1]->id, 'drcr');
+        $this->assertEquals($thead_ths[2]->id, 'amount');
+        $this->assertEquals($thead_ths[3]->id, 'actions');
         $column_count = count($thead_ths);
-        $this->assertEquals($column_count,3); // no other columns
+        $this->assertEquals($column_count,4); // no other columns
 
         // 7. Ensure that the tbody section has the correct quantity of rows.
         $dbRecords=$this->Distributions->find()
@@ -268,11 +279,14 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
             // 9.0 account
             $this->assertEquals($fixtureRecord['Accounts__title'],  $htmlColumns[0]->plaintext);
 
-            // 9.1 amount
-            $this->assertEquals($fixtureRecord['Distributions__amount'],  $htmlColumns[1]->plaintext);
+            // 9.1 dr/cr
+            $this->assertEquals($fixtureRecord['Distributions__drcr'],  $htmlColumns[1]->plaintext);
 
-            // 9.2 Now examine the action links
-            $td = $htmlColumns[2];
+            // 9.2 amount
+            $this->assertEquals($fixtureRecord['Distributions__amount'],  $htmlColumns[2]->plaintext);
+
+            // 9.3 Now examine the action links
+            $td = $htmlColumns[3];
             $actionLinks = $td->find('a');
             $this->assertEquals('DistributionView', $actionLinks[0]->name);
             $unknownATag--;
@@ -327,7 +341,12 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $this->assertEquals($distribution->account['title'], $field->plaintext);
         $unknownRowCnt--;
 
-        // 4.2 amount
+        // 4.2 transaction_title
+        $field = $table->find('tr#drcr td',0);
+        $this->assertEquals($distribution['drcr'], $field->plaintext);
+        $unknownRowCnt--;
+
+        // 4.3 amount
         $field = $table->find('tr#amount td',0);
         $this->assertEquals($distribution['amount'], $field->plaintext);
         $unknownRowCnt--;

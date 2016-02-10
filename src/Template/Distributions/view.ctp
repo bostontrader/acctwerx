@@ -11,6 +11,10 @@
                 <th><?= __('Account Title') ?></th>
                 <td><?= $distribution->account->title ?></td>
             </tr>
+            <tr id="drcr">
+                <th><?= __('DR/CR') ?></th>
+                <td><?= $distribution->drcr ?></td>
+            </tr>
             <tr id="amount">
                 <th><?= __('Amount') ?></th>
                 <td><?= $distribution->amount ?></td>

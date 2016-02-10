@@ -15,13 +15,13 @@ class DistributionsController extends AppController {
     public function add() {
         $this->request->allowMethod(['get', 'post']);
 
-        // Get the transaction and transaction_id.
+        // Get the book_id and transaction_id.
         $transaction_id=$this->get_transaction_id($this->request->params);
-        //$transaction=$this->Distributions->Transactions->get($transaction_id);
         $book_id=$this->get_book_id($this->request->params);
-        //$book=$this->Distributions->Transactions->Books->get($book_id);
 
         $distribution = $this->Distributions->newEntity(['contain'=>'transactions']);
+        $distribution->drcr=1; // default to dr
+
         if ($this->request->is('post')) {
             $distribution = $this->Distributions->patchEntity($distribution, $this->request->data);
             if ($this->Distributions->save($distribution)) {
