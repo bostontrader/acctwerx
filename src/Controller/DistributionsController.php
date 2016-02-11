@@ -76,28 +76,21 @@ class DistributionsController extends AppController {
 
         $book_id=$this->get_book_id($this->request->params);
         $transaction_id=$this->get_transaction_id($this->request->params);
-        //$transaction=$this->Distributions->Transactions->get($transaction_id);
 
         $this->request->allowMethod(['get']);
         $this->set(
             'distributions', $this->Distributions->find()
-                ->contain('Accounts')
+            ->contain('Accounts.Categories')
             ->where(['transaction_id'=>$transaction_id])
-            //->order(['datetime'])
         );
         $this->set(compact('book_id','transaction_id'));
     }
 
     // GET /books/:book_id/transactions/:transaction_id/distributions/:id
     public function view($id = null) {
-
         $this->request->allowMethod(['get']);
-
-        //$transaction_id=$this->get_transaction_id($this->request->params);
-
-        $distribution = $this->Distributions->get($id,['contain'=>'Accounts']);
+        $distribution = $this->Distributions->get($id,['contain'=>'Accounts.Categories']);
         $this->set('distribution', $distribution);
-        //$this->set('transaction_id',$transaction_id);
     }
 
     // The actions in this controller should only be accessible in the context of a

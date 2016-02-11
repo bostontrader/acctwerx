@@ -11,6 +11,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
     public $fixtures = [
         'app.accounts',
         'app.books',
+        'app.categories',
         'app.distributions',
         'app.transactions'
     ];
@@ -248,16 +249,17 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         //    headings, in the correct order, and nothing else.
         $thead = $table->find('thead',0);
         $thead_ths = $thead->find('tr th');
-        $this->assertEquals($thead_ths[0]->id, 'account');
-        $this->assertEquals($thead_ths[1]->id, 'drcr');
-        $this->assertEquals($thead_ths[2]->id, 'amount');
-        $this->assertEquals($thead_ths[3]->id, 'actions');
+        $this->assertEquals($thead_ths[0]->id, 'drcr');
+        $this->assertEquals($thead_ths[1]->id, 'category');
+        $this->assertEquals($thead_ths[2]->id, 'account');
+        $this->assertEquals($thead_ths[3]->id, 'amount');
+        $this->assertEquals($thead_ths[4]->id, 'actions');
         $column_count = count($thead_ths);
-        $this->assertEquals($column_count,4); // no other columns
+        $this->assertEquals($column_count,5); // no other columns
 
         // 7. Ensure that the tbody section has the correct quantity of rows.
         $dbRecords=$this->Distributions->find()
-            ->contain('Accounts')
+            ->contain('Accounts.Categories')
             ->where(['transaction_id'=>$transaction_id]);
             //->order(['datetime']);
         $tbody = $table->find('tbody',0);
@@ -276,17 +278,20 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
             $htmlRow = $values[1];
             $htmlColumns = $htmlRow->find('td');
 
-            // 9.0 account
-            $this->assertEquals($fixtureRecord['Accounts__title'],  $htmlColumns[0]->plaintext);
+            // 9.0 dr/cr
+            $this->assertEquals($fixtureRecord['Distributions__drcr']==1?'DR':'CR',  $htmlColumns[0]->plaintext);
 
-            // 9.1 dr/cr
-            $this->assertEquals($fixtureRecord['Distributions__drcr'],  $htmlColumns[1]->plaintext);
+            // 9.1 category
+            $this->assertEquals($fixtureRecord['Categories__title'],  $htmlColumns[1]->plaintext);
 
-            // 9.2 amount
-            $this->assertEquals($fixtureRecord['Distributions__amount'],  $htmlColumns[2]->plaintext);
+            // 9.2 account
+            $this->assertEquals($fixtureRecord['Accounts__title'],  $htmlColumns[2]->plaintext);
 
-            // 9.3 Now examine the action links
-            $td = $htmlColumns[3];
+            // 9.3 amount
+            $this->assertEquals($fixtureRecord['Distributions__amount'],  $htmlColumns[3]->plaintext);
+
+            // 9.4 Now examine the action links
+            $td = $htmlColumns[4];
             $actionLinks = $td->find('a');
             $this->assertEquals('DistributionView', $actionLinks[0]->name);
             $unknownATag--;
@@ -312,7 +317,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         // 1. Obtain the relevant records and verify their referential integrity.
         $book_id=FixtureConstants::bookTypical;
         $distribution_id=FixtureConstants::distributionTypical;
-        $distribution=$this->Distributions->get($distribution_id,['contain'=>'Accounts']);
+        $distribution=$this->Distributions->get($distribution_id,['contain'=>'Accounts.Categories']);
         $transaction_id=FixtureConstants::transactionTypical;
         $transaction=$this->Transactions->get($transaction_id);
         $this->assertEquals($distribution['transaction_id'],$transaction['id']);
@@ -336,17 +341,22 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         // This is the count of the table rows that are presently undistributioned for.
         $unknownRowCnt = count($table->find('tr'));
 
-        // 4.1 transaction_title
+        // 4.1 drcr
+        $field = $table->find('tr#drcr td',0);
+        $this->assertEquals($distribution['drcr']==1?'DR':'CR', $field->plaintext);
+        $unknownRowCnt--;
+
+        // 4.2 category_title
+        $field = $table->find('tr#category_title td',0);
+        $this->assertEquals($distribution->account->category['title'], $field->plaintext);
+        $unknownRowCnt--;
+
+        // 4.3 account_title
         $field = $table->find('tr#account_title td',0);
         $this->assertEquals($distribution->account['title'], $field->plaintext);
         $unknownRowCnt--;
 
-        // 4.2 transaction_title
-        $field = $table->find('tr#drcr td',0);
-        $this->assertEquals($distribution['drcr'], $field->plaintext);
-        $unknownRowCnt--;
-
-        // 4.3 amount
+        // 4.4 amount
         $field = $table->find('tr#amount td',0);
         $this->assertEquals($distribution['amount'], $field->plaintext);
         $unknownRowCnt--;

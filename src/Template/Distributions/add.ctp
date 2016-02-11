@@ -18,8 +18,8 @@
             <legend><?= __('Add Distribution') ?></legend>
             <?php
                 echo $this->Form->input('transaction_id',['value'=>$transaction_id,'type'=>'hidden']);
-                echo $this->Form->input('account_id', ['id'=>'DistributionAccountId', 'options' => $accounts, 'empty' => '(none selected)']);
                 echo $this->Form->radio('drcr', [['value'=>1,'text'=>'dr'],['value'=>-1,'text'=>'cr']]);
+                echo $this->Form->input('account_id', ['id'=>'DistributionAccountId', 'options' => $accounts, 'empty' => '(none selected)']);
                 echo $this->Form->input('amount',['id'=>'DistributionAmount','type'=>'text']);
             ?>
         </fieldset>

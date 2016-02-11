@@ -19,8 +19,9 @@
         <table id="DistributionsTable" cellpadding="0" cellspacing="0">
             <thead>
                 <tr>
-                    <th id="account" ><?= __('Account') ?></th>
                     <th id="drcr" ><?= __('DR/CR') ?></th>
+                    <th id="category" ><?= __('Category') ?></th>
+                    <th id="account" ><?= __('Account') ?></th>
                     <th id="amount" ><?= __('Amount') ?></th>
                     <th id="actions" class="actions"><?= __('Actions') ?></th>
                 </tr>
@@ -28,8 +29,9 @@
             <tbody>
                 <?php foreach ($distributions as $distribution): ?>
                 <tr>
+                    <td><?= $distribution->drcr==1?'DR':'CR' ?></td>
+                    <td><?= $distribution->account->category->title ?></td>
                     <td><?= $distribution->account->title ?></td>
-                    <td><?= $distribution->drcr ?></td>
                     <td><?= $distribution->amount ?></td>
                     <td class="actions">
                         <?= $this->Html->link(__('View'), ['book_id'=>$book_id,'transaction_id'=>$transaction_id,'action'=>'view','id'=>$distribution->id,'_method'=>'GET'],['name'=>'DistributionView']) ?>
