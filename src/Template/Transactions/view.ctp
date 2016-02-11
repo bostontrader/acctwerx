@@ -1,4 +1,7 @@
-<?php  /* @var \Cake\ORM\Entity $transaction */ ?>
+<?php
+/* @var int $book_id */
+/* @var \Cake\ORM\Entity $transaction */
+?>
 <div id="TransactionsView">
     <nav class="large-3 medium-4 columns" id="actions-sidebar">
         <ul class="side-nav">

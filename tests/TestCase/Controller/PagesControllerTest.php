@@ -37,7 +37,7 @@ class PagesControllerTest extends IntegrationTestCase
     {
         $this->get('/pages/home');
         $this->assertResponseOk();
-        $this->assertResponseContains('CakePHP');
+        $this->assertResponseContains('AcctWerx');
         $this->assertResponseContains('<html>');
     }
 

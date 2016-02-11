@@ -312,11 +312,24 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         $this->assertNoRedirect();
         $html=str_get_html($this->_response->body());
 
-        // 3.  Look for the table that contains the view fields.
+        // 3. Verify the <A> tags
+        // 3.1 Get the count of all <A> tags that are presently unaccounted for.
+        $content = $html->find('div#AccountsView',0);
+        $this->assertNotNull($content);
+        $unknownATag = count($content->find('a'));
+
+        // 3.2 Look for specific tags
+        $this->assertEquals(1, count($html->find('a#AccountDistributions')));
+        $unknownATag--;
+
+        // 3.3. Ensure that all the <A> tags have been accounted for
+        $this->assertEquals(0, $unknownATag);
+
+        // 4.  Look for the table that contains the view fields.
         $table = $html->find('table#AccountViewTable',0);
         $this->assertNotNull($table);
 
-        // 4. Now inspect the fields on the form.  We want to know that:
+        // 5. Now inspect the fields on the form.  We want to know that:
         // A. The correct fields are there and no other fields.
         // B. The fields have correct values.
         //
@@ -325,33 +338,27 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         // This is the count of the table rows that are presently unaccounted for.
         $unknownRowCnt = count($table->find('tr'));
 
-        // 4.1 book_title
+        // 5.1 book_title
         $field = $table->find('tr#book_title td',0);
         $this->assertEquals($book['title'], $field->plaintext);
         $unknownRowCnt--;
 
-        // 4.2 category_title
+        // 5.2 category_title
         $field = $table->find('tr#category_title td',0);
         $this->assertEquals($category['title'], $field->plaintext);
         $unknownRowCnt--;
 
-        // 4.3 sort
+        // 5.3 sort
         $field = $table->find('tr#sort td',0);
         $this->assertEquals($account['sort'], $field->plaintext);
         $unknownRowCnt--;
 
-        // 4.4 title
+        // 5.4 title
         $field = $table->find('tr#title td',0);
         $this->assertEquals($account['title'], $field->plaintext);
         $unknownRowCnt--;
 
-        // 4.9 Have all the rows been accounted for?  Are there any extras?
+        // 5.9 Have all the rows been accounted for?  Are there any extras?
         $this->assertEquals(0, $unknownRowCnt);
-
-        // 5. Examine the <A> tags on this page.  There should be zero links.
-        $content = $html->find('div#AccountsView',0);
-        $this->assertNotNull($content);
-        $links = $content->find('a');
-        $this->assertEquals(0,count($links));
     }
 }

@@ -210,6 +210,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $this->assertEquals($fromDbRecord['amount'],$distributionNew['amount']);
     }
 
+    // GET /books/:book_id/transactions/:transaction_id/distributions
     public function testGET_index() {
 
         /* @var \simple_html_dom_node $content */
@@ -299,6 +300,92 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
             $unknownATag--;
             //$this->assertEquals('DistributionDelete', $actionLinks[2]->name);
             //$unknownATag--;
+
+            // 9.9 No other columns
+            $this->assertEquals(count($htmlColumns),$column_count);
+        }
+
+        // 10. Ensure that all the <A> tags have been distributioned for
+        $this->assertEquals(0, $unknownATag);
+    }
+
+    // GET /books/:book_id/accounts/:account_id/distributions
+    public function testGET_indexa() {
+
+        /* @var \simple_html_dom_node $content */
+        /* @var \simple_html_dom_node $header */
+        /* @var \simple_html_dom_node $htmlRow */
+        /* @var \simple_html_dom_node $table */
+        /* @var \simple_html_dom_node $tbody */
+        /* @var \simple_html_dom_node $td */
+        /* @var \simple_html_dom_node $thead */
+
+        // 1. Submit request, examine response, observe no redirect, and parse the response.
+        $account_id=FixtureConstants::accountTypical;
+        $this->get('/books/'.FixtureConstants::bookTypical.'/accounts/'.$account_id.'/distributions');
+        $this->assertResponseCode(200);
+        $this->assertNoRedirect();
+        $html=str_get_html($this->_response->body());
+
+        // 2. Now inspect the header of the form.
+        //$header=$html->find('header',0);
+        //$account=$this->Accounts->get($account_id);
+        //$this->assertContains($account['title'],$header->innertext());
+
+        // 3. Get a the count of all <A> tags that are presently unaccounted for.
+        $content = $html->find('div#DistributionsIndex',0);
+        $this->assertNotNull($content);
+        $unknownATag = count($content->find('a'));
+
+        // 4. Look for the create new distribution link
+        //$this->assertEquals(1, count($html->find('a#DistributionAdd')));
+        //$unknownATag--;
+
+        // 5. Ensure that there is a suitably named table to display the results.
+        $table = $html->find('table#DistributionsTable',0);
+        $this->assertNotNull($table);
+
+        // 6. Ensure that said table's thead element contains the correct
+        //    headings, in the correct order, and nothing else.
+        $thead = $table->find('thead',0);
+        $thead_ths = $thead->find('tr th');
+        $this->assertEquals($thead_ths[0]->id, 'drcr');
+        $this->assertEquals($thead_ths[1]->id, 'amount');
+        $this->assertEquals($thead_ths[2]->id, 'run_total');
+        $column_count = count($thead_ths);
+        $this->assertEquals($column_count,3); // no other columns
+
+        // 7. Ensure that the tbody section has the correct quantity of rows.
+        $dbRecords=$this->Distributions->find()
+            ->contain('Accounts.Categories')
+            ->where(['account_id'=>$account_id]);
+        //->order(['datetime']);
+        $tbody = $table->find('tbody',0);
+        $tbody_rows = $tbody->find('tr');
+        $this->assertEquals(count($tbody_rows), $dbRecords->count());
+
+        // 8. Ensure that the values displayed in each row, match the values from
+        //    the fixture.  The values should be presented in a particular order
+        //    with nothing else thereafter.
+        $iterator = new \MultipleIterator();
+        $iterator->attachIterator(new \ArrayIterator($dbRecords->execute()->fetchAll('assoc')));
+        $iterator->attachIterator(new \ArrayIterator($tbody_rows));
+
+        foreach ($iterator as $values) {
+            $fixtureRecord = $values[0];
+            $htmlRow = $values[1];
+            $htmlColumns = $htmlRow->find('td');
+
+            // 9.0 dr/cr
+            $this->assertEquals($fixtureRecord['Distributions__drcr']==1?'DR':'CR',  $htmlColumns[0]->plaintext);
+
+            // 9.1 amount
+            $this->assertEquals($fixtureRecord['Distributions__amount'],  $htmlColumns[1]->plaintext);
+
+            // 9.2 run_total check this later
+            //$this->assertEquals($fixtureRecord['Distributions__amount'],  $htmlColumns[2]->plaintext);
+
+            // No action links
 
             // 9.9 No other columns
             $this->assertEquals(count($htmlColumns),$column_count);

@@ -71,19 +71,41 @@ class DistributionsController extends AppController {
         return null;
     }
 
+    // The list of distributions can be for a particular transaction
+    // or for an account.  We can thus reach this method via two routes:
+    // GET /books/:book_id/accounts/:account_id/distributions
     // GET /books/:book_id/transactions/:transaction_id/distributions
     public function index() {
 
-        $book_id=$this->get_book_id($this->request->params);
-        $transaction_id=$this->get_transaction_id($this->request->params);
-
         $this->request->allowMethod(['get']);
-        $this->set(
-            'distributions', $this->Distributions->find()
-            ->contain('Accounts.Categories')
-            ->where(['transaction_id'=>$transaction_id])
-        );
-        $this->set(compact('book_id','transaction_id'));
+
+        $book_id=$this->get_book_id($this->request->params);
+
+        // Must have account_id _or_ transaction_id
+        if (array_key_exists('account_id', $this->request->params)) {
+            $account_id=$this->request->params['account_id'];
+            $account=$this->Distributions->Accounts->get($account_id,['contain'=>['Categories']]);
+            $this->set(
+                'distributions', $this->Distributions->find()
+                ->contain('Accounts.Categories')
+                ->where(['account_id'=>$account_id])
+            );
+            $this->set(compact('account','account_id'));
+            $this->render('indexa');
+
+        } else if (array_key_exists('transaction_id', $this->request->params)) {
+            $transaction_id=$this->request->params['transaction_id'];
+
+            $this->set(
+                'distributions', $this->Distributions->find()
+                ->contain('Accounts.Categories')
+                ->where(['transaction_id'=>$transaction_id])
+            );
+            $this->set(compact('book_id','transaction_id'));
+
+        } else
+            throw new BadRequestException(self::DNC);
+
     }
 
     // GET /books/:book_id/transactions/:transaction_id/distributions/:id

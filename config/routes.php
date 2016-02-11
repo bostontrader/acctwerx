@@ -18,7 +18,6 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-use Cake\Core\Plugin;
 use Cake\Routing\Router;
 
 /**
@@ -41,28 +40,14 @@ use Cake\Routing\Router;
  */
 Router::defaultRouteClass('DashedRoute');
 
-// from http://thomasv.nl/2013/12/cakephp-restful-routes-basics/
-//GET 	    /projects 	        index 	    display all projects
-//GET 	    /projects/add 	    new 	    return a HTML Form to add a new project
-//POST 	    /projects 	        create 	    create a new project
-//GET 	    /projects/:id 	    show 	    display a specific project
-//GET 	    /projects/:id/edit 	edit 	    return a HTML Form to edit a project
-//PATCH/PUT /projects/:id 	    update 	    update a specific project
-//DELETE 	/projects/:id 	    destroy 	delete a specific project
-
-// from cookbook
-//HTTP format URL.format          Controller action invoked
-//GET         /recipes.format     BooksController::index()
-//GET         /recipes/123.format BooksController::view(123)
-//POST        /recipes.format     BooksController::add()
-//PUT         /recipes/123.format BooksController::edit(123)
-//PATCH       /recipes/123.format BooksController::edit(123)
-//DELETE      /recipes/123.format BooksController::delete(123)
-
 Router::scope('/', function ($routes) {
 
     $routes->resources('Books', function ($routes) {
-        $routes->resources('Accounts');
+        $routes->resources('Accounts', function ($routes) {
+            $routes->resources('Distributions');
+            $routes->connect('/distributions/add', ['controller' => 'distributions', 'action' => 'add']);
+            $routes->connect('/distributions/edit/*', ['controller' => 'distributions', 'action' => 'edit']);
+        });
         $routes->connect('/accounts/add', ['controller' => 'accounts', 'action' => 'add']);
         $routes->connect('/accounts/edit/*', ['controller' => 'accounts', 'action' => 'edit']);
 

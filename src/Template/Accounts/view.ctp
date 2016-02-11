@@ -1,7 +1,12 @@
-<?php  /* @var \Cake\ORM\Entity $account */ ?>
+<?php
+/* @var int $book_id */
+/* @var \Cake\ORM\Entity $account */
+?>
 <div id="AccountsView">
     <nav class="large-3 medium-4 columns" id="actions-sidebar">
         <ul class="side-nav">
+            <li class="heading"><?= __('Actions') ?></li>
+            <li><?= $this->Html->link(__('Distributions'), ['book_id'=>$book_id,'account_id'=>$account->id,'controller'=>'distributions','_method'=>'GET'], ['id'=>'AccountDistributions']) ?></li>
         </ul>
     </nav>
     <div class="accounts view large-9 medium-8 columns content">
