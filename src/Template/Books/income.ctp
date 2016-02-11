@@ -1,3 +1,9 @@
+<?php
+/**
+ * @var \Cake\ORM\Entity $book
+ * @var array $lineItems
+ */
+?>
 <div id="BooksView">
     <nav class="large-3 medium-4 columns" id="actions-sidebar">
         <ul class="side-nav">
@@ -7,6 +13,22 @@
     <div class="books view large-9 medium-8 columns content">
         <h3><?= h(__('Income Statement for ').$book->title) ?></h3>
         <table id="BookBalanceTable" class="vertical-table">
+            <thead>
+            <tr>
+                <th id="category" ><?= __('Category') ?></th>
+                <th id="account" ><?= __('Account') ?></th>
+                <th id="amount" ><?= __('Amount') ?></th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($lineItems as $lineItem): ?>
+                <tr>
+                    <td><?= $lineItem['ct'] ?></td>
+                    <td><?= $lineItem['at'] ?></td>
+                    <td><?= $lineItem['amount'] ?></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
         </table>
     </div>
 </div>

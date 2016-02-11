@@ -8,7 +8,11 @@ use Cake\ORM\TableRegistry;
 class BooksControllerTest extends DMIntegrationTestCase {
 
     public $fixtures = [
-        'app.books'
+        'app.accounts',
+        'app.books',
+        'app.categories',
+        'app.distributions',
+        'app.transactions'
     ];
 
     /** @var \App\Model\Table\BooksTable */
@@ -250,6 +254,10 @@ class BooksControllerTest extends DMIntegrationTestCase {
         $this->assertEquals(1, count($html->find('a#BookAccounts')));
         $unknownATag--;
         $this->assertEquals(1, count($html->find('a#BookTransactions')));
+        $unknownATag--;
+        $this->assertEquals(1, count($html->find('a#BookBalanceSheet')));
+        $unknownATag--;
+        $this->assertEquals(1, count($html->find('a#BookIncomeStatement')));
         $unknownATag--;
 
         // 2.3. Ensure that all the <A> tags have been accounted for

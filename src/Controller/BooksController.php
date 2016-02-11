@@ -74,7 +74,20 @@ class BooksController extends AppController {
     public function income($id = null) {
         $this->request->allowMethod(['get']);
         $book = $this->Books->get($id);
-        $this->set('book', $book);
+
+        /* @var \Cake\Database\Connection $connection */
+        $connection = ConnectionManager::get('default');
+        $query="select categories.title as ct, accounts.title as at, sum(distributions.amount * distributions.drcr) as amount
+            from distributions
+            left join transactions on distributions.transaction_id=transactions.id
+            left join books on transactions.book_id=books.id
+            left join accounts on distributions.account_id=accounts.id
+            left join categories on accounts.category_id=categories.id
+            where books.id=$id
+            group by accounts.id";
+        $lineItems=$connection->execute($query)->fetchAll('assoc');
+
+        $this->set(compact('book','lineItems' ));
     }
 
     public function index() {
