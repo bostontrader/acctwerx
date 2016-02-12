@@ -89,10 +89,10 @@ class AccountsController extends AppController {
         $this->request->allowMethod(['get']);
 
         $book_id=$this->get_book_id($this->request->params);
+        $book=$this->Accounts->Books->get($book_id);
 
         $account = $this->Accounts->get($id,['contain'=>['Books','Categories']]);
-        $this->set('account', $account);
-        $this->set('book_id',$book_id);
+        $this->set(compact('account','book'));
     }
 
     // The actions in this controller should only be accessible in the context of a book,

@@ -3,6 +3,10 @@
  * @var \Cake\ORM\Entity $book
  * @var \Cake\ORM\Table $accounts
  */
+$this->Html->addCrumb('Books', '/books');
+$this->Html->addCrumb($book->title, ['controller'=>'books','id'=>$book->id,'action'=>'view', '_method'=>'GET']);
+$this->Html->addCrumb('Accounts', ['controller'=>'accounts','book_id'=>$book->id,'_method'=>'GET']);
+
 ?>
 <div id="AccountsIndex">
     <nav class="large-3 medium-4 columns" id="actions-sidebar">

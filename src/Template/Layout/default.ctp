@@ -55,6 +55,7 @@
 
     <?php
         //if($currentUser) {
+        echo $this->Html->getCrumbs(' > ', 'Home');
         echo $this->fetch('content');
         //}
     ?>

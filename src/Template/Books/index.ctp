@@ -2,6 +2,8 @@
 /**
  * @var \Cake\ORM\Table $books
  */
+$this->Html->addCrumb('Books', '/books');
+
 ?>
 <div id="BooksIndex">
     <nav class="large-3 medium-4 columns" id="actions-sidebar">

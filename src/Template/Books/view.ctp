@@ -1,4 +1,9 @@
-<?php  /* @var \Cake\ORM\Entity $book */ ?>
+<?php
+/* @var \Cake\ORM\Entity $book */
+$this->Html->addCrumb('Books', '/books');
+$this->Html->addCrumb($book->title, ['controller'=>'books','id'=>$book->id,'action'=>'view', '_method'=>'GET']);
+
+?>
 <div id="BooksView">
     <nav class="large-3 medium-4 columns" id="actions-sidebar">
         <ul class="side-nav">
