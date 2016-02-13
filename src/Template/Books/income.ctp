@@ -3,6 +3,7 @@
  * @var \Cake\ORM\Entity $book
  * @var array $lineItems
  */
+$this->Breadcrumb->makeTrail('Income Statement',$this->Html);
 ?>
 <div id="BooksView">
     <nav class="large-3 medium-4 columns" id="actions-sidebar">

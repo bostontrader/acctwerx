@@ -1,6 +1,7 @@
 <?php
 /* @var int $book_id */
 /* @var \Cake\ORM\Entity $transaction */
+$this->Breadcrumb->makeTrail($transaction->title,$this->Html);
 ?>
 <div id="TransactionsView">
     <nav class="large-3 medium-4 columns" id="actions-sidebar">
