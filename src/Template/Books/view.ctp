@@ -1,8 +1,6 @@
 <?php
 /* @var \Cake\ORM\Entity $book */
-$this->Html->addCrumb('Books', '/books');
-$this->Html->addCrumb($book->title, ['controller'=>'books','id'=>$book->id,'action'=>'view', '_method'=>'GET']);
-
+$this->Breadcrumb->makeTrail($book->title,$this->Html);
 ?>
 <div id="BooksView">
     <nav class="large-3 medium-4 columns" id="actions-sidebar">

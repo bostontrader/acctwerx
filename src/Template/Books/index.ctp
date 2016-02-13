@@ -1,10 +1,6 @@
 <?php
-/**
- * @var \Cake\ORM\Table $books
- */
-
-$this->Breadcrumb->makeTrail('Books');
-
+/* @var \Cake\ORM\Table $books */
+$this->Breadcrumb->makeTrail('Books',$this->Html);
 ?>
 <div id="BooksIndex">
     <nav class="large-3 medium-4 columns" id="actions-sidebar">

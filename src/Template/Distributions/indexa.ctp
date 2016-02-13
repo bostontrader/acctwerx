@@ -3,6 +3,7 @@
  * @var \Cake\ORM\Entity $account
  * @var \Cake\ORM\Table $distributions
  */
+$this->Breadcrumb->makeTrail('Distributions',$this->Html);
 ?>
 <div id="DistributionsIndex">
     <nav class="large-3 medium-4 columns" id="actions-sidebar">

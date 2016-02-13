@@ -1,19 +1,15 @@
 <?php
-/**
+/*
  * @var \Cake\ORM\Entity $book
  * @var \Cake\ORM\Table $accounts
  */
-$this->Html->addCrumb('Books', '/books');
-$this->Html->addCrumb($book->title, ['controller'=>'books','id'=>$book->id,'action'=>'view', '_method'=>'GET']);
-$this->Html->addCrumb('Accounts', ['controller'=>'accounts','book_id'=>$book->id,'_method'=>'GET']);
-
+$this->Breadcrumb->makeTrail('Accounts',$this->Html);
 ?>
 <div id="AccountsIndex">
     <nav class="large-3 medium-4 columns" id="actions-sidebar">
         <ul class="side-nav">
             <li class="heading"><?= __('Actions') ?></li>
             <li><?= $this->Html->link(__('New Account'), ['book_id'=>$book['id'],'action'=>'add','_method'=>'GET'],['id'=>'AccountAdd']) ?></li>
-            <li><?php //$this->Html->link(__('New Account'), '/books/'.$book_id.'/accounts',['id'=>'AccountAdd']) ?></li>
         </ul>
     </nav>
     <div class="accounts index large-9 medium-8 columns content">
