@@ -55,7 +55,16 @@
 
     <?php
         //if($currentUser) {
+        //$crumb=[' > ','Home'];
+    //$n1=$this->Html->getCrumbs();
+    //$n2=$this->Html->getCrumbList();
+        // The content view has already been evaluated and HtmlHelper has
+        // an array of links ready to become breadcrumbs.  Finally, prepend this
+        // and display the full breadcrumb trail in the layout.
         echo $this->Html->getCrumbs(' > ', 'Home');
+    //$n1=$this->Html->getCrumbs();
+    //$n2=$this->Html->getCrumbList();
+        // start session, level = 0
         echo $this->fetch('content');
         //}
     ?>

@@ -2,7 +2,8 @@
 /**
  * @var \Cake\ORM\Table $books
  */
-$this->Html->addCrumb('Books', '/books');
+
+$this->Breadcrumb->makeTrail('Books');
 
 ?>
 <div id="BooksIndex">

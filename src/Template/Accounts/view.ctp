@@ -6,8 +6,10 @@
 $this->Html->addCrumb('Books', '/books');
 $this->Html->addCrumb($book->title, ['controller'=>'books','id'=>$book->id,'action'=>'view', '_method'=>'GET']);
 $this->Html->addCrumb('Accounts', ['controller'=>'accounts','book_id'=>$book->id,'_method'=>'GET']);
-$this->Html->addCrumb('View', ['book_id'=>$book->id,'action'=>'view','id'=>$account->id,'_method'=>'GET']);
+$this->Html->addCrumb($account->title, ['book_id'=>$book->id,'action'=>'view','id'=>$account->id,'_method'=>'GET']);
 
+$n1=$this->Html->getCrumbs();
+$n2=$this->Html->getCrumbList();
 ?>
 <div id="AccountsView">
     <nav class="large-3 medium-4 columns" id="actions-sidebar">
