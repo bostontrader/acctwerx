@@ -38,6 +38,7 @@ class BooksController extends AppController {
             left join accounts on distributions.account_id=accounts.id
             left join categories on accounts.category_id=categories.id
             where books.id=$id
+            and categories.id in (1,2,3)
             group by accounts.id";
         $lineItems=$connection->execute($query)->fetchAll('assoc');
 
@@ -84,6 +85,7 @@ class BooksController extends AppController {
             left join accounts on distributions.account_id=accounts.id
             left join categories on accounts.category_id=categories.id
             where books.id=$id
+            and categories.id in (4,5)
             group by accounts.id";
         $lineItems=$connection->execute($query)->fetchAll('assoc');
 
