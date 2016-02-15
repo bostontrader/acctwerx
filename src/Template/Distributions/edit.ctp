@@ -20,6 +20,7 @@
                 echo $this->Form->radio('drcr', [['value'=>1,'text'=>'dr'],['value'=>-1,'text'=>'cr']]);
                 echo $this->Form->input('account_id', ['id'=>'DistributionAccountId', 'options' => $accounts, 'empty' => '(none selected)']);
                 echo $this->Form->input('amount',['id'=>'DistributionAmount','type'=>'text']);
+                echo $this->Form->input('currency_id', ['id'=>'DistributionCurrencyId', 'options' => $currencies, 'empty' => '(none selected)']);
             ?>
         </fieldset>
         <?= $this->Form->button(__('Submit')) ?>

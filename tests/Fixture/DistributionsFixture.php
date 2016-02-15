@@ -8,7 +8,8 @@ class DistributionsFixture extends DMFixture {
     public $newDistributionRecord = [
         'transaction_id' => FixtureConstants::transactionTypical,
         'account_id' => FixtureConstants::accountTypical,
-        'amount' => 500
+        'amount' => 500,
+        'currency_id' => FixtureConstants::currencyTypical,
     ];
 
     public function init() {

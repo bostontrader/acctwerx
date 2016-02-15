@@ -23,6 +23,10 @@
                 <th><?= __('Amount') ?></th>
                 <td><?= $distribution->amount ?></td>
             </tr>
+            <tr id="currency_symbol">
+                <th><?= __('Currency') ?></th>
+                <td><?= $distribution->currency->symbol ?></td>
+            </tr>
         </table>
     </div>
 </div>

@@ -17,6 +17,7 @@ $this->Breadcrumb->makeTrail('Distributions',$this->Html);
                 <tr>
                     <th id="drcr" ><?= __('DR/CR') ?></th>
                     <th id="amount" ><?= __('Amount') ?></th>
+                    <th id="currency" ><?= __('Currency') ?></th>
                     <th id="run_total" ><?= __('Running Total') ?></th>
                 </tr>
             </thead>
@@ -25,6 +26,7 @@ $this->Breadcrumb->makeTrail('Distributions',$this->Html);
                 <tr>
                     <td><?= $distribution->drcr==1?'DR':'CR' ?></td>
                     <td><?= $distribution->amount ?></td>
+                    <td><?= $distribution->currency->title ?></td>
                     <td><?= $run_tot+=$distribution->amount*$distribution->drcr ?></td>
                 </tr>
                 <?php endforeach; ?>

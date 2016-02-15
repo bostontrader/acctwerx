@@ -25,6 +25,7 @@ $this->Breadcrumb->makeTrail('Distributions',$this->Html);
                     <th id="category" ><?= __('Category') ?></th>
                     <th id="account" ><?= __('Account') ?></th>
                     <th id="amount" ><?= __('Amount') ?></th>
+                    <th id="currency" ><?= __('Currency') ?></th>
                     <th id="actions" class="actions"><?= __('Actions') ?></th>
                 </tr>
             </thead>
@@ -35,6 +36,7 @@ $this->Breadcrumb->makeTrail('Distributions',$this->Html);
                     <td><?= $distribution->account->category->title ?></td>
                     <td><?= $distribution->account->title ?></td>
                     <td><?= $distribution->amount ?></td>
+                    <td><?= $distribution->currency->title ?></td>
                     <td class="actions">
                         <?= $this->Html->link(__('View'), ['book_id'=>$book_id,'transaction_id'=>$transaction_id,'action'=>'view','id'=>$distribution->id,'_method'=>'GET'],['name'=>'DistributionView']) ?>
                         <?= $this->Html->link(__('Edit'), ['book_id'=>$book_id,'transaction_id'=>$transaction_id,'action'=>'edit',$distribution->id,'_method'=>'GET'],['name'=>'DistributionEdit']) ?>

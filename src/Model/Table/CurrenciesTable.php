@@ -3,16 +3,13 @@ namespace App\Model\Table;
 
 use Cake\ORM\Table;
 
-class DistributionsTable extends Table {
+class CurrenciesTable extends Table {
 
     public function initialize(array $config) {
         parent::initialize($config);
 
         $this->displayField('title');
-
-        $this->belongsTo('Accounts');
-        $this->belongsTo('Currencies');
-        $this->belongsTo('Transactions');
+        $this->hasMany('Distributions');
     }
-}
 
+}

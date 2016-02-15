@@ -32,7 +32,8 @@ class DistributionsController extends AppController {
             }
         }
         $accounts = $this->Distributions->Accounts->find('list');
-        $this->set(compact('accounts','distribution','transaction_id'));
+        $currencies = $this->Distributions->Currencies->find('list');
+        $this->set(compact('accounts','currencies','distribution','transaction_id'));
         return null;
     }
 
@@ -67,7 +68,8 @@ class DistributionsController extends AppController {
             }
         }
         $accounts = $this->Distributions->Accounts->find('list');
-        $this->set(compact('accounts','distribution','transaction_id'));
+        $currencies = $this->Distributions->Currencies->find('list');
+        $this->set(compact('accounts','currencies','distribution','transaction_id'));
         return null;
     }
 
@@ -87,7 +89,7 @@ class DistributionsController extends AppController {
             $account=$this->Distributions->Accounts->get($account_id,['contain'=>['Categories']]);
             $this->set(
                 'distributions', $this->Distributions->find()
-                ->contain('Accounts.Categories')
+                ->contain(['Accounts.Categories','Currencies'])
                 ->where(['account_id'=>$account_id])
             );
             $this->set(compact('account','account_id'));
@@ -98,7 +100,7 @@ class DistributionsController extends AppController {
 
             $this->set(
                 'distributions', $this->Distributions->find()
-                ->contain('Accounts.Categories')
+                ->contain(['Accounts.Categories','Currencies'])
                 ->where(['transaction_id'=>$transaction_id])
             );
             $this->set(compact('book_id','transaction_id'));
@@ -111,7 +113,7 @@ class DistributionsController extends AppController {
     // GET /books/:book_id/transactions/:transaction_id/distributions/:id
     public function view($id = null) {
         $this->request->allowMethod(['get']);
-        $distribution = $this->Distributions->get($id,['contain'=>'Accounts.Categories']);
+        $distribution = $this->Distributions->get($id,['contain'=>['Accounts.Categories','Currencies']]);
         $this->set('distribution', $distribution);
     }
 

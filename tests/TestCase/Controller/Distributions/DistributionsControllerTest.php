@@ -2,6 +2,7 @@
 namespace App\Test\TestCase\Controller;
 
 use App\Test\Fixture\AccountsFixture;
+use App\Test\Fixture\CurrenciesFixture;
 use App\Test\Fixture\FixtureConstants;
 use App\Test\Fixture\DistributionsFixture;
 use Cake\ORM\TableRegistry;
@@ -12,6 +13,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         'app.accounts',
         'app.books',
         'app.categories',
+        'app.currencies',
         'app.distributions',
         'app.transactions'
     ];
@@ -28,6 +30,9 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
     /** @var \App\Test\Fixture\AccountsFixture */
     private $accountsFixture;
 
+    /** @var \App\Test\Fixture\CurrenciesFixture */
+    private $currenciesFixture;
+
     /** @var \App\Test\Fixture\DistributionsFixture */
     private $distributionsFixture;
 
@@ -37,6 +42,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $this->Transactions = TableRegistry::get('Transactions');
         $this->distributionsFixture = new distributionsFixture();
         $this->accountsFixture = new accountsFixture();
+        $this->currenciesFixture = new currenciesFixture();
     }
 
     public function testGET_add() {
@@ -92,6 +98,10 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         // 4.6 Ensure that there's an input field for amount, of type text, and that it is empty
         if($this->inputCheckerA($form,'input#DistributionAmount')) $unknownInputCnt--;
 
+        // 4.7 Ensure that there's a select field for currency_id, that it has no selection,
+        //    and that it has the correct quantity of available choices.
+        if($this->selectCheckerA($form, 'DistributionCurrencyId', 'currencies')) $unknownSelectCnt--;
+
         // 5. Have all the input, select, and Atags been distributioned for?
         $this->expectedInputsSelectsAtagsFound($unknownInputCnt, $unknownSelectCnt, $html, 'div#DistributionsAdd');
     }
@@ -112,6 +122,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $this->assertEquals($fromDbRecord['transaction_id'],$fixtureRecord['transaction_id']);
         $this->assertEquals($fromDbRecord['account_id'],$fixtureRecord['account_id']);
         $this->assertEquals($fromDbRecord['amount'],$fixtureRecord['amount']);
+        $this->assertEquals($fromDbRecord['currency_id'],$fixtureRecord['currency_id']);
     }
 
     //public function testDELETE() {
@@ -184,6 +195,13 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         // 5.5 Ensure that there's an input field for amount, of type text, and that it is empty
         if($this->inputCheckerA($form,'input#DistributionAmount', $distribution['amount'])) $unknownInputCnt--;
 
+        // 5.6 Ensure that there's a select field for currency_id and that it is correctly set
+        // $currency_id / $currency_id['title'], from fixture
+        $currency_id=$distribution['currency_id'];
+        $currency = $this->currenciesFixture->get($currency_id);
+        if($this->inputCheckerB($form,'select#DistributionCurrencyId option[selected]',$currency_id,$currency['title']))
+            $unknownSelectCnt--;
+
         // 6. Have all the input, select, and Atags been distributioned for?
         $this->expectedInputsSelectsAtagsFound($unknownInputCnt, $unknownSelectCnt, $html, 'div#DistributionsEdit');
     }
@@ -207,7 +225,9 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         // 3. Now retrieve that 1 record and validate it.
         $fromDbRecord=$this->Distributions->get($distribution_id);
         $this->assertEquals($fromDbRecord['transaction_id'],$distributionNew['transaction_id']);
+        $this->assertEquals($fromDbRecord['account_id'],$distributionNew['account_id']);
         $this->assertEquals($fromDbRecord['amount'],$distributionNew['amount']);
+        $this->assertEquals($fromDbRecord['currency_id'],$distributionNew['currency_id']);
     }
 
     // GET /books/:book_id/transactions/:transaction_id/distributions
@@ -254,13 +274,14 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $this->assertEquals($thead_ths[1]->id, 'category');
         $this->assertEquals($thead_ths[2]->id, 'account');
         $this->assertEquals($thead_ths[3]->id, 'amount');
-        $this->assertEquals($thead_ths[4]->id, 'actions');
+        $this->assertEquals($thead_ths[4]->id, 'currency');
+        $this->assertEquals($thead_ths[5]->id, 'actions');
         $column_count = count($thead_ths);
-        $this->assertEquals($column_count,5); // no other columns
+        $this->assertEquals($column_count,6); // no other columns
 
         // 7. Ensure that the tbody section has the correct quantity of rows.
         $dbRecords=$this->Distributions->find()
-            ->contain('Accounts.Categories')
+            ->contain(['Accounts.Categories','Currencies'])
             ->where(['transaction_id'=>$transaction_id]);
             //->order(['datetime']);
         $tbody = $table->find('tbody',0);
@@ -291,8 +312,11 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
             // 9.3 amount
             $this->assertEquals($fixtureRecord['Distributions__amount'],  $htmlColumns[3]->plaintext);
 
-            // 9.4 Now examine the action links
-            $td = $htmlColumns[4];
+            // 9.4 symbol
+            $this->assertEquals($fixtureRecord['Currencies__symbol'],  $htmlColumns[4]->plaintext);
+
+            // 9.5 Now examine the action links
+            $td = $htmlColumns[5];
             $actionLinks = $td->find('a');
             $this->assertEquals('DistributionView', $actionLinks[0]->name);
             $unknownATag--;
@@ -351,13 +375,14 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $thead_ths = $thead->find('tr th');
         $this->assertEquals($thead_ths[0]->id, 'drcr');
         $this->assertEquals($thead_ths[1]->id, 'amount');
-        $this->assertEquals($thead_ths[2]->id, 'run_total');
+        $this->assertEquals($thead_ths[2]->id, 'currency');
+        $this->assertEquals($thead_ths[3]->id, 'run_total');
         $column_count = count($thead_ths);
-        $this->assertEquals($column_count,3); // no other columns
+        $this->assertEquals($column_count,4); // no other columns
 
         // 7. Ensure that the tbody section has the correct quantity of rows.
         $dbRecords=$this->Distributions->find()
-            ->contain('Accounts.Categories')
+            ->contain(['Accounts.Categories','Currencies'])
             ->where(['account_id'=>$account_id]);
         //->order(['datetime']);
         $tbody = $table->find('tbody',0);
@@ -382,8 +407,11 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
             // 9.1 amount
             $this->assertEquals($fixtureRecord['Distributions__amount'],  $htmlColumns[1]->plaintext);
 
-            // 9.2 run_total check this later
-            //$this->assertEquals($fixtureRecord['Distributions__amount'],  $htmlColumns[2]->plaintext);
+            // 9.2 currency
+            $this->assertEquals($fixtureRecord['Currencies__symbol'],  $htmlColumns[2]->plaintext);
+
+            // 9.3 run_total check this later
+            //$this->assertEquals($fixtureRecord['Distributions__amount'],  $htmlColumns[3]->plaintext);
 
             // No action links
 
@@ -404,7 +432,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         // 1. Obtain the relevant records and verify their referential integrity.
         $book_id=FixtureConstants::bookTypical;
         $distribution_id=FixtureConstants::distributionTypical;
-        $distribution=$this->Distributions->get($distribution_id,['contain'=>'Accounts.Categories']);
+        $distribution=$this->Distributions->get($distribution_id,['contain'=>['Accounts.Categories','Currencies']]);
         $transaction_id=FixtureConstants::transactionTypical;
         $transaction=$this->Transactions->get($transaction_id);
         $this->assertEquals($distribution['transaction_id'],$transaction['id']);
@@ -446,6 +474,11 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         // 4.4 amount
         $field = $table->find('tr#amount td',0);
         $this->assertEquals($distribution['amount'], $field->plaintext);
+        $unknownRowCnt--;
+
+        // 4.5 currency_symbol
+        $field = $table->find('tr#currency_symbol td',0);
+        $this->assertEquals($distribution->currency['symbol'], $field->plaintext);
         $unknownRowCnt--;
 
         // 4.9 Have all the rows been distributioned for?  Are there any extras?
