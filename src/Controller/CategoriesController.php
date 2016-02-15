@@ -3,10 +3,10 @@ namespace App\Controller;
 
 class CategoriesController extends AppController {
 
-    const BOOK_SAVED = "The category has been saved.";
-    const BOOK_NOT_SAVED = "The category could not be saved. Please, try again.";
-    const BOOK_DELETED = "The category has been deleted.";
-    const CANNOT_DELETE_BOOK = "The category could not be deleted. Please, try again.";
+    const CATEGORY_SAVED = "The category has been saved.";
+    const CATEGORY_NOT_SAVED = "The category could not be saved. Please, try again.";
+    const CATEGORY_DELETED = "The category has been deleted.";
+    const CANNOT_DELETE_CATEGORY = "The category could not be deleted. Please, try again.";
 
     public function add() {
         $this->request->allowMethod(['get','post']);
@@ -14,10 +14,10 @@ class CategoriesController extends AppController {
         if ($this->request->is('post')) {
             $category = $this->Categories->patchEntity($category, $this->request->data);
             if ($this->Categories->save($category)) {
-                $this->Flash->success(__(self::BOOK_SAVED));
+                $this->Flash->success(__(self::CATEGORY_SAVED));
                 return $this->redirect(['controller'=>'categories','action' => 'index','_method'=>'GET']);
             } else {
-                $this->Flash->error(__(self::BOOK_NOT_SAVED));
+                $this->Flash->error(__(self::CATEGORY_NOT_SAVED));
             }
         }
         $this->set(compact('category'));
@@ -28,9 +28,9 @@ class CategoriesController extends AppController {
         //$this->request->allowMethod(['post', 'delete']);
         //$category = $this->Categories->get($id);
         //if ($this->Categories->delete($category)) {
-            //$this->Flash->success(__(self::BOOK_DELETED));
+            //$this->Flash->success(__(self::CATEGORY_DELETED));
         //} else {
-            //$this->Flash->error(__(self::CANNOT_DELETE_BOOK));
+            //$this->Flash->error(__(self::CANNOT_DELETE_CATEGORY));
         //}
         //return $this->redirect(['action' => 'index']);
     //}
@@ -41,10 +41,10 @@ class CategoriesController extends AppController {
         if ($this->request->is(['put'])) {
             $category = $this->Categories->patchEntity($category, $this->request->data);
             if ($this->Categories->save($category)) {
-                $this->Flash->success(__(self::BOOK_SAVED));
+                $this->Flash->success(__(self::CATEGORY_SAVED));
                 return $this->redirect(['controller'=>'categories','action' => 'index','_method'=>'GET']);
             } else {
-                $this->Flash->error(__(self::BOOK_NOT_SAVED));
+                $this->Flash->error(__(self::CATEGORY_NOT_SAVED));
             }
         }
         $this->set(compact('category'));

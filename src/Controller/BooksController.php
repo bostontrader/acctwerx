@@ -9,6 +9,11 @@ class BooksController extends AppController {
     const BOOK_DELETED = "The book has been deleted.";
     const CANNOT_DELETE_BOOK = "The book could not be deleted. Please, try again.";
 
+    public function initialize() {
+        parent::initialize();
+        $this->loadComponent('RequestHandler');
+    }
+
     public function add() {
         $this->request->allowMethod(['get','post']);
         $book = $this->Books->newEntity();
@@ -43,6 +48,16 @@ class BooksController extends AppController {
         $lineItems=$connection->execute($query)->fetchAll('assoc');
 
         $this->set(compact('book','lineItems'));
+
+        $catfood="{\"datetime\": \"2016-01-17\",
+  \"array\": [
+    {\"drcr\":1,\"account_id\":1,\"currency_id\":1,\"quantity\":500.250},
+    {\"drcr\":-1,\"account_id\":2,\"currency_id\":2,\"quantity\":25}
+  ]
+
+}";
+        $this->set(compact('catfood'));
+        $this->set('_serialize', ['lineItems']);
     }
 
     //public function delete($id = null) {

@@ -50,6 +50,8 @@ Router::scope('/', function ($routes) {
     // PATCH /recipes/123.format RecipesController::edit(123)
     // DELETE /recipes/123.format RecipesController::delete(123)
 
+    $routes->extensions(['json']);
+
     $routes->resources('Books', function ($routes) {
         $routes->resources('Accounts', function ($routes) {
             $routes->resources('Distributions');
@@ -75,6 +77,10 @@ Router::scope('/', function ($routes) {
     $routes->resources('Categories');
     $routes->connect('/categories/add', ['controller' => 'categories', 'action' => 'add']);
     $routes->connect('/categories/edit/*', ['controller' => 'categories', 'action' => 'edit']);
+
+    $routes->resources('Currencies');
+    $routes->connect('/currencies/add', ['controller' => 'currencies', 'action' => 'add']);
+    $routes->connect('/currencies/edit/*', ['controller' => 'currencies', 'action' => 'edit']);
 
     /**
      * Here, we are connecting '/' (base path) to a controller called 'Pages',
