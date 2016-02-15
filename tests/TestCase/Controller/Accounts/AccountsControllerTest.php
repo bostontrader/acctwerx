@@ -252,6 +252,8 @@ class AccountsControllerTest extends DMIntegrationTestCase {
             ->where(['book_id'=>$book_id])
             ->order(['category_id','sort']);
         $tbody = $table->find('tbody',0);
+        $n1=$table->innertext;
+        $n2=$tbody->innertext;
         $tbody_rows = $tbody->find('tr');
         $this->assertEquals(count($tbody_rows), $dbRecords->count());
 

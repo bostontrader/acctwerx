@@ -8,8 +8,6 @@ use Cake\Datasource\ConnectionManager;
 use Cake\ORM\Query;
 use Cake\TestSuite\IntegrationTestCase;
 
-require_once 'simple_html_dom.php';
-
 /**
  *
  * In these tests I generally want to test that:

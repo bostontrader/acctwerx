@@ -42,6 +42,14 @@ Router::defaultRouteClass('DashedRoute');
 
 Router::scope('/', function ($routes) {
 
+    // By default, resources provides the following routes...
+    // GET /recipes.format RecipesController::index()
+    // GET /recipes/123.format RecipesController::view(123)
+    // POST /recipes.format RecipesController::add()
+    // PUT /recipes/123.format RecipesController::edit(123)
+    // PATCH /recipes/123.format RecipesController::edit(123)
+    // DELETE /recipes/123.format RecipesController::delete(123)
+
     $routes->resources('Books', function ($routes) {
         $routes->resources('Accounts', function ($routes) {
             $routes->resources('Distributions');
