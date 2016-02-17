@@ -49,7 +49,8 @@ class BooksController extends AppController {
             left join currencies on distributions.currency_id=currencies.id
             where books.id=$id
             and categories.id in (1,2,3)
-            group by accounts.id, currencies.id";
+            group by accounts.id, currencies.id
+            order by categories.id";
         $lineItems=$connection->execute($query)->fetchAll('assoc');
 
         $this->set(compact('book','lineItems'));
@@ -98,7 +99,8 @@ class BooksController extends AppController {
             left join categories on accounts.category_id=categories.id
             where books.id=$id
             and categories.id in (4,5)
-            group by accounts.id";
+            group by accounts.id
+            order by categories.id";
         $lineItems=$connection->execute($query)->fetchAll('assoc');
 
         $this->set(compact('book','lineItems' ));
