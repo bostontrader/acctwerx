@@ -11,6 +11,7 @@ class BooksControllerTest extends DMIntegrationTestCase {
         'app.accounts',
         'app.books',
         'app.categories',
+        'app.currencies',
         'app.distributions',
         'app.transactions'
     ];

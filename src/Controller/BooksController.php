@@ -36,27 +36,24 @@ class BooksController extends AppController {
 
         /* @var \Cake\Database\Connection $connection */
         $connection = ConnectionManager::get('default');
-        $query="select categories.title as ct, accounts.title as at, sum(distributions.amount * distributions.drcr) as amount
+        $query="select
+                categories.title as ct,
+                accounts.title as at,
+                currencies.symbol,
+                sum(distributions.amount * distributions.drcr) as amount
             from distributions
             left join transactions on distributions.transaction_id=transactions.id
             left join books on transactions.book_id=books.id
             left join accounts on distributions.account_id=accounts.id
             left join categories on accounts.category_id=categories.id
+            left join currencies on distributions.currency_id=currencies.id
             where books.id=$id
             and categories.id in (1,2,3)
-            group by accounts.id";
+            group by accounts.id, currencies.id";
         $lineItems=$connection->execute($query)->fetchAll('assoc');
 
         $this->set(compact('book','lineItems'));
 
-        $catfood="{\"datetime\": \"2016-01-17\",
-  \"array\": [
-    {\"drcr\":1,\"account_id\":1,\"currency_id\":1,\"quantity\":500.250},
-    {\"drcr\":-1,\"account_id\":2,\"currency_id\":2,\"quantity\":25}
-  ]
-
-}";
-        $this->set(compact('catfood'));
         $this->set('_serialize', ['lineItems']);
     }
 
