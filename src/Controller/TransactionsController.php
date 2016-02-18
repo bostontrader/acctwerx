@@ -11,6 +11,24 @@ class TransactionsController extends AppController {
     const TRANSACTION_DELETED = "The transaction has been deleted.";
     const CANNOT_DELETE_TRANSACTION = "The transaction could not be deleted. Please, try again.";
 
+    public function initialize() {
+        parent::initialize();
+        $this->loadComponent('RequestHandler');
+    }
+
+    /**
+     * This method mostly works as ordinarily expected. A GET request will return a new
+     * transaction entry form and a POST will create a new transaction.
+     *
+     * But wait... there's more!  The first step of processing a POST will be an attempt
+     * to decode a JSON payload.  If JSON exists, then create an entire new transaction,
+     * with distributions, all in one shot.  Ignore any $request->params that might be set.
+     *
+     * If no JSON exists, then process this request the ordinary way.  That is, create a new transaction,
+     * w/o any distributions, and hope $request->params is suitably set.
+     *
+     * @return \Cake\Network\Response|null
+     */
     // GET | POST /books/:book_id/transactions/add
     public function add() {
         $this->request->allowMethod(['get', 'post']);
@@ -21,12 +39,28 @@ class TransactionsController extends AppController {
 
         $transaction = $this->Transactions->newEntity(['contain'=>'books']);
         if ($this->request->is('post')) {
-            $transaction = $this->Transactions->patchEntity($transaction, $this->request->data);
-            if ($this->Transactions->save($transaction)) {
-                $this->Flash->success(__(self::TRANSACTION_SAVED));
-                return $this->redirect(['action' => 'index','book_id' => $book_id,'_method'=>'GET']);
+
+            // Is there a better way to determine whether or not JSON is here?
+            $fullTransaction=$this->request->input('json_decode',true);
+            if(is_null($fullTransaction)) {
+                // No JSON, do it the normal way.
+                $transaction = $this->Transactions->patchEntity($transaction, $this->request->data);
+                if ($this->Transactions->save($transaction)) {
+                    $this->Flash->success(__(self::TRANSACTION_SAVED));
+                    return $this->redirect(['action' => 'index','book_id' => $book_id,'_method'=>'GET']);
+                } else {
+                    $this->Flash->error(__(self::TRANSACTION_NOT_SAVED));
+                }
             } else {
-                $this->Flash->error(__(self::TRANSACTION_NOT_SAVED));
+                // JSON found.
+                $transaction = $this->Transactions->patchEntity($transaction, $fullTransaction);
+                if ($this->Transactions->save($transaction)) {
+                    $reply=['result'=>'ok'];
+                    $this->set(compact('reply'));
+                    $this->set('_serialize', ['reply']);
+                } else {
+                    $this->Flash->error(__(self::TRANSACTION_NOT_SAVED));
+                }
             }
         }
         $this->set(compact('transaction','book'));

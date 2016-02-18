@@ -8,8 +8,9 @@ use Cake\ORM\TableRegistry;
 class TransactionsControllerTest extends DMIntegrationTestCase {
 
     public $fixtures = [
-        'app.transactions',
-        'app.books'
+        'app.books',
+        'app.distributions',
+        'app.transactions'
     ];
 
     /** @var \Cake\ORM\Table */
@@ -92,6 +93,44 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
         $this->assertEquals($fromDbRecord['book_id'],$fixtureRecord['book_id']);
         $this->assertEquals($fromDbRecord['note'],$fixtureRecord['note']);
         $this->assertEquals($fromDbRecord['datetime'],$fixtureRecord['datetime']);
+    }
+
+    // POST A JSON Transaction, fully armed with distributions, the add method.
+    // Unfortunately, we can't yet properly test this here.
+    //
+    // Option A. If we use the ordinary post method, we find that the posted data
+    // must be an array.  Can't just send a string of JSON.
+    //
+    // Option B. If we use the Network/Client object, the testing will work,
+    // but it goes to the default db instead of the test db.
+    //
+    // Don't have time to figure this out now :-(
+    public function testPOST_addJSON() {
+
+        $fixtureRecord='{
+            "datetime": "2016-01-17",
+            "note": "JSON Test",
+            "distributions": [
+                {"drcr":1,"account_id":1,"currency_id":1,"amount":500.250},
+                {"drcr":-1,"account_id":2,"currency_id":2,"amount":25}
+            ]
+        }';
+
+        $url='/books/'.FixtureConstants::bookTypical.'/transactions/add';
+        //$this->post($url, $fixtureRecord);
+        //$http=new Client();
+        //$response = $http->post($url, $fixtureRecord);
+
+        // Now retrieve the newly written record.
+        //$query=new Query(ConnectionManager::get('test'),$table);
+        //$fromDbRecord=$query->find('all')->contain('Distributions')->order(['id'=>'DESC'])->first();
+
+        //return $fromDbRecord;
+
+        // 2. Now validate that record.
+        //$this->assertEquals($fromDbRecord['book_id'],$fixtureRecord['book_id']);
+        //$this->assertEquals($fromDbRecord['note'],$fixtureRecord['note']);
+        //$this->assertEquals($fromDbRecord['datetime'],$fixtureRecord['datetime']);
     }
 
     //public function testDELETE() {
