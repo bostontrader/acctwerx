@@ -52,10 +52,8 @@ class BooksController extends AppController {
             group by accounts.id, currencies.id
             order by categories.id";
         $lineItems=$connection->execute($query)->fetchAll('assoc');
-
         $this->set(compact('book','lineItems'));
-
-        $this->set('_serialize', ['lineItems']);
+        $this->set('_serialize', ['lineItems']); // makes JSON
     }
 
     //public function delete($id = null) {

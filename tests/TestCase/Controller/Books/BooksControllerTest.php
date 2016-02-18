@@ -30,6 +30,9 @@ class BooksControllerTest extends DMIntegrationTestCase {
 
     public function testGET_add() {
 
+        /* @var \simple_html_dom_node $form */
+        /* @var \simple_html_dom_node $html */
+
         // 1. GET the url and parse the response.
         $this->get('/books/add');
         $this->assertResponseCode(200);
@@ -37,7 +40,6 @@ class BooksControllerTest extends DMIntegrationTestCase {
         $html = str_get_html($this->_response->body());
 
         // 2. Ensure that the correct form exists
-        /* @var \simple_html_dom_node $form */
         $form = $html->find('form#BookAddForm',0);
         $this->assertNotNull($form);
 
@@ -85,7 +87,8 @@ class BooksControllerTest extends DMIntegrationTestCase {
         $this->get('/books/balance/'.$book_id);
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
-        //$html = str_get_html($this->_response->body());
+
+        // Shall we test the content and calculations of the BS?
     }
 
     //public function testDELETE() {
@@ -156,7 +159,8 @@ class BooksControllerTest extends DMIntegrationTestCase {
         $this->get('/books/income/'.$book_id);
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
-        //$html = str_get_html($this->_response->body());
+
+        // Shall we test the content and calculations of the IS?
     }
 
     public function testGET_index() {
