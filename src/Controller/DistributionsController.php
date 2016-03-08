@@ -89,7 +89,7 @@ class DistributionsController extends AppController {
             $account=$this->Distributions->Accounts->get($account_id,['contain'=>['Categories']]);
             $this->set(
                 'distributions', $this->Distributions->find()
-                ->contain(['Accounts.Categories','Currencies'])
+                ->contain(['Accounts.Categories','Currencies','Transactions'])
                 ->where(['account_id'=>$account_id])
             );
             $this->set(compact('account','account_id'));

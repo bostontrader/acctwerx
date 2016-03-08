@@ -1,4 +1,7 @@
-<?php  /* @var \Cake\ORM\Entity $book $book */ ?>
+<?php
+/* @var \Cake\ORM\Entity $book $book */
+$this->Breadcrumb->makeTrail($book->title,$this->Html);
+?>
 
 <div id="BooksEdit">
     <nav class="large-3 medium-4 columns" id="actions-sidebar">

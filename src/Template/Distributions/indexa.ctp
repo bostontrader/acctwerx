@@ -15,19 +15,23 @@ $this->Breadcrumb->makeTrail('Distributions',$this->Html);
         <table id="DistributionsTable" cellpadding="0" cellspacing="0">
             <thead>
                 <tr>
+                    <th id="date" ><?= __('Date') ?></th>
+                    <th id="note" ><?= __('Note') ?></th>
                     <th id="drcr" ><?= __('DR/CR') ?></th>
-                    <th id="amount" ><?= __('Amount') ?></th>
+                    <th id="amount"  style="text-align:right"><?= __('Amount') ?></th>
                     <th id="currency" ><?= __('Currency') ?></th>
-                    <th id="run_total" ><?= __('Running Total') ?></th>
+                    <th id="run_total" style="text-align:right"><?= __('Running Total') ?></th>
                 </tr>
             </thead>
             <tbody>
                 <?php $run_tot=0; foreach ($distributions as $distribution): ?>
                 <tr>
+                    <td><?= $distribution->transaction->datetime ?></td>
+                    <td><?= $distribution->transaction->note ?></td>
                     <td><?= $distribution->drcr==1?'DR':'CR' ?></td>
-                    <td><?= $distribution->amount ?></td>
-                    <td><?= $distribution->currency->title ?></td>
-                    <td><?= $run_tot+=$distribution->amount*$distribution->drcr ?></td>
+                    <td style="text-align:right"><?= $this->Number->precision($distribution->amount,4) ?></td>
+                    <td><?= $distribution->currency->symbol ?></td>
+                    <td style="text-align:right"><?= $this->Number->precision($run_tot+=$distribution->amount*$distribution->drcr,4) ?></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
