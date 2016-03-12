@@ -16,9 +16,9 @@ class BreadcrumbHelper extends Helper {
      *    comes to actually render the trail, the Cake software can do this.
      *
      * The problem with this plan is that some views can be reached via more than one path.
-     * How can the view know which path lead to it?  The basic answer is to save a path
+     * How can the view know which path led to it?  The basic answer is to save a path
      * in the session, with each step towards a particular view, and use that path to
-     * generate the trail using a sutiable number of invokations of addCrumb.  Each view's
+     * generate the trail using a suitable number of invocations of addCrumb.  Each view's
      * url is added to the session trail, as well as a suitable label to be used in the trail.
      */
     public function makeTrail($label,$htmlHelper) {
@@ -51,7 +51,7 @@ class BreadcrumbHelper extends Helper {
         // 4. Save the trail to the session
         $this->request->session()->write($sessionVar,$newArray);
 
-        // 5. Now add the crumbs to ordinary way
+        // 5. Now add the crumbs the ordinary way
         foreach($newArray as $key=>$crumb){
             if($key==$requestUrl) break; // no crumb for this url
             $htmlHelper->addCrumb($crumb['label'], $crumb['params']);

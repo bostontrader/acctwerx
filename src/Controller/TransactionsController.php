@@ -47,7 +47,7 @@ class TransactionsController extends AppController {
                 $transaction = $this->Transactions->patchEntity($transaction, $this->request->data);
                 if ($this->Transactions->save($transaction)) {
                     $this->Flash->success(__(self::TRANSACTION_SAVED));
-                    return $this->redirect(['action' => 'index','book_id' => $book_id,'_method'=>'GET']);
+                    return $this->redirect(['action' => 'view','book_id' => $book_id,'id' => $transaction->id,'_method'=>'GET']);
                 } else {
                     $this->Flash->error(__(self::TRANSACTION_NOT_SAVED));
                 }
@@ -111,7 +111,8 @@ class TransactionsController extends AppController {
             'transactions', $this->Transactions->find()
             ->contain('Books')
             ->where(['book_id'=>$book_id])
-            ->order(['datetime']));
+            ->limit(20)
+            ->order(['datetime desc']));
         $this->set(compact('book','book_id'));
     }
 
