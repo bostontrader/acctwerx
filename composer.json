@@ -12,7 +12,8 @@
         "cakephp/plugin-installer": "*",
         "phpunit/phpunit": "4.8.21",
         "phpmd/phpmd": "2.3.2",
-        "shark/simple_html_dom": "dev-master"
+        "shark/simple_html_dom": "dev-master",
+        "jpgraph/jpgraph": "dev-master"
 	},
     "require-dev": {
         "psy/psysh": "@stable",

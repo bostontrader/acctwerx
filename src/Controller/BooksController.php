@@ -67,6 +67,13 @@ class BooksController extends AppController {
         //return $this->redirect(['action' => 'index']);
     //}
 
+    public function bank($id = null){
+        //$this->layout='jpgraph_layout';
+        $this->viewBuilder()->layout('jpgraph_layout');
+        $this->RequestHandler->respondAs("image/png");
+        $this->render('graph_bank');
+    }
+
     public function edit($id = null) {
         $this->request->allowMethod(['get', 'put']);
         $book = $this->Books->get($id);
