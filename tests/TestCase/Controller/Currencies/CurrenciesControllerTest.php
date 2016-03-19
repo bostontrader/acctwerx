@@ -175,12 +175,11 @@ class CurrenciesControllerTest extends DMIntegrationTestCase {
         $thead = $table->find('thead',0);
         $thead_ths = $thead->find('tr th');
 
-        $this->assertEquals($thead_ths[0]->id, 'id');
-        $this->assertEquals($thead_ths[1]->id, 'title');
-        $this->assertEquals($thead_ths[2]->id, 'symbol');
-        $this->assertEquals($thead_ths[3]->id, 'actions');
+        $this->assertEquals($thead_ths[0]->id, 'title');
+        $this->assertEquals($thead_ths[1]->id, 'symbol');
+        $this->assertEquals($thead_ths[2]->id, 'actions');
         $column_count = count($thead_ths);
-        $this->assertEquals($column_count,4); // no other columns
+        $this->assertEquals($column_count,3); // no other columns
 
         // 6. Ensure that the tbody section has the same
         //    quantity of rows as the count of currency records in the fixture.
@@ -200,17 +199,14 @@ class CurrenciesControllerTest extends DMIntegrationTestCase {
             $htmlRow = $values[1];
             $htmlColumns = $htmlRow->find('td');
 
-            // 7.0 id
-            $this->assertEquals($fixtureRecord['id'],  $htmlColumns[0]->plaintext);
+            // 7.0 title
+            $this->assertEquals($fixtureRecord['title'],  $htmlColumns[0]->plaintext);
 
-            // 7.1 title
-            $this->assertEquals($fixtureRecord['title'],  $htmlColumns[1]->plaintext);
+            // 7.1 symbol
+            $this->assertEquals($fixtureRecord['symbol'],  $htmlColumns[1]->plaintext);
 
-            // 7.2 symbol
-            $this->assertEquals($fixtureRecord['symbol'],  $htmlColumns[2]->plaintext);
-
-            // 7.3 Now examine the action links
-            $td = $htmlColumns[3];
+            // 7.2 Now examine the action links
+            $td = $htmlColumns[2];
             $actionLinks = $td->find('a');
             $this->assertEquals('CurrencyView', $actionLinks[0]->name);
             $unknownATag--;

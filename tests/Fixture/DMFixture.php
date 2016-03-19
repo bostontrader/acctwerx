@@ -8,9 +8,9 @@ use Cake\TestSuite\Fixture\TestFixture;
 
 class DMFixture extends TestFixture {
 
-    protected $joinTableName;
+    //protected $joinTableName;
     protected $tableName;
-    protected $order;
+    //protected $order;
 
     // Given an id, return the first fixture record found with that id, or null if not found.
     public function get($id) {
@@ -19,30 +19,31 @@ class DMFixture extends TestFixture {
         return null;
     }
 
-    // We obtain the records to use for this fixture by reading them from the 'fixture' db
+    // We obtain the records to use for this fixture by reading them from the 'dev' db
     public function init() {
 
         parent::init();
 
-        // 1. Not all fixtures want to use the fixture db.
+        // 1. Not all fixtures want to use the dev db.
         if(is_null($this->tableName)) return;
 
         // 2. We need to do this to ensure that the tables really do use the connection to the
-        // fixture db.
+        // dev db.
         TableRegistry::remove($this->tableName);
-        $table = TableRegistry::get($this->tableName,['connection'=>ConnectionManager::get('fixture')]);
+        //$d=ConnectionManager::get('dev',false); // no alias
+        $table = TableRegistry::get($this->tableName,['connection'=>ConnectionManager::get('dev',false)]); // no alias
 
-        if(!is_null($this->joinTableName)) {
-            TableRegistry::remove($this->joinTableName);
-            TableRegistry::get($this->joinTableName, ['connection' => ConnectionManager::get('fixture')]);
-        }
+        //if(!is_null($this->joinTableName)) {
+            //TableRegistry::remove($this->joinTableName);
+            //TableRegistry::get($this->joinTableName, ['connection' => ConnectionManager::get('dev')]);
+        //}
 
         // 3. Now build the query
         /** @var \Cake\Datasource\ConnectionInterface $c */
-        $query=new Query(ConnectionManager::get('fixture'),$table);
+        $query=new Query(ConnectionManager::get('dev',false),$table); // no alias
         $query->find('all');
-        if(!is_null($this->order)) $query->order($this->order);
-        if(!is_null($this->joinTableName)) $query->leftJoin($this->joinTableName,'semesters.id = sections.semester_id');
+        //if(!is_null($this->order)) $query->order($this->order);
+        //if(!is_null($this->joinTableName)) $query->leftJoin($this->joinTableName,'semesters.id = sections.semester_id');
 
         // 4. Copy the records
         /* @var \Cake\ORM\Entity $record */
@@ -54,9 +55,9 @@ class DMFixture extends TestFixture {
         TableRegistry::remove($this->tableName);
         TableRegistry::get($this->tableName,['connection'=>ConnectionManager::get('test')]);
 
-        if(!is_null($this->joinTableName)) {
-            TableRegistry::remove($this->joinTableName);
-            TableRegistry::get($this->joinTableName, ['connection' => ConnectionManager::get('test')]);
-        }
+        //if(!is_null($this->joinTableName)) {
+            //TableRegistry::remove($this->joinTableName);
+            //TableRegistry::get($this->joinTableName, ['connection' => ConnectionManager::get('test')]);
+        //}
     }
 }

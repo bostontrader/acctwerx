@@ -69,7 +69,9 @@ class BooksController extends AppController {
 
     public function bank($id = null){
         //$this->layout='jpgraph_layout';
-        $this->viewBuilder()->layout('jpgraph_layout');
+        $this->viewBuilder()
+            ->layout('jpgraph_layout')
+            ->helpers(['FinStat']);
         $this->RequestHandler->respondAs("image/png");
         $this->render('graph_bank');
     }

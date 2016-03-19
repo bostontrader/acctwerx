@@ -15,7 +15,6 @@
         <table id="CurrenciesTable" cellpadding="0" cellspacing="0">
             <thead>
                 <tr>
-                    <th id="id" ><?= __('ID') ?></th>
                     <th id="title" ><?= __('Title') ?></th>
                     <th id="symbol" ><?= __('Symbol') ?></th>
                     <th id="actions" class="actions"><?= __('Actions') ?></th>
@@ -24,7 +23,6 @@
             <tbody>
                 <?php foreach ($currencies as $currency): ?>
                 <tr>
-                    <td><?= $currency->id ?></td>
                     <td><?= $currency->title ?></td>
                     <td><?= $currency->symbol ?></td>
                     <td class="actions">

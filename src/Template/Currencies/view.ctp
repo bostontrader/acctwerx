@@ -14,7 +14,7 @@
             </tr>
             <tr id="symbol">
                 <th><?= __('Symbol') ?></th>
-                <td><?= $currency->title ?></td>
+                <td><?= $currency->symbol ?></td>
             </tr>
         </table>
     </div>

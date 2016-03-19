@@ -18,7 +18,7 @@
             <?php
                 echo $this->Form->input('book_id',['value'=>$book['id'],'type'=>'hidden']);
                 echo $this->Form->input('note',['id'=>'TransactionNote','type'=>'text']);
-                echo $this->Form->input('datetime',['id'=>'TransactionDatetime']);
+                echo $this->Form->input('tran_datetime',['id'=>'TransactionTranDatetime','type'=>'text']);
             ?>
         </fieldset>
         <?= $this->Form->button(__('Submit')) ?>
