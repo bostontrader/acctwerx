@@ -15,7 +15,7 @@ $this->Breadcrumb->makeTrail('Distributions',$this->Html);
         <table id="DistributionsTable" cellpadding="0" cellspacing="0">
             <thead>
                 <tr>
-                    <th id="date" ><?= __('Date') ?></th>
+                    <th id="tran_datetime" ><?= __('Tran Datetime') ?></th>
                     <th id="note" ><?= __('Note') ?></th>
                     <th id="drcr" ><?= __('DR/CR') ?></th>
                     <th id="amount"  style="text-align:right"><?= __('Amount') ?></th>
@@ -26,7 +26,7 @@ $this->Breadcrumb->makeTrail('Distributions',$this->Html);
             <tbody>
                 <?php $run_tot=0; foreach ($distributions as $distribution): ?>
                 <tr>
-                    <td><?= $distribution->transaction->datetime ?></td>
+                    <td><?= $distribution->transaction->tran_datetime ?></td>
                     <td><?= $distribution->transaction->note ?></td>
                     <td><?= $distribution->drcr==1?'DR':'CR' ?></td>
                     <td style="text-align:right"><?= $this->Number->precision($distribution->amount,4) ?></td>

@@ -19,7 +19,7 @@ $this->Breadcrumb->makeTrail('Transactions',$this->Html);
             <thead>
                 <tr>
                     <th id="note" ><?= __('Note') ?></th>
-                    <th id="datetime" ><?= __('Datetime') ?></th>
+                    <th id="tran_datetime" ><?= __('Tran Datetime') ?></th>
                     <th id="actions" class="actions"><?= __('Actions') ?></th>
                 </tr>
             </thead>
@@ -27,7 +27,7 @@ $this->Breadcrumb->makeTrail('Transactions',$this->Html);
                 <?php foreach ($transactions as $transaction): ?>
                 <tr>
                     <td><?= $transaction->note ?></td>
-                    <td><?= $transaction->datetime ?></td>
+                    <td><?= $transaction->tran_datetime ?></td>
                     <td class="actions">
                         <?= $this->Html->link(__('View'), ['book_id'=>$book['id'],'action'=>'view','id'=>$transaction->id,'_method'=>'GET'],['name'=>'TransactionView']) ?>
                         <?= $this->Html->link(__('Edit'), ['book_id'=>$book['id'],'action'=>'edit', $transaction->id, 'book_id'=>$book_id, '_method'=>'GET'],['name'=>'TransactionEdit']) ?>

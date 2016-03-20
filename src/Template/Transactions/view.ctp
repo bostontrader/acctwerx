@@ -21,9 +21,9 @@ $this->Breadcrumb->makeTrail($transaction->title,$this->Html);
                 <th><?= __('Note') ?></th>
                 <td><?= $transaction->note ?></td>
             </tr>
-            <tr id="datetime">
-                <th><?= __('Datetime') ?></th>
-                <td><?= $transaction->datetime ?></td>
+            <tr id="tran_datetime">
+                <th><?= __('Tran Datetime') ?></th>
+                <td><?= $transaction->tran_datetime ?></td>
             </tr>
         </table>
     </div>

@@ -17,7 +17,7 @@
             <legend><?= __('Edit Transaction for '.$book->title) ?></legend>
             <?php
                 echo $this->Form->input('note',['id'=>'TransactionNote', 'type'=>'text']);
-                echo $this->Form->input('datetime',['id'=>'TransactionDatetime','type'=>'text']);
+            echo $this->Form->input('tran_datetime',['id'=>'TransactionTranDatetime']);
             ?>
         </fieldset>
         <?= $this->Form->button(__('Submit')) ?>

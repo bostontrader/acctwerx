@@ -90,7 +90,7 @@ class DistributionsController extends AppController {
             $this->set(
                 'distributions', $this->Distributions->find()
                 ->contain(['Accounts.Categories','Currencies','Transactions'])
-                ->order('Transactions.datetime')
+                ->order('Transactions.tran_datetime')
                 ->where(['account_id'=>$account_id])
             );
             $this->set(compact('account','account_id'));
