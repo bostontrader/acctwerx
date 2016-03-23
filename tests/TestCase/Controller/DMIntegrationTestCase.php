@@ -26,7 +26,7 @@ use Cake\TestSuite\IntegrationTestCase;
  *
  * 6. Whether or not Auth prevents/allows access to a method.
  *
- * I do not want to test:
+ * I do not want to test (here):
  *
  * 1. How the method responds to badly formed requests, such as trying to submit a DELETE to the add method.
  *
@@ -41,12 +41,20 @@ use Cake\TestSuite\IntegrationTestCase;
  * there will be actual consequences that the testing will catch.  At best looking for viewVars
  * is a debugging aid.  At worst, we'll eat a lot of time picking them apart.  Just say No.
  *
- * Input validation:
+ * Input control validation:
  *
  * There are several methods of verifying that a particular input or select control
- * is correct.
+ * is correct.  For example, we may want to search for a control based on its id or name, may want
+ * to ensure that it's blank or has some particular value.  Perhaps the control should be of a
+ * certain type such as 'text' or 'hidden', or perhaps a select control should be set to a particular
+ * selection or 'no selection'.  If we're not careful, these variations can give rise to a blizzard
+ * of similar methods, that operate in a similar, but inconsitent manner.  But because we _are_ careful,
+ * we've abstracted all this out in a reasonably sensible manner.  Here's how it works...
  *
- * A. The input has a given css finder string, is of some given type, and has a specified value.
+ * Each attribute about a control of interest can be described using a simple css selector string.
+ *
+ *
+ * A. The control exists and can be found using a css finder string., is of some given type, and has a specified value.
  * B. The input is a select, with a given css finder string, and has a specified value.
  */
 
@@ -57,6 +65,75 @@ class DMIntegrationTestCase extends IntegrationTestCase {
 
     /* @var \simple_html_dom_node */
     //private $input;
+
+    /**
+     * A. The input has a given id, is of some given type, and has a specified value.
+     * @param \simple_html_dom_node $html_node the form that contains the select
+     * @param String $css_finder A css finder string to find the input of interest. Note: This only
+     * does very simple css.
+     * @param mixed $expected_value What is the expected value of the input, or false if expected to be empty.
+     * @param String $type What is the type attribute of the input?
+     * @return boolean true if a matching input is found, else assertion failure.
+     */
+    protected function inputCheckerA($html_node,$css_finder,$expected_value=false,$type='text'){
+        /* @var \simple_html_dom_node $input */
+        $n1=$html_node->find('input[type=text]');
+        $n2=$html_node->find($css_finder);
+
+
+
+
+        $input = $html_node->find($css_finder,0);
+        $this->assertEquals($input->type, $type);
+        $this->assertEquals($expected_value,$input->value);
+        return true;
+    }
+
+    /**
+     * Many forms have a hidden input for various reasons, such as for tunneling various http verbs using POST,
+     * or for implementing multi-select lists.
+     * Look for the first one of these present.  If found, return true, return false.
+     * @param \simple_html_dom_node $form the form that contains the select
+     * @param String $name the name attribute of the input
+     * @param String $value the value of the input
+     * @return boolean | \simple_html_dom_node
+     */
+    protected function lookForHiddenInput($form, $name='_method', $value='POST') {
+
+        $n1=$form->find('input[type=hidden]');
+        //$n2=$form->find('input#_method');
+        $n2=$form->find('input#book_id');
+        //foreach($form->find('input[type=hidden]') as $input) {
+            //if($input->value == $value && $input->name == $name)
+                //return $input;
+        //}
+        //return false;
+    }
+
+    /**
+     * Look for a particular select input merely to ensure that it
+     * exists.  Optionally an ensure that the control has the correct quantity of choices.
+     *
+     * Note: May also want to ensure that the selection has nothing selected.
+     * May also want to verify the
+     *
+     * @param \simple_html_dom_node $form the form that contains the select
+     * @param string $selectID the html id of the select of interest
+     * @param string $vvName the name of the view var that contains the info to populate the select
+     * control. If null, do no further testing.
+     * @param boolean $noneSelected.  If true, the count of choices in the select, should be
+     * one more than that of the view variable, because "none selected" is included as a choice.
+     * @return boolean true if a matching select is found, else assertion failures.
+     */
+    protected function selectCheckerA($form, $selectID, $vvName=null,$noneSelected=true) {
+        $option = $form->find('select#'.$selectID.' option[selected]', 0);
+        $this->assertNull($option);
+        $option_cnt = count($form->find('select#'.$selectID. ' option'));
+        $record_cnt = $this->viewVariable($vvName)->count();
+        $this->assertEquals($record_cnt + 1, $option_cnt);
+        return true;
+    }
+
 
     /**
      * Login and submit a POST request to a $url that is expected to delete a given record,
@@ -80,6 +157,36 @@ class DMIntegrationTestCase extends IntegrationTestCase {
         //$query->find('all')->where(['id' => $delete_id]);
         //$this->assertEquals(0, $query->count());
     //}
+
+
+
+
+    /**
+     * CakePHP will automatically generate a group of select inputs that
+     * can be used to enter the components of a datetime column.
+     *
+     * Ensure that there are suitable select fields for a datetime. Don't
+     * worry about checking their default values or available choices because that's
+     * Cake's responsibility and presumably already tested.
+     *
+     * @param \simple_html_dom_node $html_node the form that contains the select fields.
+     * @param String $css_finder_root A root css finder string to find the select of interest. This method
+     * will append various suffixes such as '[year]' or '[month]' when looking for the individual select
+     * fields of the group. Note: This only does very simple css.
+     * @return int the number of select fields found.  Should be 5.
+     */
+    protected function inputCheckerDatetime($form,$css_finder_root) {
+
+        // 1. Ensure that there's a select field for 'year'.  Assume, but don't check,
+        // that it's set to a default of the present year.  Don't worry about the quantity
+        // of available choices.
+        $selectInputsFound=0;
+        if($this->selectCheckerA($form, $css_finder_root.'[year]')) $selectInputsFound++;
+
+        return $selectInputsFound;
+    }
+
+
 
     /**
      * Login and submit a POST request to a $url that is expected to add a given record.
@@ -175,22 +282,8 @@ class DMIntegrationTestCase extends IntegrationTestCase {
         $this->assertEquals(0,count($links));
     }
 
-    /**
-     * A. The input has a given id, is of some given type, and has a specified value.
-     * @param \simple_html_dom_node $html_node the form that contains the select
-     * @param String $css_finder A css finder string to find the input of interest. Note: This only
-     * does very simple css.
-     * @param mixed $expected_value What is the expected value of the input, or false if expected to be empty.
-     * @param String $type What is type attribute of the input?
-     * @return boolean Return true if a matching input is found, else assertion errors.
-     */
-    protected function inputCheckerA($html_node,$css_finder,$expected_value=false,$type='text'){
-        /* @var \simple_html_dom_node $input */
-        $input = $html_node->find($css_finder,0);
-        $this->assertEquals($input->type, $type);
-        $this->assertEquals($expected_value,$input->value);
-        return true;
-    }
+
+
 
     /**
      * B.
@@ -201,12 +294,13 @@ class DMIntegrationTestCase extends IntegrationTestCase {
      * @param String $expected_display. The expected value to be displayed.
      * @return boolean Return true if a matching input is found, else assertion errors.
      */
-    protected function inputCheckerB($html_node,$css_finder,$expected_id,$expected_display){
-        $option = $html_node->find($css_finder,0);
-        $this->assertEquals($expected_id, $option->value);
-        $this->assertEquals($expected_display, $option->plaintext);
-        return true;
-    }
+    //protected function inputCheckerB($html_node,$css_finder,$expected_id,$expected_display){
+    //$option = $html_node->find($css_finder,0);
+    //$this->assertEquals($expected_id, $option->value);
+    //$this->assertEquals($expected_display, $option->plaintext);
+    //return true;
+    //}
+
 
     /**
      * Look for a particular select input and ensure that:
@@ -215,17 +309,12 @@ class DMIntegrationTestCase extends IntegrationTestCase {
      *
      * @param \simple_html_dom_node $form the form that contains the select
      * @param string $selectID the html id of the select of interest
-     * @param string $vvName the name of the view var that contains the into to populate the select
-     * @return boolean
+     * @param string $vvName the name of the view var that contains the info to populate the select
+     * @return boolean true if successful else assertion failures.
      */
-    protected function selectCheckerA($form, $selectID, $vvName) {
-        $option = $form->find('select#'.$selectID.' option[selected]', 0);
-        $this->assertNull($option);
-        $option_cnt = count($form->find('select#'.$selectID. ' option'));
-        $record_cnt = $this->viewVariable($vvName)->count();
-        $this->assertEquals($record_cnt + 1, $option_cnt);
-        return true;
-    }
+    //protected function selectCheckerB() {
+
+    //}
 
     // Hack the session to make it look as if we're properly logged in.
     //protected function fakeLogin($userId) {
@@ -246,22 +335,7 @@ class DMIntegrationTestCase extends IntegrationTestCase {
         //);
     //}
 
-    /**
-     * Many forms have a hidden input for various reasons, such as for tunneling various http verbs using POST,
-     * or for implementing multi-select lists.
-     * Look for the first one of these present.  If found, return true, return false.
-     * @param \simple_html_dom_node $form the form that contains the select
-     * @param String $name the name attribute of the input
-     * @param String $value the value of the input
-     * @return boolean | \simple_html_dom_node
-     */
-    protected function lookForHiddenInput($form, $name='_method', $value='POST') {
-        foreach($form->find('input[type=hidden]') as $input) {
-            if($input->value == $value && $input->name == $name)
-                return $input;
-        }
-        return false;
-    }
+
 
     /**
      * @deprecated use selectCheckerA

@@ -39,26 +39,30 @@ class AccountsControllerTest extends DMIntegrationTestCase {
 
     public function testGET_add() {
 
-        /* @var \simple_html_dom_node $form */
-        /* @var \simple_html_dom_node $html */
-        /* @var \simple_html_dom_node $input */
-        /* @var \simple_html_dom_node $legend */
+        // Use internal libxml errors -- turn on in production, off for debugging
+        // DomDocument can deal with mal-formed html, but will generate lots of spurious errors.
+        // Use this to make the errors go away.
+        libxml_use_internal_errors(true);
 
         // 1. GET the url and parse the response.
         $book_id=FixtureConstants::bookTypical;
         $this->get('/books/'.$book_id.'/accounts/add');
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
-        $html = str_get_html($this->_response->body());
+        $dom = \DomDocument::loadHtml($this->_response->body());
+        $xpath=new \DomXPath($dom);
 
         // 2. Ensure that the correct form exists
-        $form = $html->find('form#AccountAddForm',0);
-        $this->assertNotNull($form);
+        $nodes=$xpath->query("//form[@id='AccountAddForm']");
+        $this->assertTrue($nodes->length==1);
+        $form_node=$nodes->item(0);
 
         // 3. Now inspect the legend of the form.
-        $legend = $form->find('legend',0);
+        $nodes=$xpath->query("//legend",$form_node);
+        $this->assertTrue($nodes->length==1);
+        $legend_node=$nodes->item(0);
         $book=$this->Books->get($book_id);
-        $this->assertContains($book['title'],$legend->innertext());
+        $this->assertContains($book['title'],$legend_node->textContent);
 
         // 4. Now inspect the fields on the form.  We want to know that:
         // A. The correct fields are there and no other fields.
@@ -69,10 +73,14 @@ class AccountsControllerTest extends DMIntegrationTestCase {
 
         // 4.1 These are counts of the select and input fields on the form.  They
         // are presently unaccounted for.
-        $unknownSelectCnt = count($form->find('select'));
-        $unknownInputCnt = count($form->find('input'));
+        $nodes=$xpath->query("//select",$form_node);
+        $unknownSelectCnt=$nodes->length;
+        $nodes=$xpath->query("//input",$form_node);
+        $unknownInputCnt=$nodes->length;
 
         // 4.2 Look for the hidden POST input.
+        // why doesn't this work?
+        $nodes=$xpath->query("//input[@type='hidden' and @name='_method' and @value='POST'",$form_node);
         if($this->lookForHiddenInput($form)) $unknownInputCnt--;
 
         // 4.3 Look for the hidden book_id input, and validate its contents.

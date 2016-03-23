@@ -71,8 +71,10 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
         // 4.4 Ensure that there's an input field for note, of type text, and that it is empty
         if($this->inputCheckerA($form,'input#TransactionNote')) $unknownInputCnt--;
 
-        // 4.5 Ensure that there's an input field for datetime, of type text, and that it is empty
-        if($this->inputCheckerA($form,'input#TransactionDatetime')) $unknownInputCnt--;
+        // 4.5 Ensure that there are suitable select fields for tran_datetime. Don't
+        // worry about checking their default values or available choices because that's
+        // Cake's responsibility.
+        if($this->inputCheckerDatetime($form,'input#TransactionTranDatetime')) $unknownSelectCnt--;
 
         // 5. Have all the input, select, and Atags been transactioned for?
         $this->expectedInputsSelectsAtagsFound($unknownInputCnt, $unknownSelectCnt, $html, 'div#TransactionsAdd');
