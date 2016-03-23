@@ -75,19 +75,15 @@ class DMIntegrationTestCase extends IntegrationTestCase {
      * @param String $type What is the type attribute of the input?
      * @return boolean true if a matching input is found, else assertion failure.
      */
-    protected function inputCheckerA($html_node,$css_finder,$expected_value=false,$type='text'){
+    //protected function inputCheckerA($html_node,$css_finder,$expected_value=false,$type='text'){
         /* @var \simple_html_dom_node $input */
-        $n1=$html_node->find('input[type=text]');
-        $n2=$html_node->find($css_finder);
-
-
-
-
-        $input = $html_node->find($css_finder,0);
-        $this->assertEquals($input->type, $type);
-        $this->assertEquals($expected_value,$input->value);
-        return true;
-    }
+        //$n1=$html_node->find('input[type=text]');
+        //$n2=$html_node->find($css_finder);
+        //$input = $html_node->find($css_finder,0);
+        //$this->assertEquals($input->type, $type);
+        //$this->assertEquals($expected_value,$input->value);
+        //return true;
+    //}
 
     /**
      * Many forms have a hidden input for various reasons, such as for tunneling various http verbs using POST,
@@ -98,17 +94,17 @@ class DMIntegrationTestCase extends IntegrationTestCase {
      * @param String $value the value of the input
      * @return boolean | \simple_html_dom_node
      */
-    protected function lookForHiddenInput($form, $name='_method', $value='POST') {
+    //protected function lookForHiddenInput($form, $name='_method', $value='POST') {
 
-        $n1=$form->find('input[type=hidden]');
+        //$n1=$form->find('input[type=hidden]');
         //$n2=$form->find('input#_method');
-        $n2=$form->find('input#book_id');
+        //$n2=$form->find('input#book_id');
         //foreach($form->find('input[type=hidden]') as $input) {
             //if($input->value == $value && $input->name == $name)
                 //return $input;
         //}
         //return false;
-    }
+    //}
 
     /**
      * Look for a particular select input merely to ensure that it
@@ -125,14 +121,14 @@ class DMIntegrationTestCase extends IntegrationTestCase {
      * one more than that of the view variable, because "none selected" is included as a choice.
      * @return boolean true if a matching select is found, else assertion failures.
      */
-    protected function selectCheckerA($form, $selectID, $vvName=null,$noneSelected=true) {
-        $option = $form->find('select#'.$selectID.' option[selected]', 0);
-        $this->assertNull($option);
-        $option_cnt = count($form->find('select#'.$selectID. ' option'));
-        $record_cnt = $this->viewVariable($vvName)->count();
-        $this->assertEquals($record_cnt + 1, $option_cnt);
-        return true;
-    }
+    //protected function selectCheckerA($form, $selectID, $vvName=null,$noneSelected=true) {
+        //$option = $form->find('select#'.$selectID.' option[selected]', 0);
+        //$this->assertNull($option);
+        //$option_cnt = count($form->find('select#'.$selectID. ' option'));
+        //$record_cnt = $this->viewVariable($vvName)->count();
+        //$this->assertEquals($record_cnt + 1, $option_cnt);
+        //return true;
+    //}
 
 
     /**
@@ -175,16 +171,16 @@ class DMIntegrationTestCase extends IntegrationTestCase {
      * fields of the group. Note: This only does very simple css.
      * @return int the number of select fields found.  Should be 5.
      */
-    protected function inputCheckerDatetime($form,$css_finder_root) {
+    //protected function inputCheckerDatetime($form,$css_finder_root) {
 
         // 1. Ensure that there's a select field for 'year'.  Assume, but don't check,
         // that it's set to a default of the present year.  Don't worry about the quantity
         // of available choices.
-        $selectInputsFound=0;
-        if($this->selectCheckerA($form, $css_finder_root.'[year]')) $selectInputsFound++;
+        //$selectInputsFound=0;
+        //if($this->selectCheckerA($form, $css_finder_root.'[year]')) $selectInputsFound++;
 
-        return $selectInputsFound;
-    }
+        //return $selectInputsFound;
+    //}
 
 
 
@@ -208,9 +204,9 @@ class DMIntegrationTestCase extends IntegrationTestCase {
         $this->assertRedirect( $redirect_url );
 
         // Now retrieve the newly written record.
-        $query=new Query(ConnectionManager::get('test'),$table);
-        $fromDbRecord=$query->find('all')->order(['id' => 'DESC'])->first();
-
+        //$query=new Query(ConnectionManager::get('test'),$table);
+        //$fromDbRecord=$query->find('all')->order(['id' => 'DESC'])->first();
+        $fromDbRecord=$table->find('all')->order(['id' => 'DESC'])->first();
         return $fromDbRecord;
     }
 
@@ -227,19 +223,19 @@ class DMIntegrationTestCase extends IntegrationTestCase {
      * @param \Cake\ORM\Table $table The table to receive the new record.
      * @return \Cake\ORM\Entity The newly added record, as read from the db.
      */
-    protected function genericEditPutProlog($user_id, $url, $id, $post_data, $redirect_url, $table) {
-        $connection=ConnectionManager::get('test');
-        $query=new Query($connection,$table);
+    //protected function genericEditPutProlog($user_id, $url, $id, $post_data, $redirect_url, $table) {
+        //$connection=ConnectionManager::get('test');
+        //$query=new Query($connection,$table);
 
         //$this->fakeLogin($user_id);
-        $this->put($url.'/'.$id, $post_data);
-        $this->assertResponseCode(302);
-        $this->assertRedirect( $redirect_url );
+        //$this->put($url.'/'.$id, $post_data);
+        //$this->assertResponseCode(302);
+        //$this->assertRedirect( $redirect_url );
 
         // Now retrieve that 1 record and send it back.
-        $query=new Query($connection,$table);
-        return $table->get($id);
-    }
+        //$query=new Query($connection,$table);
+        //return $table->get($id);
+    //}
 
     /**
      * Many tests need to login, issue a GET request, and receive and parse a response.
@@ -248,17 +244,17 @@ class DMIntegrationTestCase extends IntegrationTestCase {
      * @param String $url
      * @return \simple_html_dom_node $html parsed dom that contains the response.
      */
-    protected function loginRequestResponse($user_id, $url) {
+    //protected function loginRequestResponse($user_id, $url) {
 
         // 1. Simulate login, submit request, examine response.
         //if(!is_null($user_id)) $this->fakeLogin($user_id);
-        $this->get($url);
-        $this->assertResponseCode(200);
-        $this->assertNoRedirect();
+        //$this->get($url);
+        //$this->assertResponseCode(200);
+        //$this->assertNoRedirect();
 
         // 2. Parse the html from the response
-        return str_get_html($this->_response->body());
-    }
+        //return str_get_html($this->_response->body());
+    //}
 
     /**
      * During many tests we determine the number of inputs, selects, and atags that we
@@ -270,17 +266,17 @@ class DMIntegrationTestCase extends IntegrationTestCase {
      * @param String $css_finder A css finder string to find a region of the html to search for
      * Atags.
      */
-    protected function expectedInputsSelectsAtagsFound($unknownInputCnt, $unknownSelectCnt, $html, $css_finder) {
-        $this->assertEquals(0, $unknownInputCnt);
-        $this->assertEquals(0, $unknownSelectCnt);
+    //protected function expectedInputsSelectsAtagsFound($unknownInputCnt, $unknownSelectCnt, $html, $css_finder) {
+        //$this->assertEquals(0, $unknownInputCnt);
+        //$this->assertEquals(0, $unknownSelectCnt);
 
         // Examine the <A> tags on this page.  There should be zero links.
         /* @var \simple_html_dom_node $content */
-        $content = $html->find($css_finder,0);
-        $this->assertNotNull($content);
-        $links = $content->find('a');
-        $this->assertEquals(0,count($links));
-    }
+        //$content = $html->find($css_finder,0);
+        //$this->assertNotNull($content);
+        //$links = $content->find('a');
+        //$this->assertEquals(0,count($links));
+    //}
 
 
 
