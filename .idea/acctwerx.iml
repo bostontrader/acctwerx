@@ -12,7 +12,6 @@
       <sourceFolder url="file://$MODULE_DIR$/vendor/robmorgan/phinx/tests" isTestSource="true" packagePrefix="Test" />
       <sourceFolder url="file://$MODULE_DIR$/vendor/psr/log" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" packagePrefix="App" />
-      <sourceFolder url="file://$MODULE_DIR$/vendor/nesbot/carbon/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vendor/mobiledetect/mobiledetectlib/namespaced" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vendor/jakub-onderka/php-console-color/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/vendor/jakub-onderka/php-console-highlighter/src" isTestSource="false" />
@@ -25,7 +24,6 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/aura/installer-default" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/aura/intl" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/cakephp/bake" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/cakephp/cakephp" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/cakephp/debug_kit" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/cakephp/migrations" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/cakephp/plugin-installer" />
@@ -48,7 +46,6 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/php-text-template" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/php-timer" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/php-token-stream" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/phpunit" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/phpunit-mock-objects" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/psr/log" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/psy/psysh" />

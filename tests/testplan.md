@@ -80,3 +80,51 @@ $STACK_ROOT/php/bin/php vendor/bin/phpunit tests/TestCase/Controller
 http://localhost/myapp?XDEBUG_SESSION_START=n
 var_dump($n);
 export XDEBUG_CONFIG="idekey=PHPSTORM"
+
+
+ * In these tests I generally want to test that:
+ *
+ * 1. A controller method exists...
+ *
+ * 2. Said method returns the correct response code.
+ *
+ * 3. Said method does or does not redirect.  If it redirects, then where to?
+ *
+ * 4. A bare minimum of html structure required to reasonably verify correct operation
+ *    and to facilitate TDD.  For example, the add method should return a form with certain fields,
+ *    and particular <A> tag should exist.
+ *
+ * 5. Verify that the db has changed as expected, if applicable.
+ *
+ * 6. Whether or not Auth prevents/allows access to a method.
+ *
+ * I do not want to test (here):
+ *
+ * 1. How the method responds to badly formed requests, such as trying to submit a DELETE to the add method.
+ *
+ * 2. Any html structure, formatting, css, scripts, tags, krakens, or whatever, beyond the bare minimum
+ *    listed above.
+ *
+ * 3. Whether or not following an <A> tag actually works as expected.
+ *
+ * These items should be tested elsewhere.
+ *
+ * Although tempting to test for viewVars, resist the urge.  If they are not set correctly then
+ * there will be actual consequences that the testing will catch.  At best looking for viewVars
+ * is a debugging aid.  At worst, we'll eat a lot of time picking them apart.  Just say No.
+ *
+ * Input control validation:
+ *
+ * There are several methods of verifying that a particular input or select control
+ * is correct.  For example, we may want to search for a control based on its id or name, may want
+ * to ensure that it's blank or has some particular value.  Perhaps the control should be of a
+ * certain type such as 'text' or 'hidden', or perhaps a select control should be set to a particular
+ * selection or 'no selection'.  If we're not careful, these variations can give rise to a blizzard
+ * of similar methods, that operate in a similar, but inconsitent manner.  But because we _are_ careful,
+ * we've abstracted all this out in a reasonably sensible manner.  Here's how it works...
+ *
+ * Each attribute about a control of interest can be described using a simple css selector string.
+ *
+ *
+ * A. The control exists and can be found using a css finder string., is of some given type, and has a specified value.
+ * B. The input is a select, with a given css finder string, and has a specified value.
