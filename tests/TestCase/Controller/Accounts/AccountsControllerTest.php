@@ -321,55 +321,83 @@ class AccountsControllerTest extends DMIntegrationTestCase {
 
         // 6. Ensure that said table's thead element contains the correct
         //    headings, in the correct order, and nothing else.
-        $thead = $table->find('thead',0);
-        $thead_ths = $thead->find('tr th');
-        $this->assertEquals($thead_ths[0]->id, 'category');
-        $this->assertEquals($thead_ths[1]->id, 'sort');
-        $this->assertEquals($thead_ths[2]->id, 'title');
-        $this->assertEquals($thead_ths[3]->id, 'actions');
-        $column_count = count($thead_ths);
-        $this->assertEquals($column_count,4); // no other columns
+        //$thead = $table->find('thead',0);
+        //$thead_ths = $thead->find('tr th');
+        //$this->assertEquals($thead_ths[0]->id, 'category');
+        //$this->assertEquals($thead_ths[1]->id, 'sort');
+        //$this->assertEquals($thead_ths[2]->id, 'title');
+        //$this->assertEquals($thead_ths[3]->id, 'actions');
+        $column_header_nodes=$xpath->query("thead/tr/th",$table_node);
+        //$column_count = count($thead_ths);
+        $this->assertEquals($column_header_nodes->length,4); // no other columns
+        $nodes=$xpath->query("thead/tr/th[1][@id='category']",$table_node);
+        $this->assertTrue($nodes->length==1);
+        $nodes=$xpath->query("thead/tr/th[2][@id='sort']",$table_node);
+        $this->assertTrue($nodes->length==1);
+        $nodes=$xpath->query("thead/tr/th[3][@id='title']",$table_node);
+        $this->assertTrue($nodes->length==1);
+        $nodes=$xpath->query("thead/tr/th[4][@id='actions']",$table_node);
+        $this->assertTrue($nodes->length==1);
 
         // 7. Ensure that the tbody section has the correct quantity of rows.
         $dbRecords=$this->Accounts->find()
             ->contain(['Categories'])
             ->where(['book_id'=>$book_id])
             ->order(['category_id','sort']);
-        $tbody = $table->find('tbody',0);
-        $n1=$table->innertext;
-        $n2=$tbody->innertext;
-        $tbody_rows = $tbody->find('tr');
-        $this->assertEquals(count($tbody_rows), $dbRecords->count());
+        //$tbody = $table->find('tbody',0);
+        //$n1=$table->innertext;
+        //$n2=$tbody->innertext;
+        //$tbody_rows = $tbody->find('tr');
+        //$this->assertEquals(count($tbody_rows), $dbRecords->count());
+        $tbody_nodes=$xpath->query("tbody/tr",$table_node);
+        //$tbody_rows=$nodes->item(0);
+        $this->assertTrue($tbody_nodes->length==$dbRecords->count());
 
         // 8. Ensure that the values displayed in each row, match the values from
         //    the fixture.  The values should be presented in a particular order
         //    with nothing else thereafter.
         $iterator = new \MultipleIterator();
         $iterator->attachIterator(new \ArrayIterator($dbRecords->execute()->fetchAll('assoc')));
-        $iterator->attachIterator(new \ArrayIterator($tbody_rows));
+        $iterator->attachIterator(new \ArrayIterator(iterator_to_array($tbody_nodes)));
+        //$iterator->attachIterator($tbody_nodes);
 
         foreach ($iterator as $values) {
             $fixtureRecord = $values[0];
-            $htmlRow = $values[1];
-            $htmlColumns = $htmlRow->find('td');
+            //$htmlRow = $values[1];
+            $row_node = $values[1];
+            $column_nodes=$xpath->query("td",$row_node);
+            //$htmlColumns = $htmlRow->find('td');
 
             // 9.0 title
-            $this->assertEquals($fixtureRecord['Categories__title'],  $htmlColumns[0]->plaintext);
-            $this->assertEquals($fixtureRecord['Accounts__sort'],  $htmlColumns[1]->plaintext);
-            $this->assertEquals($fixtureRecord['Accounts__title'],  $htmlColumns[2]->plaintext);
+            //$this->assertEquals($fixtureRecord['Categories__title'],  $htmlColumns[0]->plaintext);
+            $this->assertEquals($fixtureRecord['Categories__title'],  $column_nodes->item(0)->textContent);
+            $this->assertEquals($fixtureRecord['Accounts__sort'], $column_nodes->item(1)->textContent);
+            $this->assertEquals($fixtureRecord['Accounts__title'], $column_nodes->item(2)->textContent);
 
             // 9.1 Now examine the action links
-            $td = $htmlColumns[3];
-            $actionLinks = $td->find('a');
-            $this->assertEquals('AccountView', $actionLinks[0]->name);
+            //$td = $htmlColumns[3];
+            $action_nodes=$xpath->query("a",$column_nodes->item(3));
+            $this->assertTrue($action_nodes->length==2);
+            //$actionLinks = $td->find('a');
+
+            $nodes=$xpath->query("a[@name='AccountView']",$column_nodes->item(3));
+            $this->assertEquals($nodes->length,1);
             $unknownATag--;
-            $this->assertEquals('AccountEdit', $actionLinks[1]->name);
+
+            $nodes=$xpath->query("a[@name='AccountEdit']",$column_nodes->item(3));
+            $this->assertEquals($nodes->length,1);
             $unknownATag--;
+
+            //$this->assertEquals('AccountView', $actionLinks[0]->name);
+            //$this->assertEquals('AccountView', $action_nodes->item(0)->name);
+            //$unknownATag--;
+            //$this->assertEquals('AccountEdit', $action_nodes->item(1)->name);
+            //$unknownATag--;
             //$this->assertEquals('AccountDelete', $actionLinks[2]->name);
             //$unknownATag--;
 
             // 9.9 No other columns
-            $this->assertEquals(count($htmlColumns),$column_count);
+            $this->assertEquals($column_nodes->length,$column_header_nodes->length);
         }
 
         // 10. Ensure that all the <A> tags have been accounted for
@@ -377,10 +405,6 @@ class AccountsControllerTest extends DMIntegrationTestCase {
     }
 
     public function testGET_view() {
-
-        /* @var \simple_html_dom_node $content */
-        /* @var \simple_html_dom_node $field */
-        /* @var \simple_html_dom_node $table */
 
         // 1. Obtain the relevant records and verify their referential integrity.
         $account_id=FixtureConstants::accountTypical;
@@ -396,24 +420,36 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         $this->get('/books/'.$book_id.'/accounts/'.$account_id);
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
-        $html=str_get_html($this->_response->body());
+        //$html=str_get_html($this->_response->body());
+        $dom = \DomDocument::loadHtml($this->_response->body());
+        $xpath=new \DomXPath($dom);
 
         // 3. Verify the <A> tags
         // 3.1 Get the count of all <A> tags that are presently unaccounted for.
-        $content = $html->find('div#AccountsView',0);
-        $this->assertNotNull($content);
-        $unknownATag = count($content->find('a'));
+        //$content = $html->find('div#AccountsView',0);
+        //$this->assertNotNull($content);
+        //$unknownATag = count($content->find('a'));
+        // 2. Verify the existence of the A tags on the portion of this
+        // page generated by this controller (the layout is tested separately).
+        // There should be zero links.
+        $nodes=$xpath->query("//div[@id='AccountsView']//a");
+        //$this->assertTrue($nodes->length==0);
+        $unknownATagCnt=$nodes->length;
 
         // 3.2 Look for specific tags
-        $this->assertEquals(1, count($html->find('a#AccountDistributions')));
-        $unknownATag--;
+        //$this->assertEquals(1, count($html->find('a#AccountDistributions')));
+        $nodes=$xpath->query("//div[@id='AccountsView']//a[@id='AccountDistributions']");
+        $this->assertEquals($nodes->length,1);
+        $unknownATagCnt--;
 
         // 3.3. Ensure that all the <A> tags have been accounted for
-        $this->assertEquals(0, $unknownATag);
+        $this->assertEquals(0, $unknownATagCnt);
 
         // 4.  Look for the table that contains the view fields.
-        $table = $html->find('table#AccountViewTable',0);
-        $this->assertNotNull($table);
+        //$table = $html->find('table#AccountViewTable',0);
+        $table_nodes=$xpath->query("//div[@id='AccountsView']//table[@id='AccountViewTable']");
+        $this->assertEquals($nodes->length,1);
+        //$this->assertNotNull($table);
 
         // 5. Now inspect the fields on the form.  We want to know that:
         // A. The correct fields are there and no other fields.
@@ -422,7 +458,9 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         //  The actual order that the fields are listed is hereby deemed unimportant.
 
         // This is the count of the table rows that are presently unaccounted for.
-        $unknownRowCnt = count($table->find('tr'));
+        $row_nodes=$xpath->query("//tr",$table_nodes);
+        //$unknownRowCnt = count($table->find('tr'));
+        $unknownRowCnt=$row_nodes->length;
 
         // 5.1 book_title
         $field = $table->find('tr#book_title td',0);
