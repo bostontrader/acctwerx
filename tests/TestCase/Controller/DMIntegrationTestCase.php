@@ -38,6 +38,44 @@ class DMIntegrationTestCase extends IntegrationTestCase {
     }
 
     /**
+     * Ensure that there's a select control with the given select_id,
+     * that it has the correct quantity of available choices, and that the
+     * correct choice is selected and displayed.
+     *
+     * @param \DomXPath $xpath
+     * @param string $select_id
+     * @param string $vv_name The name of the view variable that contains the select choices.
+     * @param array $expected_choice.  If null, then no selection.  Else set the value and text
+     * keys.
+     * @param \DOMNode $context_node
+     * @return boolean true if the select is found and passes the tests, else some assertion failure.
+     */
+    public function selectChecker($xpath,$select_id,$vv_name,$expected_choice=null,$context_node=null) {
+
+        // 1. Get the one and only one select control.
+        $select_node=$this->getTheOnlyOne($xpath,"//select[@id='$select_id']",$context_node);
+
+        // 2. Make sure it has the correct number of choices, including an
+        // extra for the none-selected choice.
+        $record_cnt = $this->viewVariable($vv_name)->count();
+        $this->assertEquals($xpath->query("//option",$select_node)->length,$record_cnt+1);
+
+        // 3. Verify the correct choice.
+        if(is_null($expected_choice)) {
+            // Make sure that none of the choices are selected.
+            $this->assertTrue($xpath->query("//option[selected]",$select_node)->length==0);
+            return true;
+        } else {
+            // This specific choice should be selected.
+            $value=$expected_choice['value']; $text=$expected_choice['text'];
+            $nodes=$xpath->query(
+                "//option[@selected='selected' and @value='$value' and text()='$text']",$select_node);
+            $this->assertTrue($nodes->length==1);
+        }
+
+    }
+
+    /**
      * A. The input has a given id, is of some given type, and has a specified value.
      * @param \simple_html_dom_node $html_node the form that contains the select
      * @param String $css_finder A css finder string to find the input of interest. Note: This only
