@@ -25,16 +25,12 @@ class AccountsControllerTest extends DMIntegrationTestCase {
     /** @var \App\Test\Fixture\AccountsFixture */
     private $accountsFixture;
 
-    /** @var \App\Test\Fixture\CategoriesFixture */
-    //private $categoriesFixture;
-
     public function setUp() {
         parent::setup();
         $this->Accounts = TableRegistry::get('Accounts');
         $this->Books = TableRegistry::get('Books');
         $this->Categories = TableRegistry::get('Categories');
         $this->accountsFixture = new AccountsFixture();
-        //$this->categoriesFixture = new categoriesFixture();
     }
 
     public function testGET_add() {
@@ -53,51 +49,49 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         $content_node=$this->getTheOnlyOne($xpath,"//div[@id='AccountsAdd']");
 
         // 3. Count the A tags.
-        $nodes=$xpath->query("//a",$content_node);
-        $unknownATagCnt=$nodes=$xpath->query("//div[@id='AccountsAdd']//a")->length;
+        $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
         $this->assertEquals($unknownATagCnt,0);
 
-        // 3. Ensure that the expected form exists
-        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='AccountAddForm']");
+        // 4. Ensure that the expected form exists
+        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='AccountAddForm']",$content_node);
 
-        // 4. Now inspect the legend of the form.
-        $legend_node=$this->getTheOnlyOne($xpath,"//legend",$form_node);
-        $this->assertContains($book['title'],$legend_node->textContent);
+        // 5. Now inspect the legend of the form.
+        $this->assertContains($book['title'],$this->getTheOnlyOne($xpath,"//legend",$form_node)->textContent);
 
-        // 5. Now inspect the fields on the form.  We want to know that:
+        // 6. Now inspect the fields on the form.  We want to know that:
         // A. The correct fields are there and no other fields.
         // B. The fields have correct values. This includes verifying that select
         //    lists contain options.
         //
         //  The actual order that the fields are listed on the form is hereby deemed unimportant.
 
-        // 5.1 These are counts of the select and input fields on the form.  They
+        // 6.1 These are counts of the select and input fields on the form.  They
         // are presently unaccounted for.
         $unknownSelectCnt=$xpath->query("//select",$form_node)->length;
         $unknownInputCnt=$xpath->query("//input",$form_node)->length;
 
-        // 5.2 Look for the hidden POST input.
+        // 6.2 Look for the hidden POST input.
         $this->assertEquals($xpath->query("//input[@type='hidden' and @name='_method' and @value='POST']",$form_node)->length,1);
         $unknownInputCnt--;
 
-        // 5.3 Look for the hidden book_id input, and validate its contents.
+        // 6.3 Look for the hidden book_id input, and validate its contents.
         $this->assertEquals($xpath->query("//input[@type='hidden' and @id='AccountBookId' and @value='$book_id']",$form_node)->length,1);
         $unknownInputCnt--;
 
-        // 5.4 Ensure that there's a select field for category_id, that it has the correct quantity of available choices,
+        // 6.4 Ensure that there's a select field for category_id, that it has the correct quantity of available choices,
         // and that it has no selection.
         $this->selectChecker($xpath,'AccountCategoryId','categories',null,$form_node);
         $unknownSelectCnt--;
 
-        // 5.5 Ensure that there's an input field for sort, of type text, and that it is empty
+        // 6.5 Ensure that there's an input field for sort, of type text, and that it is empty
         $this->assertTrue($xpath->query("//input[@id='AccountSort' and @type='text' and not(@value)]",$form_node)->length==1);
         $unknownInputCnt--;
 
-        // 5.6 Ensure that there's an input field for title, of type text, and that it is empty
+        // 6.6 Ensure that there's an input field for title, of type text, and that it is empty
         $this->assertTrue($xpath->query("//input[@id='AccountTitle' and @type='text' and not(@value)]",$form_node)->length==1);
         $unknownInputCnt--;
 
-        // 6. Have all the input and selects been accounted for?
+        // 7. Have all the input and selects been accounted for?
         $this->assertEquals(0, $unknownInputCnt);
         $this->assertEquals(0, $unknownSelectCnt);
     }
@@ -146,47 +140,49 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         $dom->loadHTML($this->_response->body());
         $xpath=new \DomXPath($dom);
 
-        // 3. Count the A tags.
-        $unknownATagCnt=$nodes=$xpath->query("//div[@id='AccountsEdit']//a")->length;
+        // 3. Isolate the content produced by this controller method (excluding the layout.)
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='AccountsEdit']");
+
+        // 4. Count the A tags.
+        $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
         $this->assertEquals($unknownATagCnt,0);
 
-        // 4. Ensure that the expected form exists
-        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='AccountEditForm']");
+        // 5. Ensure that the expected form exists
+        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='AccountEditForm']",$content_node);
 
-        // 5. Now inspect the legend of the form.
-        $legend_node=$this->getTheOnlyOne($xpath,"//legend",$form_node);
-        $this->assertContains($book['title'],$legend_node->textContent);
+        // 6. Now inspect the legend of the form.
+        $this->assertContains($book['title'],$this->getTheOnlyOne($xpath,"//legend",$form_node)->textContent);
 
-        // 6. Now inspect the fields on the form.  We want to know that:
+        // 7. Now inspect the fields on the form.  We want to know that:
         // A. The correct fields are there and no other fields.
         // B. The fields have correct values. This includes verifying that select
         //    lists contain options.
         //
         //  The actual order that the fields are listed on the form is hereby deemed unimportant.
 
-        // 6.1 These are counts of the select and input fields on the form.  They
+        // 7.1 These are counts of the select and input fields on the form.  They
         // are presently unaccounted for.
         $unknownSelectCnt=$xpath->query("//select",$form_node)->length;
         $unknownInputCnt=$xpath->query("//input",$form_node)->length;
 
-        // 6.2 Look for the hidden PUT input.
+        // 7.2 Look for the hidden PUT input.
         $this->assertEquals($xpath->query("//input[@type='hidden' and @name='_method' and @value='PUT']",$form_node)->length,1);
         $unknownInputCnt--;
 
-        // 6.3 Ensure that there's a select field for category_id, that it has the correct quantity of available choices,
+        // 7.3 Ensure that there's a select field for category_id, that it has the correct quantity of available choices,
         // and that it has the correct selection.
         $this->selectChecker($xpath,'AccountCategoryId','categories',['value'=>$account->category_id,'text'=>$account->category->title],$form_node);
         $unknownSelectCnt--;
 
-        // 6.4 Ensure that there's an input field for sort, of type text, and that it is empty
+        // 7.4 Ensure that there's an input field for sort, of type text, and that it is empty
         $this->assertTrue($xpath->query("//input[@id='AccountSort' and @type='text' and @value='$account->sort']",$form_node)->length==1);
         $unknownInputCnt--;
 
-        // 6.5 Ensure that there's an input field for title, of type text, that is correctly set
+        // 7.5 Ensure that there's an input field for title, of type text, that is correctly set
         $this->assertTrue($xpath->query("//input[@id='AccountTitle' and @type='text' and @value='$account->title']",$form_node)->length==1);
         $unknownInputCnt--;
 
-        // 7. Have all the input and selects been accounted for?
+        // 8. Have all the input and selects been accounted for?
         $this->assertEquals(0, $unknownInputCnt);
         $this->assertEquals(0, $unknownSelectCnt);
     }
@@ -226,20 +222,23 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         $dom->loadHTML($this->_response->body());
         $xpath=new \DomXPath($dom);
 
-        // 2. Now inspect the heading of the table.
-        $this->getTheOnlyOne($xpath,"//header[contains(text(),'$book->title')]");
+        // 2. Isolate the content produced by this controller method (excluding the layout.)
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='AccountsIndex']");
 
         // 3. Count the A tags.
-        $unknownATagCnt=$nodes=$xpath->query("//div[@id='AccountsIndex']//a")->length;
+        $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
 
         // 4. Look for the create new account link
-        $this->getTheOnlyOne($xpath,"//a[@id='AccountAdd']");
+        $this->getTheOnlyOne($xpath,"//a[@id='AccountAdd']",$content_node);
         $unknownATagCnt--;
 
         // 5. Ensure that there is a suitably named table to display the results.
-        $table_node=$this->getTheOnlyOne($xpath,"//table[@id='AccountsTable']");
+        $table_node=$this->getTheOnlyOne($xpath,"//table[@id='AccountsTable']",$content_node);
 
-        // 6. Ensure that said table's thead element contains the correct
+        // 6. Now inspect the heading of the table.
+        $this->getTheOnlyOne($xpath,"//header[contains(text(),'$book->title')]",$content_node);
+
+        // 7. Ensure that said table's thead element contains the correct
         //    headings, in the correct order, and nothing else.
         $column_header_nodes=$xpath->query("thead/tr/th",$table_node);
         $this->assertEquals($column_header_nodes->length,4); // no other columns
@@ -249,7 +248,7 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         $this->getTheOnlyOne($xpath,"thead/tr/th[3][@id='title']",$table_node);
         $this->getTheOnlyOne($xpath,"thead/tr/th[4][@id='actions']",$table_node);
 
-        // 7. Ensure that the tbody section has the correct quantity of rows.
+        // 8. Ensure that the tbody section has the correct quantity of rows.
         $dbRecords=$this->Accounts->find()
             ->contain(['Categories'])
             ->where(['book_id'=>$book_id])
@@ -257,7 +256,7 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         $tbody_nodes=$xpath->query("tbody/tr",$table_node);
         $this->assertTrue($tbody_nodes->length==$dbRecords->count());
 
-        // 8. Ensure that the values displayed in each row, match the values from
+        // 9. Ensure that the values displayed in each row, match the values from
         //    the fixture.  The values should be presented in a particular order
         //    with nothing else thereafter.
         $iterator = new \MultipleIterator();
@@ -315,8 +314,7 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         $content_node=$this->getTheOnlyOne($xpath,"//div[@id='AccountsView']");
 
         // 4. Count the A tags.
-        $nodes=$xpath->query("//a",$content_node);
-        $unknownATagCnt=$xpath->query("//a",$content_node)->length;
+        $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
 
         // 4.1 Look for the account distributions link
         $this->getTheOnlyOne($xpath,"//a[@id='AccountDistributions']",$content_node);
@@ -334,33 +332,25 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         //
 
         // This is the count of the table rows that are presently unaccounted for.
-        //$row_nodes=$xpath->query("//tr",$table_node);
         $unknownRowCnt=$xpath->query("//tr",$table_node)->length;
 
         // 6.1 book_title
-        //$field = $table->find('tr#book_title td',0);
-        //$field=$xpath->query("//tr[1]/[@id='book_title']",$table_node);
         $this->getTheOnlyOne($xpath,"//tr[1][@id='book_title']/td[text()='$book->title']",$table_node);
-        //$this->assertEquals($book['title'], ro->plaintext);
         $unknownRowCnt--;
 
-        // 5.2 category_title
-        $field = $table->find('tr#category_title td',0);
-        $this->assertEquals($category['title'], $field->plaintext);
+        // 6.2 category_title
+        $this->getTheOnlyOne($xpath,"//tr[2][@id='category_title']/td[text()='$category->title']",$table_node);
         $unknownRowCnt--;
 
-        // 5.3 sort
-        $field = $table->find('tr#sort td',0);
-        $this->assertEquals($account['sort'], $field->plaintext);
+        // 6.3 sort
+        $this->getTheOnlyOne($xpath,"//tr[3][@id='sort']/td[text()='$account->sort']",$table_node);
         $unknownRowCnt--;
 
-        // 5.4 title
-        $field = $table->find('tr#title td',0);
-        $this->assertEquals($account['title'], $field->plaintext);
+        // 6.4 title
+        $this->getTheOnlyOne($xpath,"//tr[4][@id='title']/td[text()='$account->title']",$table_node);
         $unknownRowCnt--;
 
-        // 5.9 Have all the rows been accounted for?  Are there any extras?
+        // 6.9 Have all the rows been accounted for?  Are there any extras?
         $this->assertEquals(0, $unknownRowCnt);
     }
 }
-

@@ -30,9 +30,11 @@ class DMIntegrationTestCase extends IntegrationTestCase {
      * @return \DOMNode 
      */
     public function getTheOnlyOne($xpath, $xpath_expression, $context_node=null) {
-        is_null($context_node) ? 
-            $nodes=$xpath->query($xpath_expression) : 
+
+        is_null($context_node) ?
+            $nodes=$xpath->query($xpath_expression) :
             $nodes=$xpath->query($xpath_expression,$context_node);
+
         $this->assertEquals($nodes->length, 1);
         return $nodes->item(0);
     }
@@ -64,7 +66,6 @@ class DMIntegrationTestCase extends IntegrationTestCase {
         if(is_null($expected_choice)) {
             // Make sure that none of the choices are selected.
             $this->assertTrue($xpath->query("//option[selected]",$select_node)->length==0);
-            return true;
         } else {
             // This specific choice should be selected.
             $value=$expected_choice['value']; $text=$expected_choice['text'];
@@ -72,73 +73,8 @@ class DMIntegrationTestCase extends IntegrationTestCase {
                 "//option[@selected='selected' and @value='$value' and text()='$text']",$select_node);
             $this->assertTrue($nodes->length==1);
         }
-
+        return true;
     }
-
-    /**
-     * A. The input has a given id, is of some given type, and has a specified value.
-     * @param \simple_html_dom_node $html_node the form that contains the select
-     * @param String $css_finder A css finder string to find the input of interest. Note: This only
-     * does very simple css.
-     * @param mixed $expected_value What is the expected value of the input, or false if expected to be empty.
-     * @param String $type What is the type attribute of the input?
-     * @return boolean true if a matching input is found, else assertion failure.
-     */
-    //protected function inputCheckerA($html_node,$css_finder,$expected_value=false,$type='text'){
-        /* @var \simple_html_dom_node $input */
-        //$n1=$html_node->find('input[type=text]');
-        //$n2=$html_node->find($css_finder);
-        //$input = $html_node->find($css_finder,0);
-        //$this->assertEquals($input->type, $type);
-        //$this->assertEquals($expected_value,$input->value);
-        //return true;
-    //}
-
-    /**
-     * Many forms have a hidden input for various reasons, such as for tunneling various http verbs using POST,
-     * or for implementing multi-select lists.
-     * Look for the first one of these present.  If found, return true, return false.
-     * @param \simple_html_dom_node $form the form that contains the select
-     * @param String $name the name attribute of the input
-     * @param String $value the value of the input
-     * @return boolean | \simple_html_dom_node
-     */
-    //protected function lookForHiddenInput($form, $name='_method', $value='POST') {
-
-        //$n1=$form->find('input[type=hidden]');
-        //$n2=$form->find('input#_method');
-        //$n2=$form->find('input#book_id');
-        //foreach($form->find('input[type=hidden]') as $input) {
-            //if($input->value == $value && $input->name == $name)
-                //return $input;
-        //}
-        //return false;
-    //}
-
-    /**
-     * Look for a particular select input merely to ensure that it
-     * exists.  Optionally an ensure that the control has the correct quantity of choices.
-     *
-     * Note: May also want to ensure that the selection has nothing selected.
-     * May also want to verify the
-     *
-     * @param \simple_html_dom_node $form the form that contains the select
-     * @param string $selectID the html id of the select of interest
-     * @param string $vvName the name of the view var that contains the info to populate the select
-     * control. If null, do no further testing.
-     * @param boolean $noneSelected.  If true, the count of choices in the select, should be
-     * one more than that of the view variable, because "none selected" is included as a choice.
-     * @return boolean true if a matching select is found, else assertion failures.
-     */
-    //protected function selectCheckerA($form, $selectID, $vvName=null,$noneSelected=true) {
-        //$option = $form->find('select#'.$selectID.' option[selected]', 0);
-        //$this->assertNull($option);
-        //$option_cnt = count($form->find('select#'.$selectID. ' option'));
-        //$record_cnt = $this->viewVariable($vvName)->count();
-        //$this->assertEquals($record_cnt + 1, $option_cnt);
-        //return true;
-    //}
-
 
     /**
      * Login and submit a POST request to a $url that is expected to delete a given record,
@@ -213,8 +149,6 @@ class DMIntegrationTestCase extends IntegrationTestCase {
         $this->assertRedirect( $redirect_url );
 
         // Now retrieve the newly written record.
-        //$query=new Query(ConnectionManager::get('test'),$table);
-        //$fromDbRecord=$query->find('all')->order(['id' => 'DESC'])->first();
         $fromDbRecord=$table->find('all')->order(['id' => 'DESC'])->first();
         return $fromDbRecord;
     }
@@ -264,62 +198,7 @@ class DMIntegrationTestCase extends IntegrationTestCase {
         // 2. Parse the html from the response
         //return str_get_html($this->_response->body());
     //}
-
-    /**
-     * During many tests we determine the number of inputs, selects, and atags that we
-     * should have, compare that do what we actually test, a determine a final quantity
-     * of unaccounted for elements. These three quantities should all be zero.
-     * @param int $unknownInputCnt The quantity of unaccounted-for input tags.
-     * @param int $unknownSelectCnt The quantity of unaccounted-for select tags
-     * @param \simple_html_dom_node $html parsed dom that contains the response.
-     * @param String $css_finder A css finder string to find a region of the html to search for
-     * Atags.
-     */
-    //protected function expectedInputsSelectsAtagsFound($unknownInputCnt, $unknownSelectCnt, $html, $css_finder) {
-        //$this->assertEquals(0, $unknownInputCnt);
-        //$this->assertEquals(0, $unknownSelectCnt);
-
-        // Examine the <A> tags on this page.  There should be zero links.
-        /* @var \simple_html_dom_node $content */
-        //$content = $html->find($css_finder,0);
-        //$this->assertNotNull($content);
-        //$links = $content->find('a');
-        //$this->assertEquals(0,count($links));
-    //}
-
-
-
-
-    /**
-     * B.
-     * @param \simple_html_dom_node $html_node the form that contains the select
-     * @param String $css_finder A css finder string to find the input of interest. Note: This only
-     * does very simple css.
-     * @param String $expected_id The expected value of the select.
-     * @param String $expected_display. The expected value to be displayed.
-     * @return boolean Return true if a matching input is found, else assertion errors.
-     */
-    //protected function inputCheckerB($html_node,$css_finder,$expected_id,$expected_display){
-    //$option = $html_node->find($css_finder,0);
-    //$this->assertEquals($expected_id, $option->value);
-    //$this->assertEquals($expected_display, $option->plaintext);
-    //return true;
-    //}
-
-
-    /**
-     * Look for a particular select input and ensure that:
-     * The selection is what is expected and that the selection control
-     * has the correct quantity of choices.  If the control passes, return true, else fail.
-     *
-     * @param \simple_html_dom_node $form the form that contains the select
-     * @param string $selectID the html id of the select of interest
-     * @param string $vvName the name of the view var that contains the info to populate the select
-     * @return boolean true if successful else assertion failures.
-     */
-    //protected function selectCheckerB() {
-
-    //}
+    
 
     // Hack the session to make it look as if we're properly logged in.
     //protected function fakeLogin($userId) {
@@ -341,26 +220,6 @@ class DMIntegrationTestCase extends IntegrationTestCase {
     //}
 
 
-
-    /**
-     * @deprecated use selectCheckerA
-     * Look for a particular select input and ensure that:
-     * The selection is what is expected and that the selection control
-     * has the correct quantity of choices.  If the control passes, return true, else fail.
-     *
-     * @param \simple_html_dom_node $form the form that contains the select
-     * @param string $selectID the html id of the select of interest
-     * @param string $vvName the name of the view var that contains the into to populate the select
-     * @return boolean
-     */
-    //protected function lookForSelect($form, $selectID, $vvName) {
-        //$option = $form->find('select#'.$selectID.' option[selected]', 0);
-        //$this->assertNull($option);
-        //$option_cnt = count($form->find('select#'.$selectID. ' option'));
-        //$record_cnt = $this->viewVariable($vvName)->count();
-        //$this->assertEquals($record_cnt + 1, $option_cnt);
-        //return true;
-    //}
 
     //public function setUp() {
         //parent::setUp();
