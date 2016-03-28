@@ -197,10 +197,10 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         $this->assertEquals($accountNew['book_id'],$book['id']);
 
         // 2. POST a suitable record to the url, observe the redirect, and parse the response.
-        $shortUrl='/books/'.$book_id.'/accounts';
-        $this->put($shortUrl.'/'.$account_id, $accountNew);
+        $baseUrl='/books/'.$book_id.'/accounts';
+        $this->put("$baseUrl'/'$account_id", $accountNew);
         $this->assertResponseCode(302);
-        $this->assertRedirect( $shortUrl );
+        $this->assertRedirect( $baseUrl );
 
         // 3. Now retrieve that 1 record and validate it.
         $fromDbRecord=$this->Accounts->get($account_id);
