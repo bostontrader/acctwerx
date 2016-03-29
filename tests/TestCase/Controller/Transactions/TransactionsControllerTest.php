@@ -23,16 +23,18 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
     private $transactionsFixture;
 
     public function setUp() {
+        parent::setup();
         $this->Books = TableRegistry::get('Books');
         $this->Transactions = TableRegistry::get('Transactions');
-        $this->transactionsFixture = new transactionsFixture();
+        $this->transactionsFixture = new TransactionsFixture();
     }
 
     public function testGET_add() {
 
         // 1. GET the url and parse the response.
         $book_id=FixtureConstants::bookTypical;
-        $this->get('/books/'.$book_id.'/transactions/add');
+        $book=$this->Books->get($book_id);
+        $this->get("/books/$book_id/transactions/add");
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
         $dom = new \DomDocument();
@@ -45,44 +47,83 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
         // 3. Count the A tags.
         $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
         $this->assertEquals($unknownATagCnt,0);
-        
-        // 2. Ensure that the correct form exists
-        $form = $html->find('form#TransactionAddForm',0);
-        $this->assertNotNull($form);
 
-        // 3. Now inspect the legend of the form.
-        $legend = $form->find('legend',0);
-        $book=$this->Books->get($book_id);
-        $this->assertContains($book['title'],$legend->innertext());
+        // 4. Ensure that the expected form exists
+        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='TransactionAddForm']",$content_node);
 
-        // 4. Now inspect the fields on the form.  We want to know that:
+        // 5. Now inspect the legend of the form.
+        $this->assertContains($book['title'],$this->getTheOnlyOne($xpath,"//legend",$form_node)->textContent);
+
+        // 6. Now inspect the fields on the form.  We want to know that:
         // A. The correct fields are there and no other fields.
         // B. The fields have correct values. This includes verifying that select
         //    lists contain options.
         //
         //  The actual order that the fields are listed on the form is hereby deemed unimportant.
 
-        // 4.1 These are counts of the select and input fields on the form.  They
-        // are presently untransactioned for.
-        $unknownSelectCnt = count($form->find('select'));
-        $unknownInputCnt = count($form->find('input'));
+        // 6.1 These are counts of the select and input fields on the form.  They
+        // are presently unaccounted for.
+        $unknownSelectCnt=$xpath->query("//select",$form_node)->length;
+        $unknownInputCnt=$xpath->query("//input",$form_node)->length;
 
-        // 4.2 Look for the hidden POST input.
-        if($this->lookForHiddenInput($form)) $unknownInputCnt--;
+        // 6.2 Look for the hidden POST input.
+        $this->assertEquals($xpath->query("//input[@type='hidden' and @name='_method' and @value='POST']",$form_node)->length,1);
+        $unknownInputCnt--;
 
-        // 4.3 Look for the hidden book_id input, and validate its contents.
-        if($this->lookForHiddenInput($form,'book_id',$book_id)) $unknownInputCnt--;
+        // 6.3 Look for the hidden book_id input, and validate its contents.
+        $this->assertEquals($xpath->query("//input[@type='hidden' and @id='TransactionBookId' and @value='$book_id']",$form_node)->length,1);
+        $unknownInputCnt--;
 
-        // 4.4 Ensure that there's an input field for note, of type text, and that it is empty
-        if($this->inputCheckerA($form,'input#TransactionNote')) $unknownInputCnt--;
+        // 6.5 Ensure that there's an input field for sort, of type text, and that it is empty
+        $this->assertTrue($xpath->query("//input[@id='TransactionNote' and @type='text' and not(@value)]",$form_node)->length==1);
+        $unknownInputCnt--;
+
+        // 6.4 Ensure that there's a select field for category_id, that it has the correct quantity of available choices,
+        // and that it has no selection.
+        //$this->selectChecker($xpath,'AccountCategoryId','categories',null,$form_node);
+        //$unknownSelectCnt--;
 
         // 4.5 Ensure that there are suitable select fields for tran_datetime. Don't
         // worry about checking their default values or available choices because that's
         // Cake's responsibility.
-        if($this->inputCheckerDatetime($form,'input#TransactionTranDatetime')) $unknownSelectCnt--;
+        //($this->inputCheckerDatetime($form,'input#TransactionTranDatetime')) $unknownSelectCnt--;
 
-        // 5. Have all the input, select, and Atags been transactioned for?
-        $this->expectedInputsSelectsAtagsFound($unknownInputCnt, $unknownSelectCnt, $html, 'div#TransactionsAdd');
+
+        $this->inputCheckerDatetime($form_node,'TransactionTranDatetime');
+        //) $unknownSelectCnt--;
+        // 1. Get the one and only one select control.
+        $context_node=$form_node;
+        $select_name='tran_datetime';
+        $expected_choice=['value'=>'2016','text'=>'2016']; // default value
+        $select_node=$this->getTheOnlyOne($xpath,"//select[@name='$select_name[year]']",$context_node);
+
+        // 2. Make sure it has the correct number of choices, including an
+        // extra for the none-selected choice.
+        //$record_cnt = $this->viewVariable($vv_name)->count();
+        $record_cnt=11;
+        $this->assertEquals($xpath->query("//option",$select_node)->length,$record_cnt+1);
+
+        // 3. Verify the correct choice.
+        if(is_null($expected_choice)) {
+            // Is it worth your while to determine today's year and ensure that's the selected choice?
+            // Make sure that none of the choices are selected.
+            //$this->assertTrue($xpath->query("//option[selected]",$select_node)->length==0);
+        } else {
+            // This specific choice should be selected.
+            $value=$expected_choice['value']; $text=$expected_choice['text'];
+            $nodes=$xpath->query(
+                "//option[@selected='selected' and @value='$value' and text()='$text']",$select_node);
+            $this->assertTrue($nodes->length==1);
+        }
+
+
+        // 6.6 Ensure that there's an input field for title, of type text, and that it is empty
+        //$this->assertTrue($xpath->query("//input[@id='AccountTitle' and @type='text' and not(@value)]",$form_node)->length==1);
+        //$unknownInputCnt--;
+
+        // 7. Have all the input and selects been accounted for?
+        $this->assertEquals(0, $unknownInputCnt);
+        $this->assertEquals(0, $unknownSelectCnt);
     }
 
     public function testPOST_add() {

@@ -13,7 +13,9 @@ class DMIntegrationTestCase extends IntegrationTestCase {
     /* var \App\Test\Fixture\UsersFixture */
     //protected $usersFixture;
 
-    public function setup() {
+    public function setUp() {
+        // The tests make heavy use of DOMDocument and DOMXpath and these
+        // need this....
         // Use internal libxml errors -- turn on in production, off for debugging
         // DomDocument can deal with mal-formed html, but will generate lots of spurious errors.
         // Use this to make the errors go away.
@@ -44,6 +46,9 @@ class DMIntegrationTestCase extends IntegrationTestCase {
      * that it has the correct quantity of available choices, and that the
      * correct choice is selected and displayed.
      *
+     * This is very similar to selectCheckerB, but we'd need extra variables and
+     * conditionals to make everything work.  Simpler to just have two methods.
+     *
      * @param \DomXPath $xpath
      * @param string $select_id
      * @param string $vv_name The name of the view variable that contains the select choices.
@@ -52,7 +57,7 @@ class DMIntegrationTestCase extends IntegrationTestCase {
      * @param \DOMNode $context_node
      * @return boolean true if the select is found and passes the tests, else some assertion failure.
      */
-    public function selectChecker($xpath,$select_id,$vv_name,$expected_choice=null,$context_node=null) {
+    public function selectCheckerA($xpath,$select_id,$vv_name,$expected_choice=null,$context_node=null) {
 
         // 1. Get the one and only one select control.
         $select_node=$this->getTheOnlyOne($xpath,"//select[@id='$select_id']",$context_node);
@@ -77,6 +82,45 @@ class DMIntegrationTestCase extends IntegrationTestCase {
     }
 
     /**
+     * Ensure that there's a select control with the given $xpression,
+     * that it has the correct quantity of available choices, and that the
+     * correct choice is selected and displayed.
+     *
+     * This is very similar to selectCheckerA, but we'd need extra variables and
+     * conditionals to make everything work.  Simpler to just have two methods.
+     *
+     * @param \DomXPath $xpath
+     * @param string $xpression An xpath expression to identify the select.
+     * @param array $expected_choice.  If null, then no selection.  Else set the value and text
+     * keys.
+     * @param \DOMNode $context_node
+     * @return boolean true if the select is found and passes the tests, else some assertion failure.
+     */
+    public function selectCheckerB($xpath,$xpression,$expected_choice=null,$context_node=null) {
+
+        // 1. Get the one and only one select control.
+        $select_node=$this->getTheOnlyOne($xpath,"//select[@id='$select_id']",$context_node);
+
+        // 2. Make sure it has the correct number of choices, including an
+        // extra for the none-selected choice.
+        $record_cnt = $this->viewVariable($vv_name)->count();
+        $this->assertEquals($xpath->query("//option",$select_node)->length,$record_cnt+1);
+
+        // 3. Verify the correct choice.
+        if(is_null($expected_choice)) {
+            // Make sure that none of the choices are selected.
+            $this->assertTrue($xpath->query("//option[selected]",$select_node)->length==0);
+        } else {
+            // This specific choice should be selected.
+            $value=$expected_choice['value']; $text=$expected_choice['text'];
+            $nodes=$xpath->query(
+                "//option[@selected='selected' and @value='$value' and text()='$text']",$select_node);
+            $this->assertTrue($nodes->length==1);
+        }
+        return true;
+    }
+
+     /**
      * Login and submit a POST request to a $url that is expected to delete a given record,
      * and then verify its removal.
      *
@@ -110,13 +154,16 @@ class DMIntegrationTestCase extends IntegrationTestCase {
      * worry about checking their default values or available choices because that's
      * Cake's responsibility and presumably already tested.
      *
-     * @param \simple_html_dom_node $html_node the form that contains the select fields.
-     * @param String $css_finder_root A root css finder string to find the select of interest. This method
-     * will append various suffixes such as '[year]' or '[month]' when looking for the individual select
-     * fields of the group. Note: This only does very simple css.
+     * @param \DomXPath $xpath
+     * @param string $select_id
+     * @param string $vv_name The name of the view variable that contains the select choices.
+     * @param array $expected_choice.  If null, then no selection.  Else set the value and text
+     * keys.
+     * @param \DOMNode $context_node
+     * @return boolean true if the select is found and passes the tests, else some assertion failure.
      * @return int the number of select fields found.  Should be 5.
      */
-    //protected function inputCheckerDatetime($form,$css_finder_root) {
+    protected function inputCheckerDatetime($xpath,$select_id,$vv_name,$expected_choice=null,$context_node=null) {
 
         // 1. Ensure that there's a select field for 'year'.  Assume, but don't check,
         // that it's set to a default of the present year.  Don't worry about the quantity
@@ -125,7 +172,7 @@ class DMIntegrationTestCase extends IntegrationTestCase {
         //if($this->selectCheckerA($form, $css_finder_root.'[year]')) $selectInputsFound++;
 
         //return $selectInputsFound;
-    //}
+    }
 
 
 

@@ -38,7 +38,7 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         // 1. GET the url and parse the response.
         $book_id=FixtureConstants::bookTypical;
         $book=$this->Books->get($book_id);
-        $this->get('/books/'.$book_id.'/accounts/add');
+        $this->get("/books/$book_id/accounts/add");
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
         $dom = new \DomDocument();
