@@ -1,9 +1,5 @@
 #Test Plan
 
-WARNING: The testing for this app uses shark/simple_html_dom which appears to have a bizarre 
-error when reading a tbody tag.  Search the source, find the single occurrence of 'tbody', and
-comment out that line. Then everything will then work as expected.
-
 ##Categories of Testing
 There are several basic categories of testing that I'm interested in:
 

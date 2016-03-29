@@ -12,6 +12,7 @@
             <legend><?= __('Add Category') ?></legend>
             <?php
                 echo $this->Form->input('title',['id'=>'CategoryTitle']);
+                echo $this->Form->input('symbol',['id'=>'CategorySymbol']);
             ?>
         </fieldset>
         <?= $this->Form->button(__('Submit')) ?>

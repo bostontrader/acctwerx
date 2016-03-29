@@ -12,6 +12,10 @@
                 <th><?= __('Title') ?></th>
                 <td><?= $category->title ?></td>
             </tr>
+            <tr id="symbol">
+                <th><?= __('Symbol') ?></th>
+                <td><?= $category->symbol ?></td>
+            </tr>
         </table>
     </div>
 </div>

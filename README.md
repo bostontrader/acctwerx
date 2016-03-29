@@ -55,3 +55,32 @@ sudo rm $STACK_ROOT/mysql.err
 sudo $STACK_ROOT/mysql/bin/mysqld_safe --user=batman --log-error=$STACK_ROOT/mysql.err --datadir=$STACK_ROOT/mysql/data --port=3307 &
 $STACK_ROOT/php/sbin/php-fpm
 $STACK_ROOT/nginx/sbin/nginx &
+
+##On Categories
+
+There are several places where we want to "categorize" the various accounts. Not only
+do we want to categorize them, but we also want to display them in a particular order.
+
+Some examples:
+
+1. Each account is one of [Assets, Liabilities, Equity, Revenue, Expenses]
+
+2. Asset categorization might be further subdivided into Current, Equipment, and Building with them
+appearing on the Balance Sheet in this order.
+
+3. Any other random grouping of accounts, statistics of which might appear on a graph.
+
+We have two basic choices in dealing with this:
+
+1. Create additional fields as necessary, in order to handle the various categorizations and orderings that are desired by the user.
+
+2. Create a small number of fields, possibly only one or two, and create some encoding system whereby the categorizations and orderings may be described.
+
+3. Create a single "categories" table that contains an entry for any type of category we might want.  Then associate an account with any number of these tags.
+
+Choice 1 has the benefit of better fitting with db normalization.  We don't want to lump lots of things into a single field,
+so therefore we might need several fields.  It has the drawback of proliferating fields, with all the associated UI, testing, and general user confusion that comes with that.
+
+Choice 2 Violates normalization by lumping things together, but we would need fewer fields.  This is not such an advantage as it seems.  Althought actual quantity of controls in any UI would be slightly reduced, testing would probably be more difficult because of the need to consider the wide range of possible inputs.  User confusion would probably actually increase as well.  If the user can't figure out what three different categorization fields are, he'll have an even more difficult time figuring out some encoding scheme.
+
+After reflection, it becomes obvious that choices 1 and 2 are dogs (no slur against dogs intended) and choice 3 is the best choice.

@@ -11,20 +11,20 @@
         </ul>
     </nav>
     <div class="categorys index large-9 medium-8 columns content">
-        <h3><?= __('Categories') ?></h3>
+        <h3><header><?= __('Categories') ?></header></h3>
         <table id="CategoriesTable" cellpadding="0" cellspacing="0">
             <thead>
                 <tr>
-                    <th id="id" ><?= __('ID') ?></th>
                     <th id="title" ><?= __('Title') ?></th>
+                    <th id="symbol" ><?= __('Symbol') ?></th>
                     <th id="actions" class="actions"><?= __('Actions') ?></th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($categories as $category): ?>
                 <tr>
-                    <td><?= $category->id ?></td>
                     <td><?= $category->title ?></td>
+                    <td><?= $category->symbol ?></td>
                     <td class="actions">
                         <?= $this->Html->link(__('View'), ['action' => 'view', 'id'=>$category->id, '_method'=>'GET'],['name'=>'CategoryView']) ?>
                         <?= $this->Html->link(__('Edit'), ['action' => 'edit',$category->id],['name'=>'CategoryEdit']) ?>

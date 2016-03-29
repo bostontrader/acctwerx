@@ -198,7 +198,7 @@ class AccountsControllerTest extends DMIntegrationTestCase {
 
         // 2. POST a suitable record to the url, observe the redirect, and parse the response.
         $baseUrl='/books/'.$book_id.'/accounts';
-        $this->put("$baseUrl'/'$account_id", $accountNew);
+        $this->put("$baseUrl/$account_id", $accountNew);
         $this->assertResponseCode(302);
         $this->assertRedirect( $baseUrl );
 
