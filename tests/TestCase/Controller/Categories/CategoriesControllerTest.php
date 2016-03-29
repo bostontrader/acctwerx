@@ -25,18 +25,26 @@ class CategoriesControllerTest extends DMIntegrationTestCase {
 
     public function testGET_add() {
 
-        /* @var \simple_html_dom_node $form */
-        /* @var \simple_html_dom_node $html */
-
         // 1. GET the url and parse the response.
         $this->get('/categories/add');
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
-        $html = str_get_html($this->_response->body());
+        $dom = new \DomDocument();
+        $dom->loadHTML($this->_response->body());
+        $xpath=new \DomXPath($dom);
 
+        // 2. Isolate the content produced by this controller method (excluding the layout.)
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='CategoriesAdd']");
+
+        // 3. Count the A tags.
+        $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
+        $this->assertEquals($unknownATagCnt,0);
+
+        // 4. Ensure that the expected form exists
+        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='CategoryAddForm']",$content_node);
         // 2. Ensure that the correct form exists
-        $form = $html->find('form#CategoryAddForm',0);
-        $this->assertNotNull($form);
+        //$form = $html->find('form#CategoryAddForm',0);
+        //$this->assertNotNull($form);
 
         // 3. Now inspect the fields on the form.  We want to know that:
         // A. The correct fields are there and no other fields.

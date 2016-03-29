@@ -7,7 +7,7 @@
         </ul>
     </nav>
     <div class="currencies form large-9 medium-8 columns content">
-        <?= $this->Form->create($currency,['action'=>'add','id'=>'CurrencyAddForm']) ?>
+        <?= $this->Form->create($currency,['id'=>'CurrencyAddForm']) ?>
         <fieldset>
             <legend><?= __('Add Currency') ?></legend>
             <?php

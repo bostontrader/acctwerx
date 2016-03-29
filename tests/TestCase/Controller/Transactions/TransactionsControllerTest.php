@@ -30,17 +30,22 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
 
     public function testGET_add() {
 
-        /* @var \simple_html_dom_node $form */
-        /* @var \simple_html_dom_node $html */
-        /* @var \simple_html_dom_node $legend */
-
         // 1. GET the url and parse the response.
         $book_id=FixtureConstants::bookTypical;
         $this->get('/books/'.$book_id.'/transactions/add');
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
-        $html = str_get_html($this->_response->body());
+        $dom = new \DomDocument();
+        $dom->loadHTML($this->_response->body());
+        $xpath=new \DomXPath($dom);
 
+        // 2. Isolate the content produced by this controller method (excluding the layout.)
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='TransactionsAdd']");
+
+        // 3. Count the A tags.
+        $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
+        $this->assertEquals($unknownATagCnt,0);
+        
         // 2. Ensure that the correct form exists
         $form = $html->find('form#TransactionAddForm',0);
         $this->assertNotNull($form);

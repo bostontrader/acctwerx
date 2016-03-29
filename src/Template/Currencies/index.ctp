@@ -11,7 +11,8 @@
         </ul>
     </nav>
     <div class="currencys index large-9 medium-8 columns content">
-        <h3><?= __('Currencies') ?></h3>
+        <h4><header><?= __('Currencies') ?></header></h4>
+
         <table id="CurrenciesTable" cellpadding="0" cellspacing="0">
             <thead>
                 <tr>

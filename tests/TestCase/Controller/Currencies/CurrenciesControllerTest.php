@@ -18,49 +18,61 @@ class CurrenciesControllerTest extends DMIntegrationTestCase {
     private $currenciesFixture;
 
     public function setUp() {
-        //parent::setUp();
+        parent::setUp();
         $this->Currencies = TableRegistry::get('Currencies');
         $this->currenciesFixture = new CurrenciesFixture();
     }
 
     public function testGET_add() {
 
-        /* @var \simple_html_dom_node $form */
-        /* @var \simple_html_dom_node $html */
-
         // 1. GET the url and parse the response.
         $this->get('/currencies/add');
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
-        $html = str_get_html($this->_response->body());
+        $dom = new \DomDocument();
+        $dom->loadHTML($this->_response->body());
+        $xpath=new \DomXPath($dom);
 
-        // 2. Ensure that the correct form exists
-        $form = $html->find('form#CurrencyAddForm',0);
-        $this->assertNotNull($form);
+        // 2. Isolate the content produced by this controller method (excluding the layout.)
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='CurrenciesAdd']");
 
-        // 3. Now inspect the fields on the form.  We want to know that:
+        // 3. Count the A tags.
+        $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
+        $this->assertEquals($unknownATagCnt,0);
+
+        // 4. Ensure that the expected form exists
+        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='CurrencyAddForm']",$content_node);
+
+        // 5. Now inspect the legend of the form.
+        $this->assertContains("Add Currency",$this->getTheOnlyOne($xpath,"//legend",$form_node)->textContent);
+
+        // 6. Now inspect the fields on the form.  We want to know that:
         // A. The correct fields are there and no other fields.
         // B. The fields have correct values. This includes verifying that select
         //    lists contain options.
         //
         //  The actual order that the fields are listed on the form is hereby deemed unimportant.
 
-        // 3.1 These are counts of the select and input fields on the form.  They
+        // 6.1 These are counts of the select and input fields on the form.  They
         // are presently unaccounted for.
-        $unknownSelectCnt = count($form->find('select'));
-        $unknownInputCnt = count($form->find('input'));
+        $unknownSelectCnt=$xpath->query("//select",$form_node)->length;
+        $unknownInputCnt=$xpath->query("//input",$form_node)->length;
 
-        // 3.2 Look for the hidden POST input
-        if($this->lookForHiddenInput($form)) $unknownInputCnt--;
+        // 6.2 Look for the hidden POST input.
+        $this->assertEquals($xpath->query("//input[@type='hidden' and @name='_method' and @value='POST']",$form_node)->length,1);
+        $unknownInputCnt--;
 
-        // 3.3 Ensure that there's an input field for title, of type text, and that it is empty
-        if($this->inputCheckerA($form,'input#CurrencyTitle')) $unknownInputCnt--;
+        // 6.3 Ensure that there's an input field for title, of type text, and that it is empty
+        $this->assertTrue($xpath->query("//input[@id='CurrencyTitle' and @type='text' and not(@value)]",$form_node)->length==1);
+        $unknownInputCnt--;
 
-        // 3.4 Ensure that there's an input field for symbol, of type text, and that it is empty
-        if($this->inputCheckerA($form,'input#CurrencySymbol')) $unknownInputCnt--;
+        // 6.4 Ensure that there's an input field for symbol, of type text, and that it is empty
+        $this->assertTrue($xpath->query("//input[@id='CurrencySymbol' and @type='text' and not(@value)]",$form_node)->length==1);
+        $unknownInputCnt--;
 
-        // 4. Have all the input, select, and Atags been accounted for?
-        $this->expectedInputsSelectsAtagsFound($unknownInputCnt, $unknownSelectCnt, $html, 'div#CurrenciesAdd');
+        // 7. Have all the input and selects been accounted for?
+        $this->assertEquals(0, $unknownInputCnt);
+        $this->assertEquals(0, $unknownSelectCnt);
     }
 
     public function testPOST_add() {
@@ -80,185 +92,212 @@ class CurrenciesControllerTest extends DMIntegrationTestCase {
     }
 
     //public function testDELETE() {
-        //$this->deletePOST(
-            //null, // no login
-            //'/currencies/delete/',
-            //FixtureConstants::currencyTypical, '/currencies', $this->currencies
-        //);
+    //$this->deletePOST(
+    //null, // no login
+    //'/currencies/delete/',
+    //FixtureConstants::bookTypical, '/currencies', $this->Currencies
+    //);
     //}
 
     public function testGET_edit() {
 
-        // 1. Obtain a record to edit, login, GET the url, parse the response and send it back.
+        // 1. Obtain a record to edit, GET the url, and parse the response.
         $currency_id=FixtureConstants::currencyTypical;
         $currency=$this->Currencies->get($currency_id);
-        $url='/currencies/edit/' . $currency_id;
-        $html=$this->loginRequestResponse(null,$url);
+        $this->get("/currencies/edit/$currency_id");
+        $this->assertResponseCode(200);
+        $this->assertNoRedirect();
+        $dom = new \DomDocument();
+        $dom->loadHTML($this->_response->body());
+        $xpath=new \DomXPath($dom);
 
-        // 2. Ensure that the correct form exists
-        /* @var \simple_html_dom_node $form */
-        $form = $html->find('form#CurrencyEditForm',0);
-        $this->assertNotNull($form);
+        // 2. Isolate the content produced by this controller method (excluding the layout.)
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='CurrenciesEdit']");
 
-        // 3. Now inspect the fields on the form.  We want to know that:
+        // 3. Count the A tags.
+        $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
+        $this->assertEquals($unknownATagCnt,0);
+
+        // 4. Ensure that the expected form exists
+        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='CurrencyEditForm']",$content_node);
+
+        // 5. Now inspect the legend of the form.
+        $this->assertContains("Edit Currency",$this->getTheOnlyOne($xpath,"//legend",$form_node)->textContent);
+
+        // 6. Now inspect the fields on the form.  We want to know that:
         // A. The correct fields are there and no other fields.
         // B. The fields have correct values. This includes verifying that select
         //    lists contain options.
         //
         //  The actual order that the fields are listed on the form is hereby deemed unimportant.
 
-        // 3.1 These are counts of the select and input fields on the form.  They
-        // are presently unaccounted for.
-        $unknownSelectCnt = count($form->find('select'));
-        $unknownInputCnt = count($form->find('input'));
+        // 6.1 These are counts of the select and input fields on the form.  They
+        // are presently unCurrencyed for.
+        $unknownSelectCnt=$xpath->query("//select",$form_node)->length;
+        $unknownInputCnt=$xpath->query("//input",$form_node)->length;
 
-        // 3.2 Look for the hidden POST input
-        if($this->lookForHiddenInput($form,'_method','PUT')) $unknownInputCnt--;
+        // 6.2 Look for the hidden PUT input.
+        $this->assertEquals($xpath->query("//input[@type='hidden' and @name='_method' and @value='PUT']",$form_node)->length,1);
+        $unknownInputCnt--;
 
-        // 3.3 Ensure that there's an input field for title, of type text, that is correctly set
-        if($this->inputCheckerA($form,'input#CurrencyTitle',
-            $currency['title'])) $unknownInputCnt--;
+        // 6.3 Ensure that there's an input field for title, of type text, that is correctly set
+        $this->assertTrue($xpath->query("//input[@id='CurrencyTitle' and @type='text' and @value='$currency->title']",$form_node)->length==1);
+        $unknownInputCnt--;
 
-        // 3.4 Ensure that there's an input field for symbol, of type text, that is correctly set
-        if($this->inputCheckerA($form,'input#CurrencySymbol',
-            $currency['symbol'])) $unknownInputCnt--;
+        // 6.4 Ensure that there's an input field for symbol, of type text, that is correctly set
+        $this->assertTrue($xpath->query("//input[@id='CurrencySymbol' and @type='text' and @value='$currency->symbol']",$form_node)->length==1);
+        $unknownInputCnt--;
 
-        // 4. Have all the input, select, and Atags been accounted for?
-        $this->expectedInputsSelectsAtagsFound($unknownInputCnt, $unknownSelectCnt, $html, 'div#CurrenciesEdit');
+        // 7. Have all the input and selects been Currencyed for?
+        $this->assertEquals(0, $unknownInputCnt);
+        $this->assertEquals(0, $unknownSelectCnt);
     }
 
     public function testPOST_edit() {
 
-        // 1. POST a suitable record to the url, observe the redirect, and return the record just
-        // posted, as read from the db.
+        // 1. Obtain the relevant records.
         $currency_id=FixtureConstants::currencyTypical;
-        $fixtureRecord=$this->currenciesFixture->newCurrencyRecord;
-        $fromDbRecord=$this->genericEditPutProlog(
-            null, // no login
-            '/currencies/edit',
-            $currency_id, $fixtureRecord,
-            '/currencies', $this->Currencies
-        );
+        $currencyNew=$this->currenciesFixture->newCurrencyRecord;
 
-        // 2. Now validate that record.
-        $this->assertEquals($fromDbRecord['title'],$fixtureRecord['title']);
-        $this->assertEquals($fromDbRecord['symbol'],$fixtureRecord['symbol']);
+        // 2. POST a suitable record to the url, observe the redirect, and parse the response.
+        $baseUrl="/currencies";
+        $this->put("$baseUrl/$currency_id", $currencyNew);
+        $this->assertResponseCode(302);
+        $this->assertRedirect($baseUrl);
+
+        // 3. Now retrieve that 1 record and validate it.
+        $fromDbRecord=$this->Currencies->get($currency_id);
+        $this->assertEquals($fromDbRecord['title'],$currencyNew['title']);
     }
+
+    //public function testGET_income() {
+
+    // 1. Obtain a record to query, login, GET the url, and parse the response.
+    //$book_id=FixtureConstants::bookTypical;
+    //$this->get('/currencies/income/'.$book_id);
+    //$this->assertResponseCode(200);
+    //$this->assertNoRedirect();
+
+    // Shall we test the content and calculations of the IS?
+    //}
 
     public function testGET_index() {
 
-        /* @var \simple_html_dom_node $content */
-        /* @var \simple_html_dom_node $htmlRow */
-        /* @var \simple_html_dom_node $table */
-        /* @var \simple_html_dom_node $tbody */
-        /* @var \simple_html_dom_node $td */
-        /* @var \simple_html_dom_node $thead */
+        // 1. Submit request, examine response, observe no redirect, and parse the response.
+        $this->get("/currencies");
+        $this->assertResponseCode(200);
+        $this->assertNoRedirect();
+        $dom = new \DomDocument();
+        $dom->loadHTML($this->_response->body());
+        $xpath=new \DomXPath($dom);
 
-        // 1. Login, GET the url, observe the response, parse the response and send it back.
-        $html=$this->loginRequestResponse(null,'/currencies'); // no login
+        // 2. Isolate the content produced by this controller method (excluding the layout.)
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='CurrenciesIndex']");
 
-        // 2. Get the count of all <A> tags that are presently unaccounted for.
-        $content = $html->find('div#CurrenciesIndex',0);
-        $this->assertNotNull($content);
-        $unknownATag = count($content->find('a'));
+        // 3. Count the A tags.
+        $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
 
-        // 3. Look for the create new currency link
-        $this->assertEquals(1, count($html->find('a#CurrencyAdd')));
-        $unknownATag--;
+        // 4. Look for the create new currency link
+        $this->getTheOnlyOne($xpath,"//a[@id='CurrencyAdd']",$content_node);
+        $unknownATagCnt--;
 
-        // 4. Ensure that there is a suitably named table to display the results.
-        $table = $html->find('table#CurrenciesTable',0);
-        $this->assertNotNull($table);
+        // 5. Ensure that there is a suitably named table to display the results.
+        $table_node=$this->getTheOnlyOne($xpath,"//table[@id='CurrenciesTable']",$content_node);
 
-        // 5. Ensure that said table's thead element contains the correct
+        // 6. Now inspect the heading of the table.
+        $this->getTheOnlyOne($xpath,"//header[contains(text(),'Currencies')]",$content_node);
+
+        // 7. Ensure that said table's thead element contains the correct
         //    headings, in the correct order, and nothing else.
-        $thead = $table->find('thead',0);
-        $thead_ths = $thead->find('tr th');
+        $column_header_nodes=$xpath->query("thead/tr/th",$table_node);
+        $this->assertEquals($column_header_nodes->length,3); // no other columns
 
-        $this->assertEquals($thead_ths[0]->id, 'title');
-        $this->assertEquals($thead_ths[1]->id, 'symbol');
-        $this->assertEquals($thead_ths[2]->id, 'actions');
-        $column_count = count($thead_ths);
-        $this->assertEquals($column_count,3); // no other columns
+        $this->getTheOnlyOne($xpath,"thead/tr/th[1][@id='title']",$table_node);
+        $this->getTheOnlyOne($xpath,"thead/tr/th[2][@id='symbol']",$table_node);
+        $this->getTheOnlyOne($xpath,"thead/tr/th[3][@id='actions']",$table_node);
 
-        // 6. Ensure that the tbody section has the same
-        //    quantity of rows as the count of currency records in the fixture.
-        $tbody = $table->find('tbody',0);
-        $tbody_rows = $tbody->find('tr');
-        $this->assertEquals(count($tbody_rows), count($this->currenciesFixture->records));
+        // 8. Ensure that the tbody section has the correct quantity of rows.
+        $dbRecords=$this->Currencies->find()
+            ->order(['id']);
+        $tbody_nodes=$xpath->query("tbody/tr",$table_node);
+        $this->assertTrue($tbody_nodes->length==$dbRecords->count());
 
-        // 7. Ensure that the values displayed in each row, match the values from
+        // 9. Ensure that the values displayed in each row, match the values from
         //    the fixture.  The values should be presented in a particular order
         //    with nothing else thereafter.
         $iterator = new \MultipleIterator();
-        $iterator->attachIterator(new \ArrayIterator($this->currenciesFixture->records));
-        $iterator->attachIterator(new \ArrayIterator($tbody_rows));
+        $iterator->attachIterator(new \ArrayIterator($dbRecords->execute()->fetchAll('assoc')));
+        $iterator->attachIterator(new \ArrayIterator(iterator_to_array($tbody_nodes)));
 
         foreach ($iterator as $values) {
             $fixtureRecord = $values[0];
-            $htmlRow = $values[1];
-            $htmlColumns = $htmlRow->find('td');
+            $row_node = $values[1];
+            $column_nodes=$xpath->query("td",$row_node);
 
-            // 7.0 title
-            $this->assertEquals($fixtureRecord['title'],  $htmlColumns[0]->plaintext);
+            $this->assertEquals($fixtureRecord['Currencies__title'],  $column_nodes->item(0)->textContent);
+            $this->assertEquals($fixtureRecord['Currencies__symbol'],  $column_nodes->item(1)->textContent);
 
-            // 7.1 symbol
-            $this->assertEquals($fixtureRecord['symbol'],  $htmlColumns[1]->plaintext);
+            // 9.1 Now examine the action links
+            $action_nodes=$xpath->query("a",$column_nodes->item(2));
+            $this->assertTrue($action_nodes->length==2);
 
-            // 7.2 Now examine the action links
-            $td = $htmlColumns[2];
-            $actionLinks = $td->find('a');
-            $this->assertEquals('CurrencyView', $actionLinks[0]->name);
-            $unknownATag--;
-            $this->assertEquals('CurrencyEdit', $actionLinks[1]->name);
-            $unknownATag--;
-            //$this->assertEquals('CurrencyDelete', $actionLinks[2]->name);
-            //$unknownATag--;
+            $this->getTheOnlyOne($xpath,"a[@name='CurrencyView']",$column_nodes->item(2));
+            $unknownATagCnt--;
 
-            // 7.9 No other columns
-            $this->assertEquals(count($htmlColumns),$column_count);
+            $this->getTheOnlyOne($xpath,"a[@name='CurrencyEdit']",$column_nodes->item(2));
+            $unknownATagCnt--;
+
+            // 9.9 No other columns
+            $this->assertEquals($column_nodes->length,$column_header_nodes->length);
         }
 
-        // 8. Ensure that all the <A> tags have been accounted for
-        $this->assertEquals(0, $unknownATag);
+        // 10. Ensure that all the <A> tags have been accounted for
+        $this->assertEquals(0, $unknownATagCnt);
     }
 
     public function testGET_view() {
 
-        /* @var \simple_html_dom_node $content */
-        /* @var \simple_html_dom_node $field */
-        /* @var \simple_html_dom_node $table */
-
-        // 1. Obtain a record to view, login, GET the url, parse the response and send it back.
+        // 1. Obtain the relevant records.
         $currency_id=FixtureConstants::currencyTypical;
         $currency=$this->Currencies->get($currency_id);
-        $url='/currencies/' . $currency_id;
-        $html=$this->loginRequestResponse(null, $url); // no login
 
-        // 2.  Look for the table that contains the view fields.
-        $table = $html->find('table#CurrencyViewTable',0);
-        $this->assertNotNull($table);
+        // 2. Submit request, examine response, observe no redirect, and parse the response.
+        $this->get("/currencies/$currency_id");
+        $this->assertResponseCode(200);
+        $this->assertNoRedirect();
+        $dom = new \DomDocument();
+        $dom->loadHTML($this->_response->body());
+        $xpath=new \DomXPath($dom);
 
-        // 3. Now inspect the fields on the form.  We want to know that:
+        // 3. Isolate the content produced by this controller method (excluding the layout.)
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='CurrenciesView']");
+
+        // 4. Count the A tags.
+        $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
+
+        // 4.9 Ensure that all the <A> tags have been accounted for
+        $this->assertEquals(0, $unknownATagCnt);
+
+        // 5. Ensure that there is a suitably named table to display the results.
+        $table_node=$this->getTheOnlyOne($xpath,"//table[@id='CurrencyViewTable']",$content_node);
+
+        // 6. Now inspect the fields in the table.  We want to know that:
         // A. The correct fields are there and no other fields.
         // B. The fields have correct values.
         //
-        //  The actual order that the fields are listed is hereby deemed unimportant.
 
         // This is the count of the table rows that are presently unaccounted for.
-        $unknownRowCnt = count($table->find('tr'));
+        $unknownRowCnt=$xpath->query("//tr",$table_node)->length;
 
-        // 3.1 title
-        $field = $table->find('tr#title td',0);
-        $this->assertEquals($currency['title'], $field->plaintext);
+        // 6.1 title
+        $this->getTheOnlyOne($xpath,"//tr[1][@id='title']/td[text()='$currency->title']",$table_node);
         $unknownRowCnt--;
 
-        // 3.2 symbol
-        $field = $table->find('tr#symbol td',0);
-        $this->assertEquals($currency['symbol'], $field->plaintext);
+        // 6.2 symbol
+        $this->getTheOnlyOne($xpath,"//tr[2][@id='symbol']/td[text()='$currency->symbol']",$table_node);
         $unknownRowCnt--;
 
-        // 3.9 Have all the rows been accounted for?  Are there any extras?
+        // 6.9 Have all the rows been accounted for?  Are there any extras?
         $this->assertEquals(0, $unknownRowCnt);
     }
 }

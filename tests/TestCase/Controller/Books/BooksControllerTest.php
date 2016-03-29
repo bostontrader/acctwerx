@@ -8,12 +8,7 @@ use Cake\ORM\TableRegistry;
 class BooksControllerTest extends DMIntegrationTestCase {
 
     public $fixtures = [
-        //'app.accounts',
         'app.books'
-        //'app.categories',
-        //'app.currencies',
-        //'app.distributions',
-        //'app.transactions'
     ];
 
     /** @var \Cake\ORM\Table */
@@ -262,15 +257,9 @@ class BooksControllerTest extends DMIntegrationTestCase {
 
     public function testGET_view() {
 
-        // 1. Obtain the relevant records and verify their referential integrity.
-        //$account_id=FixtureConstants::accountTypical;
-        //$account=$this->Accounts->get($account_id);
+        // 1. Obtain the relevant records.
         $book_id=FixtureConstants::bookTypical;
         $book=$this->Books->get($book_id);
-        //$category_id=FixtureConstants::categoryTypical;
-        //$category=$this->Categories->get($category_id);
-        //$this->assertEquals($account['book_id'],$book['id']);
-        //$this->assertEquals($account['category_id'],$category['id']);
 
         // 2. Submit request, examine response, observe no redirect, and parse the response.
         $this->get("/books/$book_id");

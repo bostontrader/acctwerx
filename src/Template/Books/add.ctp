@@ -7,7 +7,7 @@
         </ul>
     </nav>
     <div class="books form large-9 medium-8 columns content">
-        <?= $this->Form->create($book,['action'=>'add','id'=>'BookAddForm']) ?>
+        <?= $this->Form->create($book,['id'=>'BookAddForm']) ?>
         <fieldset>
             <legend><?= __('Add Book') ?></legend>
             <?php

@@ -7,7 +7,7 @@
         </ul>
     </nav>
     <div class="categories form large-9 medium-8 columns content">
-        <?= $this->Form->create($category,['action'=>'add','id'=>'CategoryAddForm']) ?>
+        <?= $this->Form->create($category,['id'=>'CategoryAddForm']) ?>
         <fieldset>
             <legend><?= __('Add Category') ?></legend>
             <?php
