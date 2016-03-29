@@ -170,17 +170,6 @@ class CurrenciesControllerTest extends DMIntegrationTestCase {
         $this->assertEquals($fromDbRecord['title'],$currencyNew['title']);
     }
 
-    //public function testGET_income() {
-
-    // 1. Obtain a record to query, login, GET the url, and parse the response.
-    //$book_id=FixtureConstants::bookTypical;
-    //$this->get('/currencies/income/'.$book_id);
-    //$this->assertResponseCode(200);
-    //$this->assertNoRedirect();
-
-    // Shall we test the content and calculations of the IS?
-    //}
-
     public function testGET_index() {
 
         // 1. Submit request, examine response, observe no redirect, and parse the response.

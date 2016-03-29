@@ -23,74 +23,6 @@ class CategoriesControllerTest extends DMIntegrationTestCase {
         $this->categoriesFixture = new CategoriesFixture();
     }
 
-    public function xtestGET_add() {
-
-        // 1. GET the url and parse the response.
-        $this->get('/categories/add');
-        $this->assertResponseCode(200);
-        $this->assertNoRedirect();
-        $dom = new \DomDocument();
-        $dom->loadHTML($this->_response->body());
-        $xpath=new \DomXPath($dom);
-
-        // 2. Isolate the content produced by this controller method (excluding the layout.)
-        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='CategoriesAdd']");
-
-        // 3. Count the A tags.
-        $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
-        $this->assertEquals($unknownATagCnt,0);
-
-        // 4. Ensure that the expected form exists
-        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='CategoryAddForm']",$content_node);
-        // 2. Ensure that the correct form exists
-        //$form = $html->find('form#CategoryAddForm',0);
-        //$this->assertNotNull($form);
-
-        // 3. Now inspect the fields on the form.  We want to know that:
-        // A. The correct fields are there and no other fields.
-        // B. The fields have correct values. This includes verifying that select
-        //    lists contain options.
-        //
-        //  The actual order that the fields are listed on the form is hereby deemed unimportant.
-
-        // 3.1 These are counts of the select and input fields on the form.  They
-        // are presently unaccounted for.
-        $unknownSelectCnt = count($form->find('select'));
-        $unknownInputCnt = count($form->find('input'));
-
-        // 3.2 Look for the hidden POST input
-        if($this->lookForHiddenInput($form)) $unknownInputCnt--;
-
-        // 3.3 Ensure that there's an input field for title, of type text, and that it is empty
-        if($this->inputCheckerA($form,'input#CategoryTitle')) $unknownInputCnt--;
-
-        // 4. Have all the input, select, and Atags been accounted for?
-        $this->expectedInputsSelectsAtagsFound($unknownInputCnt, $unknownSelectCnt, $html, 'div#CategoriesAdd');
-    }
-
-    public function xtestPOST_add() {
-
-        // 1. POST a suitable record to the url, observe redirection, and return the record just
-        // posted, as read from the db.
-        $fixtureRecord=$this->categoriesFixture->newCategoryRecord;
-        $fromDbRecord=$this->genericPOSTAddProlog(
-            null, // no login
-            '/categories/add', $fixtureRecord,
-            '/categories', $this->Categories
-        );
-
-        // 2. Now validate that record.
-        $this->assertEquals($fromDbRecord['title'],$fixtureRecord['title']);
-    }
-
-    //public function testDELETE() {
-        //$this->deletePOST(
-            //null, // no login
-            //'/categories/delete/',
-            //FixtureConstants::categoryTypical, '/categories', $this->categories
-        //);
-    //}
-
     public function testGET_add() {
 
         // 1. GET the url and parse the response.
@@ -238,17 +170,6 @@ class CategoriesControllerTest extends DMIntegrationTestCase {
         $this->assertEquals($fromDbRecord['title'],$categoryNew['title']);
     }
 
-    //public function testGET_income() {
-
-    // 1. Obtain a record to query, login, GET the url, and parse the response.
-    //$book_id=FixtureConstants::bookTypical;
-    //$this->get('/categories/income/'.$book_id);
-    //$this->assertResponseCode(200);
-    //$this->assertNoRedirect();
-
-    // Shall we test the content and calculations of the IS?
-    //}
-
     public function testGET_index() {
 
         // 1. Submit request, examine response, observe no redirect, and parse the response.
@@ -369,3 +290,4 @@ class CategoriesControllerTest extends DMIntegrationTestCase {
         $this->assertEquals(0, $unknownRowCnt);
     }
 }
+

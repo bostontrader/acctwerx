@@ -26,7 +26,7 @@ class AccountsControllerTest extends DMIntegrationTestCase {
     private $accountsFixture;
 
     public function setUp() {
-        parent::setup();
+        parent::setUp();
         $this->Accounts = TableRegistry::get('Accounts');
         $this->Books = TableRegistry::get('Books');
         $this->Categories = TableRegistry::get('Categories');
@@ -80,7 +80,7 @@ class AccountsControllerTest extends DMIntegrationTestCase {
 
         // 6.4 Ensure that there's a select field for category_id, that it has the correct quantity of available choices,
         // and that it has no selection.
-        $this->selectChecker($xpath,'AccountCategoryId','categories',null,$form_node);
+        $this->selectCheckerA($xpath,'AccountCategoryId','categories',null,$form_node);
         $unknownSelectCnt--;
 
         // 6.5 Ensure that there's an input field for sort, of type text, and that it is empty
@@ -171,7 +171,7 @@ class AccountsControllerTest extends DMIntegrationTestCase {
 
         // 7.3 Ensure that there's a select field for category_id, that it has the correct quantity of available choices,
         // and that it has the correct selection.
-        $this->selectChecker($xpath,'AccountCategoryId','categories',['value'=>$account->category_id,'text'=>$account->category->title],$form_node);
+        $this->selectCheckerA($xpath,'AccountCategoryId','categories',['value'=>$account->category_id,'text'=>$account->category->title],$form_node);
         $unknownSelectCnt--;
 
         // 7.4 Ensure that there's an input field for sort, of type text, and that it is empty
