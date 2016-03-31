@@ -1,21 +1,21 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
-use App\Test\Fixture\AccountsFixture;
-use App\Test\Fixture\CurrenciesFixture;
-use App\Test\Fixture\FixtureConstants;
+//use App\Test\Fixture\AccountsFixture;
+//use App\Test\Fixture\CurrenciesFixture;
 use App\Test\Fixture\DistributionsFixture;
+use App\Test\Fixture\FixtureConstants;
 use Cake\ORM\TableRegistry;
 
 class DistributionsControllerTest extends DMIntegrationTestCase {
 
     public $fixtures = [
-        'app.accounts',
-        'app.books',
-        'app.categories',
-        'app.currencies',
+        //'app.accounts',
+        //'app.books',
+        //'app.categories',
+        //'app.currencies',
         'app.distributions',
-        'app.transactions'
+        '//app.transactions'
     ];
 
     /** @var \Cake\ORM\Table */
@@ -28,27 +28,29 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
     private $Transactions;
 
     /** @var \App\Test\Fixture\AccountsFixture */
-    private $accountsFixture;
+    //private $accountsFixture;
 
     /** @var \App\Test\Fixture\CurrenciesFixture */
-    private $currenciesFixture;
+    //private $currenciesFixture;
 
     /** @var \App\Test\Fixture\DistributionsFixture */
     private $distributionsFixture;
 
     public function setUp() {
+        parent::setUp();
         $this->Books = TableRegistry::get('Books');
         $this->Distributions = TableRegistry::get('Distributions');
         $this->Transactions = TableRegistry::get('Transactions');
-        $this->distributionsFixture = new distributionsFixture();
-        $this->accountsFixture = new accountsFixture();
-        $this->currenciesFixture = new currenciesFixture();
+        $this->distributionsFixture = new DistributionsFixture();
+        //$this->accountsFixture = new accountsFixture();
+        //$this->currenciesFixture = new currenciesFixture();
     }
 
     public function testGET_add() {
 
         // 1. GET the url and parse the response.
         $book_id=FixtureConstants::bookTypical;
+        $book=$this->Books->get($book_id);
         $transaction_id=FixtureConstants::transactionTypical;
         $this->get('/books/'.$book_id.'/transactions/'.$transaction_id.'/distributions/add');
         $this->assertResponseCode(200);
@@ -64,32 +66,63 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
         $this->assertEquals($unknownATagCnt,0);
 
+        // 4. Ensure that the expected form exists
+        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='DistributionAddForm']",$content_node);
         // 2. Ensure that the correct form exists
-        $form = $html->find('form#DistributionAddForm',0);
-        $this->assertNotNull($form);
-
+        //$form = $html->find('form#DistributionAddForm',0);
+        //$this->assertNotNull($form);
+        // 5. Now inspect the legend of the form.
+        $this->assertContains($book['title'],$this->getTheOnlyOne($xpath,"//legend",$form_node)->textContent);
         // 3. Now inspect the legend of the form.
         //$legend = $form->find('legend',0);
         //$transaction=$this->Transactions->get($transaction_id);
         //$this->assertContains($transaction['title'],$legend->innertext());
 
-        // 4. Now inspect the fields on the form.  We want to know that:
+        // 6. Now inspect the fields on the form.  We want to know that:
         // A. The correct fields are there and no other fields.
         // B. The fields have correct values. This includes verifying that select
         //    lists contain options.
         //
         //  The actual order that the fields are listed on the form is hereby deemed unimportant.
 
+        // 6.1 These are counts of the select and input fields on the form.  They
+        // are presently unaccounted for.
+        $unknownSelectCnt=$xpath->query("//select",$form_node)->length;
+        $unknownInputCnt=$xpath->query("//input",$form_node)->length;
         // 4.1 These are counts of the select and input fields on the form.  They
         // are presently undistributioned for.
-        $unknownSelectCnt = count($form->find('select'));
-        $unknownInputCnt = count($form->find('input'));
+        //$unknownSelectCnt = count($form->find('select'));
+        //$unknownInputCnt = count($form->find('input'));
 
-        // 4.2 Look for the hidden POST input
-        if($this->lookForHiddenInput($form)) $unknownInputCnt--;
+        // 6.2 Look for the hidden POST input.
+        $this->assertEquals($xpath->query("//input[@type='hidden' and @name='_method' and @value='POST']",$form_node)->length,1);
+        $unknownInputCnt--;
 
+        // 6.3 Look for the hidden book_id input, and validate its contents.
+        //$this->assertEquals($xpath->query("//input[@type='hidden' and @id='AccountBookId' and @value='$book_id']",$form_node)->length,1);
+        $this->assertEquals($xpath->query("//input[@type='hidden' and @id='DistributionTransactionBookId' and @value='$transaction_id']",$form_node)->length,1);
+        //$unknownInputCnt--;
         // 4.3 Look for the hidden transaction_id input, and validate its contents.
-        if($this->lookForHiddenInput($form,'transaction_id',$transaction_id)) $unknownInputCnt--;
+        //if($this->lookForHiddenInput($form,'transaction_id',$transaction_id)) $unknownInputCnt--;
+
+        // 6.4 Ensure that there's a select field for category_id, that it has the correct quantity of available choices,
+        // and that it has no selection.
+        //$this->selectCheckerA($xpath,'AccountCategoryId','categories',null,$form_node);
+        //$unknownSelectCnt--;
+
+        // 6.5 Ensure that there's an input field for sort, of type text, and that it is empty
+        //$this->assertTrue($xpath->query("//input[@id='AccountSort' and @type='text' and not(@value)]",$form_node)->length==1);
+        //$unknownInputCnt--;
+
+        // 6.6 Ensure that there's an input field for title, of type text, and that it is empty
+        //$this->assertTrue($xpath->query("//input[@id='AccountTitle' and @type='text' and not(@value)]",$form_node)->length==1);
+        //$unknownInputCnt--;
+
+        // 7. Have all the input and selects been accounted for?
+        $this->assertEquals(0, $unknownInputCnt);
+        $this->assertEquals(0, $unknownSelectCnt);
+
+
 
         // 4.4 Ensure that there's a select field for account_id, that it has no selection,
         //    and that it has the correct quantity of available choices.

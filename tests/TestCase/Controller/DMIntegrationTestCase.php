@@ -96,20 +96,22 @@ class DMIntegrationTestCase extends IntegrationTestCase {
      * @param \DOMNode $context_node
      * @return boolean true if the select is found and passes the tests, else some assertion failure.
      */
-    public function selectCheckerB($xpath,$xpression,$expected_choice=null,$context_node=null) {
+    public function selectCheckerB($xpath,$xpression,$choice_cnt,$expected_choice=null,$context_node=null) {
 
         // 1. Get the one and only one select control.
-        $select_node=$this->getTheOnlyOne($xpath,"//select[@id='$select_id']",$context_node);
+        //$select_node=$this->getTheOnlyOne($xpath,"//select[@id='$select_id']",$context_node);
+        $select_node=$this->getTheOnlyOne($xpath,$xpression,$context_node);
 
-        // 2. Make sure it has the correct number of choices, including an
-        // extra for the none-selected choice.
-        $record_cnt = $this->viewVariable($vv_name)->count();
-        $this->assertEquals($xpath->query("//option",$select_node)->length,$record_cnt+1);
+        // 2. Make sure it has the correct number of choices.  But do _not_ include
+        // an extra for the none-selected choice.
+        //$record_cnt = $this->viewVariable($vv_name)->count();
+        $this->assertEquals($xpath->query(".//option",$select_node)->length,$choice_cnt);
 
         // 3. Verify the correct choice.
         if(is_null($expected_choice)) {
             // Make sure that none of the choices are selected.
-            $this->assertTrue($xpath->query("//option[selected]",$select_node)->length==0);
+            // Ignore the selected choice.
+            //$this->assertTrue($xpath->query("//option[selected]",$select_node)->length==0);
         } else {
             // This specific choice should be selected.
             $value=$expected_choice['value']; $text=$expected_choice['text'];
@@ -186,18 +188,28 @@ class DMIntegrationTestCase extends IntegrationTestCase {
      * @param array $newRecord
      * @param String $redirect_url The url to redirect to, after the deletion.
      * @param \Cake\ORM\Table $table The table to receive the new record.
+     * @param boolean $redirect2_new_id By default, redirection should go to $redirect_url. However,
+     * if $redirect2_new_id=true, then redirect to $redirect_url/$redirect2_new_id.
+     *
      * @return \Cake\ORM\Entity The newly added record, as read from the db.
      */
-    protected function genericPOSTAddProlog($user_id, $url, $newRecord, $redirect_url, $table) {
+    protected function genericPOSTAddProlog($user_id, $url, $newRecord, $redirect_url, $table, $redirect2_new_id=false) {
 
         //$this->fakeLogin($user_id);
         $this->post($url, $newRecord);
-        $this->assertResponseCode(302);
-        $this->assertRedirect( $redirect_url );
 
         // Now retrieve the newly written record.
         $fromDbRecord=$table->find('all')->order(['id' => 'DESC'])->first();
+
+        $this->assertResponseCode(302);
+        
+        if($redirect2_new_id)
+            $this->assertRedirect( "$redirect_url/$fromDbRecord->id" );
+        else
+           $this->assertRedirect( $redirect_url );
+
         return $fromDbRecord;
+
     }
 
     /**

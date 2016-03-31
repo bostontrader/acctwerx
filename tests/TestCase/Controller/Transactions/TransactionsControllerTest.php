@@ -74,52 +74,17 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
         $this->assertEquals($xpath->query("//input[@type='hidden' and @id='TransactionBookId' and @value='$book_id']",$form_node)->length,1);
         $unknownInputCnt--;
 
-        // 6.5 Ensure that there's an input field for sort, of type text, and that it is empty
+        // 6.4 Ensure that there's an input field for sort, of type text, and that it is empty
         $this->assertTrue($xpath->query("//input[@id='TransactionNote' and @type='text' and not(@value)]",$form_node)->length==1);
         $unknownInputCnt--;
 
-        // 6.4 Ensure that there's a select field for category_id, that it has the correct quantity of available choices,
-        // and that it has no selection.
-        //$this->selectChecker($xpath,'AccountCategoryId','categories',null,$form_node);
-        //$unknownSelectCnt--;
-
-        // 4.5 Ensure that there are suitable select fields for tran_datetime. Don't
-        // worry about checking their default values or available choices because that's
-        // Cake's responsibility.
-        //($this->inputCheckerDatetime($form,'input#TransactionTranDatetime')) $unknownSelectCnt--;
-
-
-        $this->inputCheckerDatetime($form_node,'TransactionTranDatetime');
-        //) $unknownSelectCnt--;
-        // 1. Get the one and only one select control.
-        $context_node=$form_node;
-        $select_name='tran_datetime';
-        $expected_choice=['value'=>'2016','text'=>'2016']; // default value
-        $select_node=$this->getTheOnlyOne($xpath,"//select[@name='$select_name[year]']",$context_node);
-
-        // 2. Make sure it has the correct number of choices, including an
-        // extra for the none-selected choice.
-        //$record_cnt = $this->viewVariable($vv_name)->count();
-        $record_cnt=11;
-        $this->assertEquals($xpath->query("//option",$select_node)->length,$record_cnt+1);
-
-        // 3. Verify the correct choice.
-        if(is_null($expected_choice)) {
-            // Is it worth your while to determine today's year and ensure that's the selected choice?
-            // Make sure that none of the choices are selected.
-            //$this->assertTrue($xpath->query("//option[selected]",$select_node)->length==0);
-        } else {
-            // This specific choice should be selected.
-            $value=$expected_choice['value']; $text=$expected_choice['text'];
-            $nodes=$xpath->query(
-                "//option[@selected='selected' and @value='$value' and text()='$text']",$select_node);
-            $this->assertTrue($nodes->length==1);
-        }
-
-
-        // 6.6 Ensure that there's an input field for title, of type text, and that it is empty
-        //$this->assertTrue($xpath->query("//input[@id='AccountTitle' and @type='text' and not(@value)]",$form_node)->length==1);
-        //$unknownInputCnt--;
+        // 6.5 Check the 5 selects spawned for tran_datetime.
+        $this->selectCheckerB($xpath,"//select[@name='tran_datetime[year]']",11,$expected_choice=null,$context_node=null);
+        $this->selectCheckerB($xpath,"//select[@name='tran_datetime[month]']",12,$expected_choice=null,$context_node=null);
+        $this->selectCheckerB($xpath,"//select[@name='tran_datetime[day]']",31,$expected_choice=null,$context_node=null);
+        $this->selectCheckerB($xpath,"//select[@name='tran_datetime[hour]']",24,$expected_choice=null,$context_node=null);
+        $this->selectCheckerB($xpath,"//select[@name='tran_datetime[minute]']",60,$expected_choice=null,$context_node=null);
+        $unknownSelectCnt-=5;
 
         // 7. Have all the input and selects been accounted for?
         $this->assertEquals(0, $unknownInputCnt);
@@ -130,17 +95,35 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
 
         // 1. POST a suitable record to the url, observe redirection, and return the record just
         // posted, as read from the db.
+        //$fixtureRecord=$this->transactionsFixture->newTransactionRecord;
+        //$fromDbRecord=$this->genericPOSTAddProlog(
+            //null, // no login
+            //'/books/'.FixtureConstants::bookTypical.'/transactions/add', $fixtureRecord,
+            //'/books/'.FixtureConstants::bookTypical.'/transactions', $this->Transactions
+        //);
+
+        // 1. POST a suitable record to the url, observe redirection, and return the record just
+        // posted, as read from the db.
         $fixtureRecord=$this->transactionsFixture->newTransactionRecord;
+        $urlBase='/books/'.FixtureConstants::bookTypical.'/transactions';
         $fromDbRecord=$this->genericPOSTAddProlog(
             null, // no login
-            '/books/'.FixtureConstants::bookTypical.'/transactions/add', $fixtureRecord,
-            '/books/'.FixtureConstants::bookTypical.'/transactions', $this->Transactions
+            $urlBase.'/add', $fixtureRecord,
+            $urlBase, $this->Transactions,
+            true
         );
 
+
+        
+        
         // 2. Now validate that record.
         $this->assertEquals($fromDbRecord['book_id'],$fixtureRecord['book_id']);
         $this->assertEquals($fromDbRecord['note'],$fixtureRecord['note']);
-        $this->assertEquals($fromDbRecord['datetime'],$fixtureRecord['datetime']);
+
+        $d1=$fromDbRecord->tran_datetime;
+        $t=$fixtureRecord['tran_datetime'];
+        $d2=new \Cake\I18n\Time($t['year'].'-'.$t['month'].'-'.$t['day'].' '.$t['hour'].':'.$t['minute']);
+        $this->assertTrue($d1->eq($d2));
     }
 
     // POST A JSON Transaction, fully armed with distributions, the add method.
@@ -153,18 +136,18 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
     // but it goes to the default db instead of the test db.
     //
     // Don't have time to figure this out now :-(
-    public function testPOST_addJSON() {
+    //public function testPOST_addJSON() {
 
-        $fixtureRecord='{
-            "datetime": "2016-01-17",
-            "note": "JSON Test",
-            "distributions": [
-                {"drcr":1,"account_id":1,"currency_id":1,"amount":500.250},
-                {"drcr":-1,"account_id":2,"currency_id":2,"amount":25}
-            ]
-        }';
+        //$fixtureRecord='{
+            //"datetime": "2016-01-17",
+            //"note": "JSON Test",
+            //"distributions": [
+                //{"drcr":1,"account_id":1,"currency_id":1,"amount":500.250},
+                //{"drcr":-1,"account_id":2,"currency_id":2,"amount":25}
+            //]
+        //}';
 
-        $url='/books/'.FixtureConstants::bookTypical.'/transactions/add';
+        //$url='/books/'.FixtureConstants::bookTypical.'/transactions/add';
         //$this->post($url, $fixtureRecord);
         //$http=new Client();
         //$response = $http->post($url, $fixtureRecord);
@@ -179,7 +162,7 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
         //$this->assertEquals($fromDbRecord['book_id'],$fixtureRecord['book_id']);
         //$this->assertEquals($fromDbRecord['note'],$fixtureRecord['note']);
         //$this->assertEquals($fromDbRecord['datetime'],$fixtureRecord['datetime']);
-    }
+    //}
 
     //public function testDELETE() {
         //$this->deletePOST(
