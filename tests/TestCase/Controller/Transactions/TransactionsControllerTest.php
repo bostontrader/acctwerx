@@ -23,7 +23,7 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
     private $transactionsFixture;
 
     public function setUp() {
-        parent::setup();
+        parent::setUp();
         $this->Books = TableRegistry::get('Books');
         $this->Transactions = TableRegistry::get('Transactions');
         $this->transactionsFixture = new TransactionsFixture();
@@ -95,15 +95,6 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
 
         // 1. POST a suitable record to the url, observe redirection, and return the record just
         // posted, as read from the db.
-        //$fixtureRecord=$this->transactionsFixture->newTransactionRecord;
-        //$fromDbRecord=$this->genericPOSTAddProlog(
-            //null, // no login
-            //'/books/'.FixtureConstants::bookTypical.'/transactions/add', $fixtureRecord,
-            //'/books/'.FixtureConstants::bookTypical.'/transactions', $this->Transactions
-        //);
-
-        // 1. POST a suitable record to the url, observe redirection, and return the record just
-        // posted, as read from the db.
         $fixtureRecord=$this->transactionsFixture->newTransactionRecord;
         $urlBase='/books/'.FixtureConstants::bookTypical.'/transactions';
         $fromDbRecord=$this->genericPOSTAddProlog(
@@ -113,9 +104,6 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
             true
         );
 
-
-        
-        
         // 2. Now validate that record.
         $this->assertEquals($fromDbRecord['book_id'],$fixtureRecord['book_id']);
         $this->assertEquals($fromDbRecord['note'],$fixtureRecord['note']);
@@ -174,10 +162,6 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
 
     public function testGET_edit() {
 
-        /* @var \simple_html_dom_node $form */
-        /* @var \simple_html_dom_node $html */
-        /* @var \simple_html_dom_node $legend */
-
         // 1. Obtain the relevant records and verify their referential integrity.
         $transaction_id=FixtureConstants::transactionTypical;
         $transaction=$this->Transactions->get($transaction_id);
@@ -189,39 +173,57 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
         $this->get('/books/'.$book['id'].'/transactions/edit/' . $transaction_id);
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
-        $html = str_get_html($this->_response->body());
+        $dom = new \DomDocument();
+        $dom->loadHTML($this->_response->body());
+        $xpath=new \DomXPath($dom);
 
-        // 3. Ensure that the correct form exists
-        $form = $html->find('form#TransactionEditForm',0);
-        $this->assertNotNull($form);
+        // 3. Isolate the content produced by this controller method (excluding the layout.)
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='TransactionsEdit']");
 
-        // 4. Now inspect the legend of the form.
-        $legend = $form->find('legend',0);
-        $this->assertContains($book['title'],$legend->innertext());
+        // 4. Count the A tags.
+        $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
+        $this->assertEquals($unknownATagCnt,0);
 
-        // 5. Now inspect the fields on the form.  We want to know that:
+        // 5. Ensure that the expected form exists
+        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='TransactionEditForm']",$content_node);
+
+        // 6. Now inspect the legend of the form.
+        $this->assertContains($book['title'],$this->getTheOnlyOne($xpath,"//legend",$form_node)->textContent);
+
+        // 7. Now inspect the fields on the form.  We want to know that:
         // A. The correct fields are there and no other fields.
         // B. The fields have correct values. This includes verifying that select
         //    lists contain options.
         //
         //  The actual order that the fields are listed on the form is hereby deemed unimportant.
 
-        // 5.1 These are counts of the select and input fields on the form.  They
-        // are presently untransactioned for.
-        $unknownSelectCnt = count($form->find('select'));
-        $unknownInputCnt = count($form->find('input'));
+        // 7.1 These are counts of the select and input fields on the form.  They
+        // are presently unaccounted for.
+        $unknownSelectCnt=$xpath->query("//select",$form_node)->length;
+        $unknownInputCnt=$xpath->query("//input",$form_node)->length;
 
-        // 5.2 Look for the hidden POST input
-        if($this->lookForHiddenInput($form,'_method','PUT')) $unknownInputCnt--;
+        // 7.2 Look for the hidden PUT input.
+        $this->assertEquals($xpath->query("//input[@type='hidden' and @name='_method' and @value='PUT']",$form_node)->length,1);
+        $unknownInputCnt--;
 
-        // 5.3 Ensure that there's an input field for note, of type text, and that it is empty
-        if($this->inputCheckerA($form,'input#TransactionNote', $transaction['note'])) $unknownInputCnt--;
+        // 7.3 Ensure that there's an input field for note, of type text, that is correctly set
+        //$this->assertTrue($xpath->query("//input[@id='AccountTitle' and @type='text' and @value='$account->note']",$form_node)->length==1);
+        $this->assertTrue($xpath->query("//input[@id='TransactionNote' and @type='text' and @value='$transaction->note']",$form_node)->length==1);
+        $unknownInputCnt--;
 
-        // 5.4 Ensure that there's an input field for datetime, of type text, that is correctly set
-        if($this->inputCheckerA($form,'input#TransactionDatetime', $transaction['datetime'])) $unknownInputCnt--;
+        // 7.4 Check the 5 selects spawned for tran_datetime.  But picking apart these selects is just too tedious
+        // and time consuming.  If trouble over comes from this sector, nuke it then.
+        //$t=$transaction->tran_datetime;
+        //$this->selectCheckerB($xpath,"//select[@name='tran_datetime[year]']",11,['value'=>$t->year,'text'=>$t->year],$context_node=null);
+        //$this->selectCheckerB($xpath,"//select[@name='tran_datetime[month]']",12,['value'=>$t->month,'text'=>$t->month],$context_node=null);
+        //$this->selectCheckerB($xpath,"//select[@name='tran_datetime[day]']",31,['value'=>$t->day,'text'=>$t->day],$context_node=null);
+        //$this->selectCheckerB($xpath,"//select[@name='tran_datetime[hour]']",24,['value'=>$t->hour,'text'=>$t->hour],$context_node=null);
+        //$this->selectCheckerB($xpath,"//select[@name='tran_datetime[minute]']",60,['value'=>$t->minute,'text'=>$t->minute],$context_node=null);
+        $unknownSelectCnt-=5;
 
-        // 6. Have all the input, select, and Atags been transactioned for?
-        $this->expectedInputsSelectsAtagsFound($unknownInputCnt, $unknownSelectCnt, $html, 'div#TransactionsEdit');
+        // 8. Have all the input and selects been accounted for?
+        $this->assertEquals(0, $unknownInputCnt);
+        $this->assertEquals(0, $unknownSelectCnt);
     }
 
     public function testPOST_edit() {
@@ -233,111 +235,101 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
         $book=$this->Books->get($book_id);
         $this->assertEquals($transactionNew['book_id'],$book['id']);
 
-        // 2. POST a suitable record to the url, observe the redirect, and parse the response.
-        $shortUrl='/books/'.$book_id.'/transactions';
-        $this->put($shortUrl.'/'.$transaction_id, $transactionNew);
+        // 2. POST a suitable record to the url and observe the redirect.
+        $baseUrl="/books/$book_id/transactions";
+        $this->put("$baseUrl/$transaction_id", $transactionNew);
         $this->assertResponseCode(302);
-        $this->assertRedirect( $shortUrl );
+        $this->assertRedirect( $baseUrl );
 
         // 3. Now retrieve that 1 record and validate it.
         $fromDbRecord=$this->Transactions->get($transaction_id);
         $this->assertEquals($fromDbRecord['book_id'],$transactionNew['book_id']);
         $this->assertEquals($fromDbRecord['note'],$transactionNew['note']);
-        $this->assertEquals($fromDbRecord['datetime'],$transactionNew['datetime']);
+
+        $d1=$fromDbRecord->tran_datetime;
+        $t=$transactionNew['tran_datetime'];
+        $d2=new \Cake\I18n\Time($t['year'].'-'.$t['month'].'-'.$t['day'].' '.$t['hour'].':'.$t['minute']);
+        $this->assertTrue($d1->eq($d2));
     }
 
     public function testGET_index() {
 
-        /* @var \simple_html_dom_node $content */
-        /* @var \simple_html_dom_node $header */
-        /* @var \simple_html_dom_node $htmlRow */
-        /* @var \simple_html_dom_node $table */
-        /* @var \simple_html_dom_node $tbody */
-        /* @var \simple_html_dom_node $td */
-        /* @var \simple_html_dom_node $thead */
-
         // 1. Submit submit request, examine response, observe no redirect, and parse the response.
         $book_id=FixtureConstants::bookTypical;
+        $book=$this->Books->get($book_id);
         $this->get('/books/'.$book_id.'/transactions');
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
-        $html=str_get_html($this->_response->body());
+        $dom = new \DomDocument();
+        $dom->loadHTML($this->_response->body());
+        $xpath=new \DomXPath($dom);
 
-        // 2. Now inspect the legend of the form.
-        $header=$html->find('header',0);
-        $book=$this->Books->get($book_id);
-        $this->assertContains($book['title'],$header->innertext());
+        // 2. Isolate the content produced by this controller method (excluding the layout.)
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='TransactionsIndex']");
 
-        // 3. Get a the count of all <A> tags that are presently untransactioned for.
-        $content = $html->find('div#TransactionsIndex',0);
-        $this->assertNotNull($content);
-        $unknownATag = count($content->find('a'));
+        // 3. Count the A tags.
+        $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
 
         // 4. Look for the create new transaction link
-        $this->assertEquals(1, count($html->find('a#TransactionAdd')));
-        $unknownATag--;
+        $this->getTheOnlyOne($xpath,"//a[@id='TransactionAdd']",$content_node);
+        $unknownATagCnt--;
 
         // 5. Ensure that there is a suitably named table to display the results.
-        $table = $html->find('table#TransactionsTable',0);
-        $this->assertNotNull($table);
+        $table_node=$this->getTheOnlyOne($xpath,"//table[@id='TransactionsTable']",$content_node);
 
-        // 6. Ensure that said table's thead element contains the correct
+        // 6. Now inspect the heading of the table.
+        $this->getTheOnlyOne($xpath,"//header[contains(text(),'$book->title')]",$content_node);
+
+        // 7. Ensure that said table's thead element contains the correct
         //    headings, in the correct order, and nothing else.
-        $thead = $table->find('thead',0);
-        $thead_ths = $thead->find('tr th');
-        $this->assertEquals($thead_ths[0]->id, 'note');
-        $this->assertEquals($thead_ths[1]->id, 'datetime');
-        $this->assertEquals($thead_ths[2]->id, 'actions');
-        $column_count = count($thead_ths);
-        $this->assertEquals($column_count,3); // no other columns
+        $column_header_nodes=$xpath->query("thead/tr/th",$table_node);
+        $this->assertEquals($column_header_nodes->length,3); // no other columns
 
-        // 7. Ensure that the tbody section has the correct quantity of rows.
+        $this->getTheOnlyOne($xpath,"thead/tr/th[1][@id='note']",$table_node);
+        $this->getTheOnlyOne($xpath,"thead/tr/th[2][@id='tran_datetime']",$table_node);
+        $this->getTheOnlyOne($xpath,"thead/tr/th[3][@id='actions']",$table_node);
+
+        // 8. Ensure that the tbody section has the correct quantity of rows.
         $dbRecords=$this->Transactions->find()
             ->where(['book_id'=>$book_id])
-            ->order(['datetime']);
-        $tbody = $table->find('tbody',0);
-        $tbody_rows = $tbody->find('tr');
-        $this->assertEquals(count($tbody_rows), $dbRecords->count());
+            ->order(['tran_datetime'=>'desc']);
+        $tbody_nodes=$xpath->query("tbody/tr",$table_node);
+        $this->assertTrue($tbody_nodes->length==$dbRecords->count());
 
-        // 8. Ensure that the values displayed in each row, match the values from
+        // 9. Ensure that the values displayed in each row, match the values from
         //    the fixture.  The values should be presented in a particular order
         //    with nothing else thereafter.
         $iterator = new \MultipleIterator();
         $iterator->attachIterator(new \ArrayIterator($dbRecords->execute()->fetchAll('assoc')));
-        $iterator->attachIterator(new \ArrayIterator($tbody_rows));
+        $iterator->attachIterator(new \ArrayIterator(iterator_to_array($tbody_nodes)));
 
         foreach ($iterator as $values) {
             $fixtureRecord = $values[0];
-            $htmlRow = $values[1];
-            $htmlColumns = $htmlRow->find('td');
+            $row_node = $values[1];
+            $column_nodes=$xpath->query("td",$row_node);
 
-            // 9.0 datetime
-            $this->assertEquals($fixtureRecord['Transactions__note'],  $htmlColumns[0]->plaintext);
-            $this->assertEquals($fixtureRecord['Transactions__datetime'],  $htmlColumns[1]->plaintext);
+            $this->assertEquals($fixtureRecord['Transactions__note'],  $column_nodes->item(0)->textContent);
+            //$this->assertEquals($fixtureRecord['Transactions__datetime'],  $column_nodes->item(1)->textContent);
 
             // 9.1 Now examine the action links
-            $td = $htmlColumns[2];
-            $actionLinks = $td->find('a');
-            $this->assertEquals('TransactionView', $actionLinks[0]->name);
-            $unknownATag--;
-            $this->assertEquals('TransactionEdit', $actionLinks[1]->name);
-            $unknownATag--;
-            //$this->assertEquals('TransactionDelete', $actionLinks[2]->name);
-            //$unknownATag--;
+            $action_nodes=$xpath->query("a",$column_nodes->item(2));
+            $this->assertTrue($action_nodes->length==2);
+
+            $this->getTheOnlyOne($xpath,"a[@name='TransactionView']",$column_nodes->item(2));
+            $unknownATagCnt--;
+
+            $this->getTheOnlyOne($xpath,"a[@name='TransactionEdit']",$column_nodes->item(2));
+            $unknownATagCnt--;
 
             // 9.9 No other columns
-            $this->assertEquals(count($htmlColumns),$column_count);
+            $this->assertEquals($column_nodes->length,$column_header_nodes->length);
         }
 
-        // 10. Ensure that all the <A> tags have been transactioned for
-        $this->assertEquals(0, $unknownATag);
+        // 10. Ensure that all the <A> tags have been accounted for
+        $this->assertEquals(0, $unknownATagCnt);
     }
 
     public function testGET_view() {
-
-        /* @var \simple_html_dom_node $content */
-        /* @var \simple_html_dom_node $field */
-        /* @var \simple_html_dom_node $table */
 
         // 1. Obtain the relevant records and verify their referential integrity.
         $transaction_id=FixtureConstants::transactionTypical;
@@ -350,50 +342,46 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
         $this->get('/books/'.$book_id.'/transactions/'.$transaction_id);
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
-        $html=str_get_html($this->_response->body());
+        $dom = new \DomDocument();
+        $dom->loadHTML($this->_response->body());
+        $xpath=new \DomXPath($dom);
 
-        // 3. Verify the <A> tags
-        // 3.1 Get the count of all <A> tags that are presently unaccounted for.
-        $content = $html->find('div#TransactionsView',0);
-        $this->assertNotNull($content);
-        $unknownATag = count($content->find('a'));
+        // 3. Isolate the content produced by this controller method (excluding the layout.)
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='TransactionsView']");
 
-        // 3.2 Look for specific tags
-        $this->assertEquals(1, count($html->find('a#TransactionDistributions')));
-        $unknownATag--;
+        // 4. Count the A tags.
+        $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
 
-        // 3.3. Ensure that all the <A> tags have been accounted for
-        $this->assertEquals(0, $unknownATag);
+        // 4.1 Look for the transaction distributions link
+        $this->getTheOnlyOne($xpath,"//a[@id='TransactionDistributions']",$content_node);
+        $unknownATagCnt--;
 
-        // 4.  Look for the table that contains the view fields.
-        $table = $html->find('table#TransactionViewTable',0);
-        $this->assertNotNull($table);
+        // 4.2 Ensure that all the <A> tags have been accounted for
+        $this->assertEquals(0, $unknownATagCnt);
 
-        // 5. Now inspect the fields on the form.  We want to know that:
+        // 5. Ensure that there is a suitably named table to display the results.
+        $table_node=$this->getTheOnlyOne($xpath,"//table[@id='TransactionViewTable']",$content_node);
+
+        // 6. Now inspect the fields in the table.  We want to know that:
         // A. The correct fields are there and no other fields.
         // B. The fields have correct values.
         //
-        //  The actual order that the fields are listed is hereby deemed unimportant.
 
-        // This is the count of the table rows that are presently untransactioned for.
-        $unknownRowCnt = count($table->find('tr'));
+        // This is the count of the table rows that are presently unaccounted for.
+        $unknownRowCnt=$xpath->query("//tr",$table_node)->length;
 
-        // 5.1 book_title
-        $field = $table->find('tr#book_title td',0);
-        $this->assertEquals($book['title'], $field->plaintext);
+        // 6.1 book_title
+        $this->getTheOnlyOne($xpath,"//tr[1][@id='book_title']/td[text()='$book->title']",$table_node);
         $unknownRowCnt--;
 
-        // 5.2 note
-        $field = $table->find('tr#note td',0);
-        $this->assertEquals($transaction['note'], $field->plaintext);
+        // 6.2 note
+        $this->getTheOnlyOne($xpath,"//tr[2][@id='note']/td[text()='$transaction->note']",$table_node);
         $unknownRowCnt--;
 
-        // 5.3 datetime
-        $field = $table->find('tr#datetime td',0);
-        $this->assertEquals($transaction['datetime'], $field->plaintext);
+        // 6.3 tran_datetime
         $unknownRowCnt--;
 
-        // 5.9 Have all the rows been transactioned for?  Are there any extras?
+        // 6.9 Have all the rows been accounted for?  Are there any extras?
         $this->assertEquals(0, $unknownRowCnt);
     }
 }

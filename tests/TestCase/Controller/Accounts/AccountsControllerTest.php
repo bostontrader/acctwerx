@@ -196,7 +196,7 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         $book=$this->Books->get($book_id);
         $this->assertEquals($accountNew['book_id'],$book['id']);
 
-        // 2. POST a suitable record to the url, observe the redirect, and parse the response.
+        // 2. POST a suitable record to the url and observe the redirect.
         $baseUrl='/books/'.$book_id.'/accounts';
         $this->put("$baseUrl/$account_id", $accountNew);
         $this->assertResponseCode(302);
