@@ -4,6 +4,8 @@ use Cake\Datasource\ConnectionManager;
 
 class BooksController extends AppController {
 
+    public $helpers = ['Fingraph','FinStat'];
+
     const BOOK_SAVED = "The book has been saved.";
     const BOOK_NOT_SAVED = "The book could not be saved. Please, try again.";
     const BOOK_DELETED = "The book has been deleted.";

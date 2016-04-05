@@ -11,11 +11,11 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
 
     public $fixtures = [
         //'app.accounts',
-        //'app.books',
+        'app.books',
         //'app.categories',
         //'app.currencies',
         'app.distributions',
-        '//app.transactions'
+        'app.transactions'
     ];
 
     /** @var \Cake\ORM\Table */
@@ -50,8 +50,10 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
 
         // 1. GET the url and parse the response.
         $book_id=FixtureConstants::bookTypical;
-        $book=$this->Books->get($book_id);
+        //$book=$this->Books->get($book_id);
         $transaction_id=FixtureConstants::transactionTypical;
+        //$transaction=$this->Transactions->get($transaction_id);
+
         $this->get('/books/'.$book_id.'/transactions/'.$transaction_id.'/distributions/add');
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
@@ -68,11 +70,9 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
 
         // 4. Ensure that the expected form exists
         $form_node=$this->getTheOnlyOne($xpath,"//form[@id='DistributionAddForm']",$content_node);
-        // 2. Ensure that the correct form exists
-        //$form = $html->find('form#DistributionAddForm',0);
-        //$this->assertNotNull($form);
+
         // 5. Now inspect the legend of the form.
-        $this->assertContains($book['title'],$this->getTheOnlyOne($xpath,"//legend",$form_node)->textContent);
+        $this->assertContains("$transaction_id",$this->getTheOnlyOne($xpath,"//legend",$form_node)->textContent);
         // 3. Now inspect the legend of the form.
         //$legend = $form->find('legend',0);
         //$transaction=$this->Transactions->get($transaction_id);
@@ -98,7 +98,15 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $this->assertEquals($xpath->query("//input[@type='hidden' and @name='_method' and @value='POST']",$form_node)->length,1);
         $unknownInputCnt--;
 
-        // 6.3 Look for the hidden book_id input, and validate its contents.
+        // hidden tx id
+        // hidden drcr
+        // drcr radio 1
+        // drcr radio 2
+        // account select
+        // amount
+        // currency select
+
+        // 6.3 Look for the hidden transaction_id input, and validate its contents.
         //$this->assertEquals($xpath->query("//input[@type='hidden' and @id='AccountBookId' and @value='$book_id']",$form_node)->length,1);
         $this->assertEquals($xpath->query("//input[@type='hidden' and @id='DistributionTransactionBookId' and @value='$transaction_id']",$form_node)->length,1);
         //$unknownInputCnt--;
