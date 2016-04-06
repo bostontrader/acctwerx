@@ -98,18 +98,29 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $this->assertEquals($xpath->query("//input[@type='hidden' and @name='_method' and @value='POST']",$form_node)->length,1);
         $unknownInputCnt--;
 
-        // hidden tx id
-        // hidden drcr
-        // drcr radio 1
-        // drcr radio 2
+        // 6.3 Look for the hidden transaction_id input, and validate its contents.
+        $this->assertEquals($xpath->query("//input[@type='hidden' and @id='DistributionTransactionId' and @value='$transaction_id']",$form_node)->length,1);
+        $unknownInputCnt--;
+
+        // 6.4 drcr
+
+        // 6.4.1 Look for the hidden drcr input, and validate its contents.
+        $this->assertEquals($xpath->query("//input[@type='hidden' and @name='drcr' and @value='']",$form_node)->length,1);
+        $unknownInputCnt--;
+
+        // 6.4.2 drcr-1 (default choice)
+        $this->assertEquals($xpath->query("//input[@id='drcr-1' and @type='radio' and @checked='checked' and @name='drcr' and @value='1']",$form_node)->length,1);
+        $unknownInputCnt--;
+
+        // 6.4.3 drcr--1
+        $this->assertEquals($xpath->query("//input[@id='drcr--1' and @type='radio' and @name='drcr' and @value='1']",$form_node)->length,1);
+        $unknownInputCnt--;
+
         // account select
         // amount
         // currency select
 
-        // 6.3 Look for the hidden transaction_id input, and validate its contents.
-        //$this->assertEquals($xpath->query("//input[@type='hidden' and @id='AccountBookId' and @value='$book_id']",$form_node)->length,1);
-        $this->assertEquals($xpath->query("//input[@type='hidden' and @id='DistributionTransactionBookId' and @value='$transaction_id']",$form_node)->length,1);
-        //$unknownInputCnt--;
+
         // 4.3 Look for the hidden transaction_id input, and validate its contents.
         //if($this->lookForHiddenInput($form,'transaction_id',$transaction_id)) $unknownInputCnt--;
 

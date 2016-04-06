@@ -23,6 +23,14 @@ Needed by composer. Which means you'll have to have OpenSSL installed on your se
 
 Needed by CakePHP
 
+--with-gd
+
+sudo apt-get install libpng-dev Needed for gd
+
+gd is needed to tdraw our pretty graphs.
+
+
+
 Recall that STACK_ROOT is defined by the LEMP stack installation.
 
 cd $STACK_ROOT/html
