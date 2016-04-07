@@ -174,11 +174,11 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         $this->selectCheckerA($xpath,'AccountCategoryId','categories',['value'=>$account->category_id,'text'=>$account->category->title],$form_node);
         $unknownSelectCnt--;
 
-        // 7.4 Ensure that there's an input field for sort, of type text, and that it is empty
+        // 7.4 Ensure that there's an input field for sort, of type text, that is correctly set.
         $this->assertTrue($xpath->query("//input[@id='AccountSort' and @type='text' and @value='$account->sort']",$form_node)->length==1);
         $unknownInputCnt--;
 
-        // 7.5 Ensure that there's an input field for title, of type text, that is correctly set
+        // 7.5 Ensure that there's an input field for title, of type text, that is correctly set.
         $this->assertTrue($xpath->query("//input[@id='AccountTitle' and @type='text' and @value='$account->title']",$form_node)->length==1);
         $unknownInputCnt--;
 

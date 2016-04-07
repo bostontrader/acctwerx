@@ -15,7 +15,7 @@
     <div class="distributions form large-9 medium-8 columns content">
         <?= $this->Form->create($distribution,['id'=>'DistributionAddForm']) ?>
         <fieldset>
-            <legend><?= __('Add Distribution for transaction :'.$transaction_id) ?></legend>
+            <legend><?= __('Add Distribution for transaction: '.$transaction_id) ?></legend>
             <?php
                 echo $this->Form->input('transaction_id',['id'=>'DistributionTransactionId','value'=>$transaction_id,'type'=>'hidden']);
                 echo $this->Form->radio('drcr', [['value'=>1,'text'=>'dr'],['value'=>-1,'text'=>'cr']]);

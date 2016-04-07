@@ -15,7 +15,7 @@
     <div class="distributions form large-9 medium-8 columns content">
         <?= $this->Form->create($distribution,['id'=>'DistributionEditForm']) ?>
         <fieldset>
-            <legend><?= __('Edit Distribution') ?></legend>
+            <legend><?= __('Edit Distribution for transaction: '.$transaction_id) ?></legend>
             <?php
                 echo $this->Form->radio('drcr', [['value'=>1,'text'=>'dr'],['value'=>-1,'text'=>'cr']]);
                 echo $this->Form->input('account_id', ['id'=>'DistributionAccountId', 'options' => $accounts, 'empty' => '(none selected)']);

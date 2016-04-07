@@ -10,10 +10,10 @@ use Cake\ORM\TableRegistry;
 class DistributionsControllerTest extends DMIntegrationTestCase {
 
     public $fixtures = [
-        //'app.accounts',
+        'app.accounts',
         'app.books',
         //'app.categories',
-        //'app.currencies',
+        'app.currencies',
         'app.distributions',
         'app.transactions'
     ];
@@ -113,54 +113,27 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $unknownInputCnt--;
 
         // 6.4.3 drcr--1
-        $this->assertEquals($xpath->query("//input[@id='drcr--1' and @type='radio' and @name='drcr' and @value='1']",$form_node)->length,1);
+        $this->assertEquals($xpath->query("//input[@id='drcr--1' and @type='radio' and not(@checked) and @name='drcr' and @value='-1']",$form_node)->length,1);
         $unknownInputCnt--;
 
-        // account select
-        // amount
-        // currency select
-
-
-        // 4.3 Look for the hidden transaction_id input, and validate its contents.
-        //if($this->lookForHiddenInput($form,'transaction_id',$transaction_id)) $unknownInputCnt--;
-
-        // 6.4 Ensure that there's a select field for category_id, that it has the correct quantity of available choices,
+        // 6.5 Ensure that there's a select field for account_id, that it has the correct quantity of available choices,
         // and that it has no selection.
-        //$this->selectCheckerA($xpath,'AccountCategoryId','categories',null,$form_node);
-        //$unknownSelectCnt--;
+        $this->selectCheckerA($xpath,'DistributionAccountId','accounts',null,$form_node);
+        $unknownSelectCnt--;
 
-        // 6.5 Ensure that there's an input field for sort, of type text, and that it is empty
-        //$this->assertTrue($xpath->query("//input[@id='AccountSort' and @type='text' and not(@value)]",$form_node)->length==1);
-        //$unknownInputCnt--;
+        // 6.6 Ensure that there's an input field for amount, of type text, and that it is empty
+        $this->assertTrue($xpath->query("//input[@id='DistributionAmount' and @type='text' and not(@value)]",$form_node)->length==1);
+        $unknownInputCnt--;
 
-        // 6.6 Ensure that there's an input field for title, of type text, and that it is empty
-        //$this->assertTrue($xpath->query("//input[@id='AccountTitle' and @type='text' and not(@value)]",$form_node)->length==1);
-        //$unknownInputCnt--;
+        // 6.7 Ensure that there's a select field for currency_id, that it has the correct quantity of available choices,
+        // and that it has no selection.
+        $this->selectCheckerA($xpath,'DistributionCurrencyId','currencies',null,$form_node);
+        $unknownSelectCnt--;
 
         // 7. Have all the input and selects been accounted for?
         $this->assertEquals(0, $unknownInputCnt);
         $this->assertEquals(0, $unknownSelectCnt);
 
-
-
-        // 4.4 Ensure that there's a select field for account_id, that it has no selection,
-        //    and that it has the correct quantity of available choices.
-        if($this->selectCheckerA($form, 'DistributionAccountId', 'accounts')) $unknownSelectCnt--;
-
-        // 4.5 There should be a radio button for dr/cr, but let's skip that for now.
-        // But it does use one hidden input and one input for each of the two choices.
-        // So that's 3 of the inputs we're looking for.
-        $unknownInputCnt-=3;
-
-        // 4.6 Ensure that there's an input field for amount, of type text, and that it is empty
-        if($this->inputCheckerA($form,'input#DistributionAmount')) $unknownInputCnt--;
-
-        // 4.7 Ensure that there's a select field for currency_id, that it has no selection,
-        //    and that it has the correct quantity of available choices.
-        if($this->selectCheckerA($form, 'DistributionCurrencyId', 'currencies')) $unknownSelectCnt--;
-
-        // 5. Have all the input, select, and Atags been distributioned for?
-        $this->expectedInputsSelectsAtagsFound($unknownInputCnt, $unknownSelectCnt, $html, 'div#DistributionsAdd');
     }
 
     public function testPOST_add() {
@@ -192,75 +165,87 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
 
     public function testGET_edit() {
 
-        /* @var \simple_html_dom_node $form */
-        /* @var \simple_html_dom_node $html */
-        /* @var \simple_html_dom_node $legend */
-
         // 1. Obtain the relevant records and verify their referential integrity.
         $book_id=FixtureConstants::bookTypical;
         $book=$this->Books->get($book_id);
         $transaction_id=FixtureConstants::transactionTypical;
         $transaction=$this->Transactions->get($transaction_id);
         $distribution_id=FixtureConstants::distributionTypical;
-        $distribution=$this->Distributions->get($distribution_id);
+        $distribution=$this->Distributions->get($distribution_id,['contain'=>['Accounts','Currencies']]);
         $this->assertEquals($distribution['transaction_id'],$transaction['id']);
         $this->assertEquals($transaction['book_id'],$book['id']);
 
         // 2. GET the url and parse the response.
-        $this->get('/books/'.$book_id.'/transactions/'.$transaction_id.'/distributions/edit/' . $distribution_id);
+        $this->get("/books/$book_id/transactions/$transaction_id/distributions/edit/$distribution_id");
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
-        $html = str_get_html($this->_response->body());
+        $dom = new \DomDocument();
+        $dom->loadHTML($this->_response->body());
+        $xpath=new \DomXPath($dom);
 
-        // 3. Ensure that the correct form exists
-        $form = $html->find('form#DistributionEditForm',0);
-        $this->assertNotNull($form);
+        // 3. Isolate the content produced by this controller method (excluding the layout.)
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='DistributionsEdit']");
 
-        // 4. Now inspect the legend of the form.
-        //$legend = $form->find('legend',0);
-        //$this->assertContains($transaction['title'],$legend->innertext());
+        // 4. Count the A tags.
+        $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
+        $this->assertEquals($unknownATagCnt,0);
 
-        // 5. Now inspect the fields on the form.  We want to know that:
+        // 5. Ensure that the expected form exists
+        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='DistributionEditForm']",$content_node);
+
+        // 6. Now inspect the legend of the form.
+        $this->assertContains("$transaction_id",$this->getTheOnlyOne($xpath,"//legend",$form_node)->textContent);
+
+        // 7. Now inspect the fields on the form.  We want to know that:
         // A. The correct fields are there and no other fields.
         // B. The fields have correct values. This includes verifying that select
         //    lists contain options.
         //
         //  The actual order that the fields are listed on the form is hereby deemed unimportant.
 
-        // 5.1 These are counts of the select and input fields on the form.  They
-        // are presently undistributioned for.
-        $unknownSelectCnt = count($form->find('select'));
-        $unknownInputCnt = count($form->find('input'));
+        // 7.1 These are counts of the select and input fields on the form.  They
+        // are presently unaccounted for.
+        $unknownSelectCnt=$xpath->query("//select",$form_node)->length;
+        $unknownInputCnt=$xpath->query("//input",$form_node)->length;
 
-        // 5.2 Look for the hidden POST input
-        if($this->lookForHiddenInput($form,'_method','PUT')) $unknownInputCnt--;
+        // 7.2 Look for the hidden POST input.
+        $this->assertEquals($xpath->query("//input[@type='hidden' and @name='_method' and @value='PUT']",$form_node)->length,1);
+        $unknownInputCnt--;
 
-        // Don't worry about the transaction_id because we cannot change it here.
+        // There is none!
+        // Look for the hidden transaction_id input, and validate its contents.
 
-        // 5.3 Ensure that there's a select field for account_id and that it is correctly set
-        // $account_id / $account_id['title'], from fixture
-        $account_id=$distribution['account_id'];
-        $account = $this->accountsFixture->get($account_id);
-        if($this->inputCheckerB($form,'select#DistributionAccountId option[selected]',$account_id,$account['title']))
-            $unknownSelectCnt--;
+        // 7.4 drcr
 
-        // 5.4 There should be a radio button for dr/cr, but let's skip that for now.
-        // But it does use one hidden input and one input for each of the two choices.
-        // So that's 3 of the inputs we're looking for.
-        $unknownInputCnt-=3;
+        // 7.4.1 Look for the hidden drcr input, and validate its contents.
+        $this->assertEquals($xpath->query("//input[@type='hidden' and @name='drcr' and @value='']",$form_node)->length,1);
+        $unknownInputCnt--;
 
-        // 5.5 Ensure that there's an input field for amount, of type text, and that it is empty
-        if($this->inputCheckerA($form,'input#DistributionAmount', $distribution['amount'])) $unknownInputCnt--;
+        // 7.4.2 drcr-1 (default choice)
+        $this->assertEquals($xpath->query("//input[@id='drcr-1' and @type='radio' and @checked='checked' and @name='drcr' and @value='1']",$form_node)->length,1);
+        $unknownInputCnt--;
 
-        // 5.6 Ensure that there's a select field for currency_id and that it is correctly set
-        // $currency_id / $currency_id['title'], from fixture
-        $currency_id=$distribution['currency_id'];
-        $currency = $this->currenciesFixture->get($currency_id);
-        if($this->inputCheckerB($form,'select#DistributionCurrencyId option[selected]',$currency_id,$currency['title']))
-            $unknownSelectCnt--;
+        // 7.4.3 drcr--1
+        $this->assertEquals($xpath->query("//input[@id='drcr--1' and @type='radio' and not(@checked) and @name='drcr' and @value='-1']",$form_node)->length,1);
+        $unknownInputCnt--;
 
-        // 6. Have all the input, select, and Atags been distributioned for?
-        $this->expectedInputsSelectsAtagsFound($unknownInputCnt, $unknownSelectCnt, $html, 'div#DistributionsEdit');
+        // 7.5 Ensure that there's a select field for account_id, that it has the correct quantity of available choices,
+        // and that it has the correct selection.
+        $this->selectCheckerA($xpath,'DistributionAccountId','accounts',['value'=>$distribution->account_id,'text'=>$distribution->account->title],$form_node);
+        $unknownSelectCnt--;
+
+        // 7.6 Ensure that there's an input field for amount, of type text, that is correctly set.
+        $this->assertTrue($xpath->query("//input[@id='DistributionAmount' and @type='text' and @value='$distribution->amount']",$form_node)->length==1);
+        $unknownInputCnt--;
+
+        // 7.7 Ensure that there's a select field for currency_id, that it has the correct quantity of available choices,
+        // and that it has no selection.
+        $this->selectCheckerA($xpath,'DistributionCurrencyId','currencies',['value'=>$distribution->currency_id,'text'=>$distribution->currency->title],$form_node);
+        $unknownSelectCnt--;
+
+        // 8. Have all the input and selects been accounted for?
+        $this->assertEquals(0, $unknownInputCnt);
+        $this->assertEquals(0, $unknownSelectCnt);
     }
 
     public function testPOST_edit() {

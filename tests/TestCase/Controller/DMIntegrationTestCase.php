@@ -65,7 +65,7 @@ class DMIntegrationTestCase extends IntegrationTestCase {
         // 2. Make sure it has the correct number of choices, including an
         // extra for the none-selected choice.
         $record_cnt = $this->viewVariable($vv_name)->count();
-        $this->assertEquals($xpath->query("//option",$select_node)->length,$record_cnt+1);
+        $this->assertEquals($xpath->query(".//option",$select_node)->length,$record_cnt+1);
 
         // 3. Verify the correct choice.
         if(is_null($expected_choice)) {
