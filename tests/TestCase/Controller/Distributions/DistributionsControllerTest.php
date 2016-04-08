@@ -12,7 +12,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
     public $fixtures = [
         'app.accounts',
         'app.books',
-        //'app.categories',
+        'app.categories',
         'app.currencies',
         'app.distributions',
         'app.transactions'
@@ -150,6 +150,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
 
         // 2. Now validate that record.
         $this->assertEquals($fromDbRecord['transaction_id'],$fixtureRecord['transaction_id']);
+        $this->assertEquals($fromDbRecord['drcr'],$fixtureRecord['drcr']);
         $this->assertEquals($fromDbRecord['account_id'],$fixtureRecord['account_id']);
         $this->assertEquals($fromDbRecord['amount'],$fixtureRecord['amount']);
         $this->assertEquals($fromDbRecord['currency_id'],$fixtureRecord['currency_id']);
@@ -255,11 +256,9 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $distribution_id=FixtureConstants::distributionTypical;
         $distributionNew=$this->distributionsFixture->newDistributionRecord;
         $transaction_id=FixtureConstants::transactionTypical;
-        //$transaction=$this->Transactions->get($transaction_id);
-        //$this->assertEquals($distributionNew['transaction_id'],$transaction['id']);
 
         // 2. POST a suitable record to the url, observe the redirect, and parse the response.
-        $urlBase='/books/'.$book_id.'/transactions/'.$transaction_id.'/distributions';
+        $urlBase="/books/$book_id/transactions/$transaction_id/distributions";
         $this->put($urlBase.'/'.$distribution_id, $distributionNew);
         $this->assertResponseCode(302);
         $this->assertRedirect( $urlBase );
@@ -267,6 +266,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         // 3. Now retrieve that 1 record and validate it.
         $fromDbRecord=$this->Distributions->get($distribution_id);
         $this->assertEquals($fromDbRecord['transaction_id'],$distributionNew['transaction_id']);
+        $this->assertEquals($fromDbRecord['drcr'],$distributionNew['drcr']);
         $this->assertEquals($fromDbRecord['account_id'],$distributionNew['account_id']);
         $this->assertEquals($fromDbRecord['amount'],$distributionNew['amount']);
         $this->assertEquals($fromDbRecord['currency_id'],$distributionNew['currency_id']);
@@ -275,201 +275,164 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
     // GET /books/:book_id/transactions/:transaction_id/distributions
     public function testGET_index() {
 
-        /* @var \simple_html_dom_node $content */
-        /* @var \simple_html_dom_node $header */
-        /* @var \simple_html_dom_node $htmlRow */
-        /* @var \simple_html_dom_node $table */
-        /* @var \simple_html_dom_node $tbody */
-        /* @var \simple_html_dom_node $td */
-        /* @var \simple_html_dom_node $thead */
-
         // 1. Submit submit request, examine response, observe no redirect, and parse the response.
         $transaction_id=FixtureConstants::transactionTypical;
         $this->get('/books/'.FixtureConstants::bookTypical.'/transactions/'.$transaction_id.'/distributions');
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
-        $html=str_get_html($this->_response->body());
+        $dom = new \DomDocument();
+        $dom->loadHTML($this->_response->body());
+        $xpath=new \DomXPath($dom);
 
-        // 2. Now inspect the header of the form.
-        //$header=$html->find('header',0);
-        //$transaction=$this->Transactions->get($transaction_id);
-        //$this->assertContains($transaction['title'],$header->innertext());
+        // 2. Isolate the content produced by this controller method (excluding the layout.)
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='DistributionsIndex']");
 
-        // 3. Get a the count of all <A> tags that are presently unaccounted for.
-        $content = $html->find('div#DistributionsIndex',0);
-        $this->assertNotNull($content);
-        $unknownATag = count($content->find('a'));
+        // 3. Count the A tags.
+        $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
 
         // 4. Look for the create new distribution link
-        $this->assertEquals(1, count($html->find('a#DistributionAdd')));
-        $unknownATag--;
+        $this->getTheOnlyOne($xpath,"//a[@id='DistributionAdd']",$content_node);
+        $unknownATagCnt--;
 
         // 5. Ensure that there is a suitably named table to display the results.
-        $table = $html->find('table#DistributionsTable',0);
-        $this->assertNotNull($table);
+        $table_node=$this->getTheOnlyOne($xpath,"//table[@id='DistributionsTable']",$content_node);
 
         // 6. Ensure that said table's thead element contains the correct
         //    headings, in the correct order, and nothing else.
-        $thead = $table->find('thead',0);
-        $thead_ths = $thead->find('tr th');
-        $this->assertEquals($thead_ths[0]->id, 'drcr');
-        $this->assertEquals($thead_ths[1]->id, 'category');
-        $this->assertEquals($thead_ths[2]->id, 'account');
-        $this->assertEquals($thead_ths[3]->id, 'amount');
-        $this->assertEquals($thead_ths[4]->id, 'currency');
-        $this->assertEquals($thead_ths[5]->id, 'actions');
-        $column_count = count($thead_ths);
-        $this->assertEquals($column_count,6); // no other columns
+        $column_header_nodes=$xpath->query("thead/tr/th",$table_node);
+        $this->assertEquals($column_header_nodes->length,6); // no other columns
+
+        $this->getTheOnlyOne($xpath,"thead/tr/th[1][@id='drcr']",$table_node);
+        $this->getTheOnlyOne($xpath,"thead/tr/th[2][@id='category']",$table_node);
+        $this->getTheOnlyOne($xpath,"thead/tr/th[3][@id='account']",$table_node);
+        $this->getTheOnlyOne($xpath,"thead/tr/th[4][@id='amount']",$table_node);
+        $this->getTheOnlyOne($xpath,"thead/tr/th[5][@id='currency']",$table_node);
+        $this->getTheOnlyOne($xpath,"thead/tr/th[6][@id='actions']",$table_node);
 
         // 7. Ensure that the tbody section has the correct quantity of rows.
         $dbRecords=$this->Distributions->find()
             ->contain(['Accounts.Categories','Currencies'])
-            ->where(['transaction_id'=>$transaction_id]);
-            //->order(['datetime']);
-        $tbody = $table->find('tbody',0);
-        $tbody_rows = $tbody->find('tr');
-        $this->assertEquals(count($tbody_rows), $dbRecords->count());
+            ->where(['transaction_id'=>$transaction_id])
+            ->order(['drcr'=>'desc']);
+        $tbody_nodes=$xpath->query("tbody/tr",$table_node);
+        $this->assertTrue($tbody_nodes->length==$dbRecords->count());
 
         // 8. Ensure that the values displayed in each row, match the values from
         //    the fixture.  The values should be presented in a particular order
         //    with nothing else thereafter.
         $iterator = new \MultipleIterator();
         $iterator->attachIterator(new \ArrayIterator($dbRecords->execute()->fetchAll('assoc')));
-        $iterator->attachIterator(new \ArrayIterator($tbody_rows));
+        $iterator->attachIterator(new \ArrayIterator(iterator_to_array($tbody_nodes)));
 
         foreach ($iterator as $values) {
             $fixtureRecord = $values[0];
-            $htmlRow = $values[1];
-            $htmlColumns = $htmlRow->find('td');
+            $row_node = $values[1];
+            $column_nodes=$xpath->query("td",$row_node);
 
-            // 9.0 dr/cr
-            $this->assertEquals($fixtureRecord['Distributions__drcr']==1?'DR':'CR',  $htmlColumns[0]->plaintext);
+            $this->assertEquals($fixtureRecord['Distributions__drcr']==1?'DR':'CR',  $column_nodes->item(0)->textContent);
+            $this->assertEquals($fixtureRecord['Categories__title'], $column_nodes->item(1)->textContent);
+            $this->assertEquals($fixtureRecord['Accounts__title'], $column_nodes->item(2)->textContent);
+            $this->assertEquals($fixtureRecord['Distributions__amount'], $column_nodes->item(3)->textContent);
+            $this->assertEquals($fixtureRecord['Currencies__title'], $column_nodes->item(4)->textContent);
 
-            // 9.1 category
-            $this->assertEquals($fixtureRecord['Categories__title'],  $htmlColumns[1]->plaintext);
+            // 9.1 Now examine the action links
+            $action_nodes=$xpath->query("a",$column_nodes->item(5));
+            $this->assertTrue($action_nodes->length==2);
 
-            // 9.2 account
-            $this->assertEquals($fixtureRecord['Accounts__title'],  $htmlColumns[2]->plaintext);
+            $this->getTheOnlyOne($xpath,"a[@name='DistributionView']",$column_nodes->item(5));
+            //$this->getTheOnlyOne($xpath,"a[@name='DistributionView']",$action_nodes->item(0)); // why doesn't this work?
+            $unknownATagCnt--;
 
-            // 9.3 amount
-            $this->assertEquals($fixtureRecord['Distributions__amount'],  $htmlColumns[3]->plaintext);
-
-            // 9.4 symbol
-            $this->assertEquals($fixtureRecord['Currencies__symbol'],  $htmlColumns[4]->plaintext);
-
-            // 9.5 Now examine the action links
-            $td = $htmlColumns[5];
-            $actionLinks = $td->find('a');
-            $this->assertEquals('DistributionView', $actionLinks[0]->name);
-            $unknownATag--;
-            $this->assertEquals('DistributionEdit', $actionLinks[1]->name);
-            $unknownATag--;
-            //$this->assertEquals('DistributionDelete', $actionLinks[2]->name);
-            //$unknownATag--;
+            $this->getTheOnlyOne($xpath,"a[@name='DistributionEdit']",$column_nodes->item(5));
+            $unknownATagCnt--;
 
             // 9.9 No other columns
-            $this->assertEquals(count($htmlColumns),$column_count);
+            $this->assertEquals($column_nodes->length,$column_header_nodes->length);
         }
 
-        // 10. Ensure that all the <A> tags have been distributioned for
-        $this->assertEquals(0, $unknownATag);
+        // 10. Ensure that all the <A> tags have been accounted for
+        $this->assertEquals(0, $unknownATagCnt);
     }
 
+    // Even though this is a list of distributions, it's significantly different
+    // from index.  Therefore just use a 2nd method.
     // GET /books/:book_id/accounts/:account_id/distributions
     public function testGET_indexa() {
 
-        /* @var \simple_html_dom_node $content */
-        /* @var \simple_html_dom_node $header */
-        /* @var \simple_html_dom_node $htmlRow */
-        /* @var \simple_html_dom_node $table */
-        /* @var \simple_html_dom_node $tbody */
-        /* @var \simple_html_dom_node $td */
-        /* @var \simple_html_dom_node $thead */
-
-        // 1. Submit request, examine response, observe no redirect, and parse the response.
+        // 1. Submit submit request, examine response, observe no redirect, and parse the response.
         $account_id=FixtureConstants::accountTypical;
         $this->get('/books/'.FixtureConstants::bookTypical.'/accounts/'.$account_id.'/distributions');
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
-        $html=str_get_html($this->_response->body());
+        $dom = new \DomDocument();
+        $dom->loadHTML($this->_response->body());
+        $xpath=new \DomXPath($dom);
 
-        // 2. Now inspect the header of the form.
-        //$header=$html->find('header',0);
-        //$account=$this->Accounts->get($account_id);
-        //$this->assertContains($account['title'],$header->innertext());
+        // 2. Isolate the content produced by this controller method (excluding the layout.)
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='DistributionsIndex']");
 
-        // 3. Get a the count of all <A> tags that are presently unaccounted for.
-        $content = $html->find('div#DistributionsIndex',0);
-        $this->assertNotNull($content);
-        $unknownATag = count($content->find('a'));
+        // 3. Count the A tags.
+        $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
 
         // 4. Look for the create new distribution link
-        //$this->assertEquals(1, count($html->find('a#DistributionAdd')));
-        //$unknownATag--;
+        //$this->getTheOnlyOne($xpath,"//a[@id='DistributionAdd']",$content_node);
+        //$unknownATagCnt--;
 
         // 5. Ensure that there is a suitably named table to display the results.
-        $table = $html->find('table#DistributionsTable',0);
-        $this->assertNotNull($table);
+        $table_node=$this->getTheOnlyOne($xpath,"//table[@id='DistributionsTable']",$content_node);
 
         // 6. Ensure that said table's thead element contains the correct
         //    headings, in the correct order, and nothing else.
-        $thead = $table->find('thead',0);
-        $thead_ths = $thead->find('tr th');
-        $this->assertEquals($thead_ths[0]->id, 'drcr');
-        $this->assertEquals($thead_ths[1]->id, 'amount');
-        $this->assertEquals($thead_ths[2]->id, 'currency');
-        $this->assertEquals($thead_ths[3]->id, 'run_total');
-        $column_count = count($thead_ths);
-        $this->assertEquals($column_count,4); // no other columns
+        $column_header_nodes=$xpath->query("thead/tr/th",$table_node);
+        $this->assertEquals($column_header_nodes->length,6); // no other columns
+
+        $this->getTheOnlyOne($xpath,"thead/tr/th[1][@id='tran_datetime']",$table_node);
+        $this->getTheOnlyOne($xpath,"thead/tr/th[2][@id='note']",$table_node);
+        $this->getTheOnlyOne($xpath,"thead/tr/th[3][@id='drcr']",$table_node);
+        $this->getTheOnlyOne($xpath,"thead/tr/th[4][@id='amount']",$table_node);
+        $this->getTheOnlyOne($xpath,"thead/tr/th[5][@id='currency']",$table_node);
+        $this->getTheOnlyOne($xpath,"thead/tr/th[6][@id='run_total']",$table_node);
 
         // 7. Ensure that the tbody section has the correct quantity of rows.
         $dbRecords=$this->Distributions->find()
-            ->contain(['Accounts.Categories','Currencies'])
-            ->where(['account_id'=>$account_id]);
-        //->order(['datetime']);
-        $tbody = $table->find('tbody',0);
-        $tbody_rows = $tbody->find('tr');
-        $this->assertEquals(count($tbody_rows), $dbRecords->count());
+            ->contain(['Accounts.Categories','Currencies','Transactions'])
+            ->where(['account_id'=>$account_id])
+            ->order('Transactions.tran_datetime');
+        $tbody_nodes=$xpath->query("tbody/tr",$table_node);
+        $this->assertTrue($tbody_nodes->length==$dbRecords->count());
 
         // 8. Ensure that the values displayed in each row, match the values from
         //    the fixture.  The values should be presented in a particular order
         //    with nothing else thereafter.
         $iterator = new \MultipleIterator();
         $iterator->attachIterator(new \ArrayIterator($dbRecords->execute()->fetchAll('assoc')));
-        $iterator->attachIterator(new \ArrayIterator($tbody_rows));
+        $iterator->attachIterator(new \ArrayIterator(iterator_to_array($tbody_nodes)));
 
         foreach ($iterator as $values) {
             $fixtureRecord = $values[0];
-            $htmlRow = $values[1];
-            $htmlColumns = $htmlRow->find('td');
+            $row_node = $values[1];
+            $column_nodes=$xpath->query("td",$row_node);
 
-            // 9.0 dr/cr
-            $this->assertEquals($fixtureRecord['Distributions__drcr']==1?'DR':'CR',  $htmlColumns[0]->plaintext);
+            $this->assertEquals($fixtureRecord['Transactions__tran_datetime'],  $column_nodes->item(0)->textContent);
+            $this->assertEquals($fixtureRecord['Transactions__note'],  $column_nodes->item(1)->textContent);
+            $this->assertEquals($fixtureRecord['Distributions__drcr']==1?'DR':'CR',  $column_nodes->item(2)->textContent);
+            $this->assertEquals($fixtureRecord['Distributions__amount'],  $column_nodes->item(3)->textContent);
+            $this->assertEquals($fixtureRecord['Currencies__symbol'], $column_nodes->item(4)->textContent);
 
-            // 9.1 amount
-            $this->assertEquals($fixtureRecord['Distributions__amount'],  $htmlColumns[1]->plaintext);
-
-            // 9.2 currency
-            $this->assertEquals($fixtureRecord['Currencies__symbol'],  $htmlColumns[2]->plaintext);
-
-            // 9.3 run_total check this later
+            // 9.5 run_total check this later
             //$this->assertEquals($fixtureRecord['Distributions__amount'],  $htmlColumns[3]->plaintext);
 
             // No action links
 
             // 9.9 No other columns
-            $this->assertEquals(count($htmlColumns),$column_count);
+            $this->assertEquals($column_nodes->length,$column_header_nodes->length);
         }
 
-        // 10. Ensure that all the <A> tags have been distributioned for
-        $this->assertEquals(0, $unknownATag);
+        // 10. Ensure that all the <A> tags have been accounted for
+        $this->assertEquals(0, $unknownATagCnt);
     }
 
     public function testGET_view() {
-
-        /* @var \simple_html_dom_node $content */
-        /* @var \simple_html_dom_node $field */
-        /* @var \simple_html_dom_node $table */
 
         // 1. Obtain the relevant records and verify their referential integrity.
         $book_id=FixtureConstants::bookTypical;
@@ -480,56 +443,62 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $this->assertEquals($distribution['transaction_id'],$transaction['id']);
 
         // 2. Submit request, examine response, observe no redirect, and parse the response.
-        $this->get('/books/'.$book_id.'/transactions/'.$transaction_id.'/distributions/'.$distribution_id);
+        $this->get("/books/$book_id/transactions/$transaction_id/distributions/$distribution_id");
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
-        $html=str_get_html($this->_response->body());
+        $dom = new \DomDocument();
+        $dom->loadHTML($this->_response->body());
+        $xpath=new \DomXPath($dom);
 
-        // 3.  Look for the table that contains the view fields.
-        $table = $html->find('table#DistributionViewTable',0);
-        $this->assertNotNull($table);
+        // 3. Isolate the content produced by this controller method (excluding the layout.)
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='DistributionsView']");
 
-        // 4. Now inspect the fields on the form.  We want to know that:
+        // 4. Count the A tags.
+        $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
+
+        // 4.1 Look for the account distributions link
+        //$this->getTheOnlyOne($xpath,"//a[@id='AccountDistributions']",$content_node);
+        //$unknownATagCnt--;
+
+        // 4.2 Ensure that all the <A> tags have been accounted for
+        $this->assertEquals(0, $unknownATagCnt);
+
+        // 5. Ensure that there is a suitably named table to display the results.
+        $table_node=$this->getTheOnlyOne($xpath,"//table[@id='DistributionViewTable']",$content_node);
+
+        // 6. Now inspect the fields in the table.  We want to know that:
         // A. The correct fields are there and no other fields.
         // B. The fields have correct values.
         //
-        //  The actual order that the fields are listed is hereby deemed unimportant.
 
-        // This is the count of the table rows that are presently undistributioned for.
-        $unknownRowCnt = count($table->find('tr'));
+        // This is the count of the table rows that are presently unaccounted for.
+        $unknownRowCnt=$xpath->query("//tr",$table_node)->length;
 
-        // 4.1 drcr
-        $field = $table->find('tr#drcr td',0);
-        $this->assertEquals($distribution['drcr']==1?'DR':'CR', $field->plaintext);
+        // 6.1 drcr
+        $expected=$distribution['drcr']==1?'DR':'CR';
+        $this->getTheOnlyOne($xpath,"//tr[1][@id='drcr']/td[text()='$expected']",$table_node);
         $unknownRowCnt--;
 
-        // 4.2 category_title
-        $field = $table->find('tr#category_title td',0);
-        $this->assertEquals($distribution->account->category['title'], $field->plaintext);
+        // 6.2 category_title
+        $expected=$distribution->account->category->title;
+        $this->getTheOnlyOne($xpath,"//tr[2][@id='category_title']/td[text()='$expected']",$table_node);
         $unknownRowCnt--;
 
-        // 4.3 account_title
-        $field = $table->find('tr#account_title td',0);
-        $this->assertEquals($distribution->account['title'], $field->plaintext);
+        // 6.3 account title
+        $expected=$distribution->account->title;
+        $this->getTheOnlyOne($xpath,"//tr[3][@id='account_title']/td[text()='$expected']",$table_node);
         $unknownRowCnt--;
 
-        // 4.4 amount
-        $field = $table->find('tr#amount td',0);
-        $this->assertEquals($distribution['amount'], $field->plaintext);
+        // 6.4 amount
+        $this->getTheOnlyOne($xpath,"//tr[4][@id='amount']/td[text()='$distribution->amount']",$table_node);
         $unknownRowCnt--;
 
-        // 4.5 currency_symbol
-        $field = $table->find('tr#currency_symbol td',0);
-        $this->assertEquals($distribution->currency['symbol'], $field->plaintext);
+        // 6.5 currency symbol
+        $expected=$distribution->currency->symbol;
+        $this->getTheOnlyOne($xpath,"//tr[5][@id='currency_symbol']/td[text()='$expected']",$table_node);
         $unknownRowCnt--;
 
-        // 4.9 Have all the rows been distributioned for?  Are there any extras?
+        // 6.9 Have all the rows been accounted for?  Are there any extras?
         $this->assertEquals(0, $unknownRowCnt);
-
-        // 5. Examine the <A> tags on this page.  There should be zero links.
-        $content = $html->find('div#DistributionsView',0);
-        $this->assertNotNull($content);
-        $links = $content->find('a');
-        $this->assertEquals(0,count($links));
     }
 }

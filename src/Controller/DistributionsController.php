@@ -102,6 +102,7 @@ class DistributionsController extends AppController {
             $this->set(
                 'distributions', $this->Distributions->find()
                 ->contain(['Accounts.Categories','Currencies'])
+                ->order(['drcr'=>'desc'])
                 ->where(['transaction_id'=>$transaction_id])
             );
             $this->set(compact('book_id','transaction_id'));

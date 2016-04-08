@@ -7,6 +7,7 @@ class DistributionsFixture extends DMFixture {
     // This record will be added during a test.  We don't need or want to control the id here, so omit it.
     public $newDistributionRecord = [
         'transaction_id' => FixtureConstants::transactionTypical,
+        'drcr'=>1,
         'account_id' => FixtureConstants::accountTypical,
         'amount' => 500,
         'currency_id' => FixtureConstants::currencyTypical,
