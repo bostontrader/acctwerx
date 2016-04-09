@@ -69,13 +69,29 @@ class BooksController extends AppController {
         //return $this->redirect(['action' => 'index']);
     //}
 
+    // display a graph of bank balances and short-term notes
+    // feed this a comma delimited list of account numbers for each
+    // category, pending a more robust solution
     public function bank($id = null){
-        //$this->layout='jpgraph_layout';
-        $this->viewBuilder()
-            ->layout('jpgraph_layout')
-            ->helpers(['FinStat']);
-        $this->RequestHandler->respondAs("image/png");
-        $this->render('graph_bank');
+
+        // Guess #1.
+        $this->response->type('image/png');
+        $this->response->body("catfood");
+        return $this->response;
+
+        //$bal=$this->request->query['bal'];
+        //$nal=$this->request->query['nal'];
+        //$this->viewBuilder()
+            //->layout('jpgraph_layout');
+            //->helpers(['FinStat']);
+        //$this->RequestHandler->respondAs("image/png");
+        //$this->set(compact('bal','nal'));
+        //$this->response->type('application/pdf');
+        //$this->response->type(['p'=>'image/png']);
+        $this->response->type('image/png');
+        $this->response->body("catfood");
+        //$this->render('graph_bank');
+        return $this->response;
     }
 
     public function edit($id = null) {
