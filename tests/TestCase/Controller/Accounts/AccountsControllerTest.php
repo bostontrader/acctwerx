@@ -86,20 +86,13 @@ class AccountsControllerTest extends DMIntegrationTestCase {
 
         // 6.4.2 Ensure that there's a multiple select field for category_id, that it has the correct quantity of available choices,
         // and that it has no selection.
-
-
-
-
-
-        //$this->selectCheckerA($xpath,'AccountCategoryId','categories',null,$form_node);
-        //$n=selectCheckerB($xpath,"//select[@id='AccountsCategories' and @multiple='multiple']", $choice_cnt,$expected_choice=null,$context_node=null) {
-        //id="AccountsCategories" multiple="multiple" name="categories[_ids][]"
-
+        $choice_cnt=$this->Categories->find()->count();
+        $this->assertTrue($this->selectCheckerB($xpath,"//select[@id='AccountsCategories' and @multiple='multiple' and @name='categories[_ids][]']", $choice_cnt,null,$form_node));
         $unknownSelectCnt--;
 
         // 6.5 Ensure that there's an input field for sort, of type text, and that it is empty
-        $this->assertTrue($xpath->query("//input[@id='AccountSort' and @type='text' and not(@value)]",$form_node)->length==1);
-        $unknownInputCnt--;
+        //$this->assertTrue($xpath->query("//input[@id='AccountSort' and @type='text' and not(@value)]",$form_node)->length==1);
+        //$unknownInputCnt--;
 
         // 6.6 Ensure that there's an input field for title, of type text, and that it is empty
         $this->assertTrue($xpath->query("//input[@id='AccountTitle' and @type='text' and not(@value)]",$form_node)->length==1);
@@ -183,14 +176,23 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         $this->assertEquals($xpath->query("//input[@type='hidden' and @name='_method' and @value='PUT']",$form_node)->length,1);
         $unknownInputCnt--;
 
-        // 7.3 Ensure that there's a select field for category_id, that it has the correct quantity of available choices,
-        // and that it has the correct selection.
-        $this->selectCheckerA($xpath,'AccountCategoryId','categories',['value'=>$account->category_id,'text'=>$account->category->title],$form_node);
+        // 7.3 No hidden book_id input
+
+        // 7.4 Validate the multi-select categories control.
+        // 7.4.1 Look for the hidden input for this control validate its contents.
+        $this->assertEquals($xpath->query("//input[@type='hidden' and @value='' and @name='categories[_ids]']",$form_node)->length,1);
+        $unknownInputCnt--;
+
+        // 7.4.2 Ensure that there's a multiple select field for category_id, that it has the correct quantity of available choices,
+        // and that it has the correct selections.
+        $choice_cnt=$this->Categories->find()->count();
+        $expected_choice=[['value'=>'1','text'=>'Assets'],['value'=>'6','text'=>'Bank']];
+        $this->assertTrue($this->selectCheckerB($xpath,"//select[@id='AccountsCategories' and @multiple='multiple' and @name='categories[_ids][]']", $choice_cnt,$expected_choice,$form_node));
         $unknownSelectCnt--;
 
         // 7.4 Ensure that there's an input field for sort, of type text, that is correctly set.
-        $this->assertTrue($xpath->query("//input[@id='AccountSort' and @type='text' and @value='$account->sort']",$form_node)->length==1);
-        $unknownInputCnt--;
+        //$this->assertTrue($xpath->query("//input[@id='AccountSort' and @type='text' and @value='$account->sort']",$form_node)->length==1);
+        //$unknownInputCnt--;
 
         // 7.5 Ensure that there's an input field for title, of type text, that is correctly set.
         $this->assertTrue($xpath->query("//input[@id='AccountTitle' and @type='text' and @value='$account->title']",$form_node)->length==1);
@@ -219,8 +221,8 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         // 3. Now retrieve that 1 record and validate it.
         $fromDbRecord=$this->Accounts->get($account_id);
         $this->assertEquals($fromDbRecord['book_id'],$accountNew['book_id']);
-        $this->assertEquals($fromDbRecord['category_id'],$accountNew['category_id']);
-        $this->assertEquals($fromDbRecord['sort'],$accountNew['sort']);
+        //$this->assertEquals($fromDbRecord['category_id'],$accountNew['category_id']);
+        //$this->assertEquals($fromDbRecord['sort'],$accountNew['sort']);
         $this->assertEquals($fromDbRecord['title'],$accountNew['title']);
     }
 
@@ -255,18 +257,18 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         // 7. Ensure that said table's thead element contains the correct
         //    headings, in the correct order, and nothing else.
         $column_header_nodes=$xpath->query("thead/tr/th",$table_node);
-        $this->assertEquals($column_header_nodes->length,4); // no other columns
+        $this->assertEquals($column_header_nodes->length,3); // no other columns
 
         $this->getTheOnlyOne($xpath,"thead/tr/th[1][@id='category']",$table_node);
-        $this->getTheOnlyOne($xpath,"thead/tr/th[2][@id='sort']",$table_node);
-        $this->getTheOnlyOne($xpath,"thead/tr/th[3][@id='title']",$table_node);
-        $this->getTheOnlyOne($xpath,"thead/tr/th[4][@id='actions']",$table_node);
+        //$this->getTheOnlyOne($xpath,"thead/tr/th[2][@id='sort']",$table_node);
+        $this->getTheOnlyOne($xpath,"thead/tr/th[2][@id='title']",$table_node);
+        $this->getTheOnlyOne($xpath,"thead/tr/th[3][@id='actions']",$table_node);
 
         // 8. Ensure that the tbody section has the correct quantity of rows.
         $dbRecords=$this->Accounts->find()
             ->contain(['Categories'])
             ->where(['book_id'=>$book_id])
-            ->order(['category_id','sort']);
+            ->order(['Accounts.title']);
         $tbody_nodes=$xpath->query("tbody/tr",$table_node);
         $this->assertTrue($tbody_nodes->length==$dbRecords->count());
 
@@ -282,18 +284,18 @@ class AccountsControllerTest extends DMIntegrationTestCase {
             $row_node = $values[1];
             $column_nodes=$xpath->query("td",$row_node);
 
-            $this->assertEquals($fixtureRecord['Categories__title'],  $column_nodes->item(0)->textContent);
-            $this->assertEquals($fixtureRecord['Accounts__sort'], $column_nodes->item(1)->textContent);
-            $this->assertEquals($fixtureRecord['Accounts__title'], $column_nodes->item(2)->textContent);
+            //$this->assertEquals($fixtureRecord['Categories__title'],  $column_nodes->item(0)->textContent);
+            //$this->assertEquals($fixtureRecord['Accounts__sort'], $column_nodes->item(1)->textContent);
+            $this->assertEquals($fixtureRecord['Accounts__title'], $column_nodes->item(1)->textContent);
 
             // 9.1 Now examine the action links
-            $action_nodes=$xpath->query("a",$column_nodes->item(3));
+            $action_nodes=$xpath->query("a",$column_nodes->item(2));
             $this->assertTrue($action_nodes->length==2);
 
-            $this->getTheOnlyOne($xpath,"a[@name='AccountView']",$column_nodes->item(3));
+            $this->getTheOnlyOne($xpath,"a[@name='AccountView']",$column_nodes->item(2));
             $unknownATagCnt--;
 
-            $this->getTheOnlyOne($xpath,"a[@name='AccountEdit']",$column_nodes->item(3));
+            $this->getTheOnlyOne($xpath,"a[@name='AccountEdit']",$column_nodes->item(2));
             $unknownATagCnt--;
 
             // 9.9 No other columns
@@ -311,10 +313,10 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         $account=$this->Accounts->get($account_id);
         $book_id=FixtureConstants::bookTypical;
         $book=$this->Books->get($book_id);
-        $category_id=FixtureConstants::categoryTypical;
-        $category=$this->Categories->get($category_id);
+        //$category_id=FixtureConstants::categoryTypical;
+        //$category=$this->Categories->get($category_id);
         $this->assertEquals($account['book_id'],$book['id']);
-        $this->assertEquals($account['category_id'],$category['id']);
+        //$this->assertEquals($account['category_id'],$category['id']);
 
         // 2. Submit request, examine response, observe no redirect, and parse the response.
         $this->get('/books/'.$book_id.'/accounts/'.$account_id);
@@ -353,15 +355,15 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         $unknownRowCnt--;
 
         // 6.2 category_title
-        $this->getTheOnlyOne($xpath,"//tr[2][@id='category_title']/td[text()='$category->title']",$table_node);
+        //$this->getTheOnlyOne($xpath,"//tr[2][@id='category_title']/td[text()='$category->title']",$table_node);
         $unknownRowCnt--;
 
         // 6.3 sort
-        $this->getTheOnlyOne($xpath,"//tr[3][@id='sort']/td[text()='$account->sort']",$table_node);
-        $unknownRowCnt--;
+        //$this->getTheOnlyOne($xpath,"//tr[3][@id='sort']/td[text()='$account->sort']",$table_node);
+        //$unknownRowCnt--;
 
         // 6.4 title
-        $this->getTheOnlyOne($xpath,"//tr[4][@id='title']/td[text()='$account->title']",$table_node);
+        $this->getTheOnlyOne($xpath,"//tr[3][@id='title']/td[text()='$account->title']",$table_node);
         $unknownRowCnt--;
 
         // 6.9 Have all the rows been accounted for?  Are there any extras?

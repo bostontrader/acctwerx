@@ -52,8 +52,9 @@ class AccountsController extends AppController {
         // Get the book and book_id.
         $book_id=$this->get_book_id($this->request->params);
         $book=$this->Accounts->Books->get($book_id);
+        //$user = $this->Users->find()->where(['id'=>$id])->contain('Roles')->first();
 
-        $account = $this->Accounts->get($id);
+        $account = $this->Accounts->get($id,['contain'=>'Categories']);
         if ($this->request->is(['put'])) {
             $account = $this->Accounts->patchEntity($account, $this->request->data);
             if ($this->Accounts->save($account)) {
@@ -79,7 +80,7 @@ class AccountsController extends AppController {
             'accounts', $this->Accounts->find()
                 ->contain(['Books','Categories'])
                 ->where(['book_id'=>$book_id])
-                ->order(['category_id','sort']));
+                ->order(['Accounts.title']));
         $this->set(compact('book'));
     }
 

@@ -18,7 +18,6 @@ $this->Breadcrumb->makeTrail('Accounts',$this->Html);
             <thead>
                 <tr>
                     <th id="category" ><?= __('Category') ?></th>
-                    <th id="sort" ><?= __('Sort') ?></th>
                     <th id="title" ><?= __('Title') ?></th>
                     <th id="actions" class="actions"><?= __('Actions') ?></th>
                 </tr>
@@ -26,8 +25,7 @@ $this->Breadcrumb->makeTrail('Accounts',$this->Html);
             <tbody>
                 <?php foreach ($accounts as $account): ?>
                 <tr>
-                    <td><?= $account->category->title ?></td>
-                    <td><?= $account->sort ?></td>
+                    <td><?= $account->catstring ?></td>
                     <td><?= $account->title ?></td>
                     <td class="actions">
                         <?= $this->Html->link(__('View'), ['book_id'=>$book['id'],'action'=>'view','id'=>$account->id,'_method'=>'GET'],['name'=>'AccountView']) ?>

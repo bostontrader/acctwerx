@@ -18,7 +18,7 @@
             <legend><?= __('Add Account for '.$book->title) ?></legend>
             <?php
                 echo $this->Form->input('book_id',['id'=>'AccountBookId','value'=>$book['id'],'type'=>'hidden']);
-            echo $this->Form->input('categories._ids', ['id'=>'AccountsCategories', 'options' => $categories, 'multiple'=>true, 'empty' => '(none selected)']);
+                echo $this->Form->input('categories._ids', ['id'=>'AccountsCategories', 'options' => $categories, 'multiple'=>true]);
                 echo $this->Form->input('title',['id'=>'AccountTitle']);
             ?>
         </fieldset>

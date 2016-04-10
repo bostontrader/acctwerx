@@ -93,12 +93,12 @@ class DMIntegrationTestCase extends IntegrationTestCase {
      *
      * @param \DomXPath $xpath
      * @param string $xpression An xpath expression to identify the select.
-     * @param array $expected_choice.  If null, then no selection.  Else set the value and text
-     * keys.
+     * @param array $expected_choice.  An array, elements of which describe a single expected selection
+     * by setting a value and text key.  If null, then expecting no selection.
      * @param \DOMNode $context_node
      * @return boolean true if the select is found and passes the tests, else some assertion failure.
      */
-    public function selectCheckerB($xpath,$xpression,$choice_cnt,$expected_choice=null,$context_node=null) {
+    public function selectCheckerB($xpath,$xpression,$choice_cnt,$expected_choices=null,$context_node=null) {
 
         // 1. Get the one and only one select control.
         $select_node=$this->getTheOnlyOne($xpath,$xpression,$context_node);
@@ -108,16 +108,18 @@ class DMIntegrationTestCase extends IntegrationTestCase {
         $this->assertEquals($xpath->query(".//option",$select_node)->length,$choice_cnt);
 
         // 3. Verify the correct choice.
-        if(is_null($expected_choice)) {
+        if(is_null($expected_choices)) {
             // Make sure that none of the choices are selected.
-            // Ignore the selected choice.
-            //$this->assertTrue($xpath->query("//option[selected]",$select_node)->length==0);
+            $this->assertTrue($xpath->query("//option[selected]",$select_node)->length==0);
         } else {
-            // This specific choice should be selected.
-            $value=$expected_choice['value']; $text=$expected_choice['text'];
-            $nodes=$xpath->query(
-                "//option[@selected='selected' and @value='$value' and text()='$text']",$select_node);
-            $this->assertTrue($nodes->length==1);
+            // These specific choices should be selected.
+            foreach($expected_choices as $expected_choice) {
+                $value = $expected_choice['value'];
+                $text = $expected_choice['text'];
+                $nodes = $xpath->query(
+                    "//option[@selected='selected' and @value='$value' and text()='$text']", $select_node);
+                $this->assertTrue($nodes->length == 1);
+            }
         }
         return true;
     }
