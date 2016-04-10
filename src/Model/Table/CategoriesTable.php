@@ -9,7 +9,16 @@ class CategoriesTable extends Table {
         parent::initialize($config);
 
         $this->displayField('title');
-        $this->hasMany('Accounts');
+        //$this->hasMany('Accounts');
+        $this->belongsToMany('Account',
+            [
+                'through' => 'AccountsCategories',
+                'alias' => 'Accounts',
+                'foreignKey' => 'category_id',
+                'joinTable' => 'accounts_categories',
+                'targetForeignKey' => 'account_id'
+            ]
+        );
     }
 
 }

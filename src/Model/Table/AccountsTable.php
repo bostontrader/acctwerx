@@ -9,10 +9,19 @@ class AccountsTable extends Table {
         parent::initialize($config);
 
         $this->displayField('title');
-
         $this->belongsTo('Books');
-        $this->belongsTo('Categories');
         $this->hasMany('Distributions');
+
+        //$this->belongsTo('Categories');
+        $this->belongsToMany('Categories',
+            [
+                'through' => 'AccountsCategories',
+                'alias' => 'Categories',
+                'foreignKey' => 'account_id',
+                'joinTable' => 'accounts_categories',
+                'targetForeignKey' => 'category_id'
+            ]
+        );
     }
 }
 

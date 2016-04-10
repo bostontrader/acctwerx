@@ -17,8 +17,7 @@
         <fieldset>
             <legend><?= __('Edit Account for '.$book->title) ?></legend>
             <?php
-                echo $this->Form->input('category_id', ['id'=>'AccountCategoryId', 'options' => $categories, 'empty' => '(none selected)']);
-                echo $this->Form->input('sort',['id'=>'AccountSort', 'type'=>'text']);
+                echo $this->Form->input('categories._ids', ['id'=>'AccountsCategories', 'options' => $categories, 'multiple'=>true]);
                 echo $this->Form->input('title',['id'=>'AccountTitle']);
             ?>
         </fieldset>

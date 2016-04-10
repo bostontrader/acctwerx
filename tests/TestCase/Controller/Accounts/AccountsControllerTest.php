@@ -9,6 +9,7 @@ class AccountsControllerTest extends DMIntegrationTestCase {
 
     public $fixtures = [
         'app.accounts',
+        'app.accounts_categories',
         'app.books',
         'app.categories'
     ];
@@ -78,9 +79,22 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         $this->assertEquals($xpath->query("//input[@type='hidden' and @id='AccountBookId' and @value='$book_id']",$form_node)->length,1);
         $unknownInputCnt--;
 
-        // 6.4 Ensure that there's a select field for category_id, that it has the correct quantity of available choices,
+        // 6.4 Validate the multi-select categories control.
+        // 6.4.1 Look for the hidden input for this control validate its contents.
+        $this->assertEquals($xpath->query("//input[@type='hidden' and @value='' and @name='categories[_ids]']",$form_node)->length,1);
+        $unknownInputCnt--;
+
+        // 6.4.2 Ensure that there's a multiple select field for category_id, that it has the correct quantity of available choices,
         // and that it has no selection.
-        $this->selectCheckerA($xpath,'AccountCategoryId','categories',null,$form_node);
+
+
+
+
+
+        //$this->selectCheckerA($xpath,'AccountCategoryId','categories',null,$form_node);
+        //$n=selectCheckerB($xpath,"//select[@id='AccountsCategories' and @multiple='multiple']", $choice_cnt,$expected_choice=null,$context_node=null) {
+        //id="AccountsCategories" multiple="multiple" name="categories[_ids][]"
+
         $unknownSelectCnt--;
 
         // 6.5 Ensure that there's an input field for sort, of type text, and that it is empty
@@ -110,8 +124,8 @@ class AccountsControllerTest extends DMIntegrationTestCase {
 
         // 2. Now validate that record.
         $this->assertEquals($fromDbRecord['book_id'],$fixtureRecord['book_id']);
-        $this->assertEquals($fromDbRecord['category_id'],$fixtureRecord['category_id']);
-        $this->assertEquals($fromDbRecord['sort'],$fixtureRecord['sort']);
+        //$this->assertEquals($fromDbRecord['category_id'],$fixtureRecord['category_id']);
+        //$this->assertEquals($fromDbRecord['sort'],$fixtureRecord['sort']);
         $this->assertEquals($fromDbRecord['title'],$fixtureRecord['title']);
     }
 

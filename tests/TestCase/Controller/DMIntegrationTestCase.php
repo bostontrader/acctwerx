@@ -46,8 +46,9 @@ class DMIntegrationTestCase extends IntegrationTestCase {
      * that it has the correct quantity of available choices, and that the
      * correct choice is selected and displayed.
      *
-     * This is very similar to selectCheckerB, but we'd need extra variables and
-     * conditionals to make everything work.  Simpler to just have two methods.
+     * This is very similar to the other selectCheckers, but we'd need extra variables and
+     * conditionals to make everything work and that just gets too complicated.  Simpler to just have
+     * several similar methods.
      *
      * @param \DomXPath $xpath
      * @param string $select_id
@@ -86,8 +87,9 @@ class DMIntegrationTestCase extends IntegrationTestCase {
      * that it has the correct quantity of available choices, and that the
      * correct choice is selected and displayed.
      *
-     * This is very similar to selectCheckerA, but we'd need extra variables and
-     * conditionals to make everything work.  Simpler to just have two methods.
+     * This is very similar to the other selectCheckers, but we'd need extra variables and
+     * conditionals to make everything work and that just gets too complicated.  Simpler to just have
+     * several similar methods.
      *
      * @param \DomXPath $xpath
      * @param string $xpression An xpath expression to identify the select.
@@ -99,12 +101,10 @@ class DMIntegrationTestCase extends IntegrationTestCase {
     public function selectCheckerB($xpath,$xpression,$choice_cnt,$expected_choice=null,$context_node=null) {
 
         // 1. Get the one and only one select control.
-        //$select_node=$this->getTheOnlyOne($xpath,"//select[@id='$select_id']",$context_node);
         $select_node=$this->getTheOnlyOne($xpath,$xpression,$context_node);
 
         // 2. Make sure it has the correct number of choices.  But do _not_ include
         // an extra for the none-selected choice.
-        //$record_cnt = $this->viewVariable($vv_name)->count();
         $this->assertEquals($xpath->query(".//option",$select_node)->length,$choice_cnt);
 
         // 3. Verify the correct choice.
