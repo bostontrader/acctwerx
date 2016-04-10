@@ -11,6 +11,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
 
     public $fixtures = [
         'app.accounts',
+        'app.accounts_categories',
         'app.books',
         'app.categories',
         'app.currencies',
@@ -330,7 +331,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
             $column_nodes=$xpath->query("td",$row_node);
 
             $this->assertEquals($fixtureRecord['Distributions__drcr']==1?'DR':'CR',  $column_nodes->item(0)->textContent);
-            $this->assertEquals($fixtureRecord['Categories__title'], $column_nodes->item(1)->textContent);
+            //$this->assertEquals($fixtureRecord['Categories__title'], $column_nodes->item(1)->textContent);
             $this->assertEquals($fixtureRecord['Accounts__title'], $column_nodes->item(2)->textContent);
             $this->assertEquals($fixtureRecord['Distributions__amount'], $column_nodes->item(3)->textContent);
             $this->assertEquals($fixtureRecord['Currencies__title'], $column_nodes->item(4)->textContent);
@@ -480,7 +481,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $unknownRowCnt--;
 
         // 6.2 category_title
-        $expected=$distribution->account->category->title;
+        $expected=$distribution->account->catstring;
         $this->getTheOnlyOne($xpath,"//tr[2][@id='category_title']/td[text()='$expected']",$table_node);
         $unknownRowCnt--;
 

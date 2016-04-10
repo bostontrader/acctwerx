@@ -33,7 +33,7 @@ $this->Breadcrumb->makeTrail('Distributions',$this->Html);
                 <?php foreach ($distributions as $distribution): ?>
                 <tr>
                     <td><?= $distribution->drcr==1?'DR':'CR' ?></td>
-                    <td><?= $distribution->account->category->title ?></td>
+                    <td><?= $distribution->account->catstring ?></td>
                     <td><?= $distribution->account->title ?></td>
                     <td><?= $distribution->amount ?></td>
                     <td><?= $distribution->currency->title ?></td>

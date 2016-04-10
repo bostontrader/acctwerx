@@ -13,7 +13,7 @@
             </tr>
             <tr id="category_title">
                 <th><?= __('Account Category') ?></th>
-                <td><?= $distribution->account->category->title ?></td>
+                <td><?= $distribution->account->catstring ?></td>
             </tr>
             <tr id="account_title">
                 <th><?= __('Account Title') ?></th>
