@@ -5,7 +5,8 @@ There are several basic categories of testing that I'm interested in:
 
 * Ordinary correct operation, such as CRUD operations.
 
-	I will call every URL I can enumerate. I want to verify basic screen content.
+	I will call every URL I can enumerate. I want to verify basic functionality
+	and screen content.
 
 * What happens with bad inputs ?  SQL injection?
 

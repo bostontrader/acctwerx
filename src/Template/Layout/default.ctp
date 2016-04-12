@@ -59,6 +59,7 @@
         // an array of links ready to become breadcrumbs.  Finally, prepend this
         // and display the full breadcrumb trail in the layout.
         echo $this->Html->getCrumbs(' > ', 'Home');
+        echo $this->Flash->render();
         echo $this->fetch('content');
         //}
     ?>

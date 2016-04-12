@@ -84,6 +84,9 @@ class BooksControllerTest extends DMIntegrationTestCase {
 
         // 2. Now validate that record.
         $this->assertEquals($fromDbRecord['title'],$fixtureRecord['title']);
+
+        // 3. Can I see the BOOK_SAVED message?
+        $this->assertTrue(false);
     }
 
     //public function testGET_balance() {

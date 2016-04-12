@@ -129,16 +129,11 @@ class FingraphComponent extends Component {
 		$lineplot->SetFillColor($color);
 		$lineplot->SetWeight(5);
 		$this->linePlots[] = $lineplot;
-		//return $lineplot;
 	}
 
 	public function buildPlot() {
-		// Then add them together to form an accumulated plot
-		//$ap = new AccLinePlot(array( $lineplotJewelry, $lineplotPapergold, $lineplotCoinsbullion ));
+		// Add the line plots together to form an accumulated plot
 		$ap = new \AccLinePlot( $this->linePlots );
 		$this->graph->Add($ap);
-		//$this->graph->Add($this->lplot);
 	}
-
-
 }

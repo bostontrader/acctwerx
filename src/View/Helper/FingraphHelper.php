@@ -10,30 +10,30 @@ require_once(ROOT . DS . 'vendor/jpgraph/jpgraph/lib/JpGraph/src/jpgraph_utils.i
 
 class FingraphHelper extends Helper {
 
-	//public $graph;
+	public $graph;
 
-	//private $xdata;
-	//private $ydata;
-	//private $graph_title;
-	//private $goal;
-	//private $linePlots;
-	//private $lplot;
+	private $xdata;
+	private $ydata;
+	private $graph_title;
+	private $goal;
+	private $linePlots;
+	private $lplot;
 
-	//private $graph_width   = 350;
-	//private $graph_height  = 320;
-	//private $left_margin   = 60;
-	//private $stats_base_y  = 270;
-	//private $stats_line_ht = 12;
+	private $graph_width   = 350;
+	private $graph_height  = 320;
+	private $left_margin   = 60;
+	private $stats_base_y  = 270;
+	private $stats_line_ht = 12;
 	
-	//function __construct($xdata, $ydata, $graph_title="Graph Title", $goal=0) {
-		//$this->xdata = $xdata;
-		//$this->ydata = $ydata;
-		//$this->graph_title = $graph_title;
-		//$this->goal = $goal;
-		//$this->graph = new \Graph($this->graph_width, $this->graph_height);
+	function __construct($xdata, $ydata, $graph_title="Graph Title", $goal=0) {
+		$this->xdata = $xdata;
+		$this->ydata = $ydata;
+		$this->graph_title = $graph_title;
+		$this->goal = $goal;
+		$this->graph = new \Graph($this->graph_width, $this->graph_height);
 
-		//$this->linePlots = array();
-	//}
+		$this->linePlots = array();
+	}
 
 	// $p = precision of the mx part of the trend line
 	//public function init($p=0) {
@@ -109,18 +109,18 @@ class FingraphHelper extends Helper {
 	//}
 
 	//public function addSeries($ydata, $legend, $color) {
-		//$lineplot = new LinePlot($ydata);
+		//$lineplot = new \LinePlot($ydata);
 		//$lineplot->SetLegend($legend);
 		//$lineplot->SetFillColor($color);
 		//$lineplot->SetWeight(5);
 		//$this->linePlots[] = $lineplot;
 		//return $lineplot;
-	//}//
+	//}
 
 	//public function buildPlot() {
 		// Then add them together to form an accumulated plot
 		//$ap = new AccLinePlot(array( $lineplotJewelry, $lineplotPapergold, $lineplotCoinsbullion ));
-		//$ap = new AccLinePlot( $this->linePlots );
+		//$ap = new \AccLinePlot( $this->linePlots );
 		//$this->graph->Add($ap);
 		//$this->graph->Add($this->lplot);
 	//}
