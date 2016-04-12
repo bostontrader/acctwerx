@@ -73,104 +73,53 @@ class BooksController extends AppController {
         //return $this->redirect(['action' => 'index']);
     //}
 
-    // display a graph of bank balances and short-term notes
-    // feed this a comma delimited list of account numbers for each
-    // category, pending a more robust solution
+    // display a graph of bank balances + notes
     public function bank($id = null){
 
-
-        // Given a range of reporting months {y1, m1}, {y2,m2} inclusive...
+        // 1. Start with a range of reporting months {y1, m1}, {y2,m2} inclusive...
         $start_period = $this->getStartPeriod();
         $stop_period  = $this->getStopPeriod();
 
-
-        //$results = $this->FinStat->doSQL("where distributions.account_id in (13, 33, 35, 47, 49, 254, 275, 293) ");
-        $results = $this->doSQL("where distributions.account_id in (13, 33, 35, 47, 49, 254, 275, 293) ");
+        // 2. Query the db and hammer the results into the proper format.
+        $results = $this->doSQL("where categories.symbol in ('B') ");
         $ydataBank = $this->buildDatapoints($results, $start_period, $stop_period);
 
+        $results = $this->doSQL("where categories.symbol in ('STN') ");
+        $ydataNote = $this->buildDatapoints($results, $start_period, $stop_period);
 
-        //$results = $this->FinStat->doSQL("where distributions.account_id in (276,294) ");
-        //$ydataNote = $this->FinStat->buildDatapoints($results, $start_period, $stop_period);
+        // 3. Now add the arrays together in order to build a linear regression
+        // trendline on their sum. The arrays should have an equal number of elements.
+        $xdata = $this->getXData();
+        $ydata = [];
+        for ($i = 0; $i < count($xdata); $i++) {
+            $n=0;
+            $n+=$ydataBank[$i];
+            $n+=$ydataNote[$i];
+            $ydata[] = $n;
+        }
 
-        // Now add the arrays together for the linear regression
-        //$xdata = $this->FinStat->getXData();
-
-        //$ydata = array();
-        //for ($i = 0; $i < count($xdata); $i++) {
-                //$n=0;
-                //$n+=$ydataBank[$i];
-                //$n+=$ydataNote[$i];
-                //$ydata[] = $n;
-        //}
-
-
-        // Guess #2.
-        // Width and height of the graph
-        $width = 600; $height = 200;
+        // 4. The graph is implemented as a controller.  Now set that up.
+        $this->loadComponent('Fingraph');
+        $this->Fingraph->init("Bank/Notes",$xdata,$ydata);
 
         // Create a graph instance
-        $graph = new \Graph($width,$height);
+        //$graph = new \Graph($width,$height);
         //App::uses('Fingraph', 'Lib');
         //$theGraph = new \Fingraph($xdata, $ydata, "Bank/Notes", 100000);
         //$theGraph = new \App\View\Helper\FingraphHelper($xdata, $ydata, "Bank/Notes", 100000);
         //$theGraph->init();
 
-        // Specify what scale we want to use,
-        // int = integer scale for the X-axis
-        // int = integer scale for the Y-axis
-        $graph->SetScale('intint');
-
-        // Setup a title for the graph
-        $graph->title->Set('Sunspot example');
-
-        // Setup titles and X-axis labels
-        $graph->xaxis->title->Set('(year from 1701)');
-
-        // Setup Y-axis title
-        $graph->yaxis->title->Set('(# sunspots)');
-
-        // Create the linear plot
-        //$lineplot=new \LinePlot([1,2,8,16,32,64,128,256,512,1024,2048,4096,8192]);
-        $lineplot=new \LinePlot($ydataBank);
-
-        // Add the plot to the graph
-        $graph->Add($lineplot);
 
 
 
+        $this->Fingraph->addSeries($ydataBank, "Bank", "green");
+        $this->Fingraph->addSeries($ydataNote, "Notes", "red");
 
 
-
-
-
-//$lineplotBank = $theGraph->addSeries($ydataBank, "Bank", "green");
-//$lineplotBank = $theGraph->addSeries($ydataNote, "Note", "red");
-
-
-//$theGraph->buildPlot();
-
-// Display the graph
-//$theGraph->graph->Stroke();
+        $this->Fingraph->buildPlot();
 
         $this->response->type('image/png');
-        $this->response->body($graph->Stroke());
-        return $this->response;
-
-        // Display the graph
-        //$graph->Stroke();
-
-        //$bal=$this->request->query['bal'];
-        //$nal=$this->request->query['nal'];
-        //$this->viewBuilder()
-            //->layout('jpgraph_layout');
-            //->helpers(['FinStat']);
-        //$this->RequestHandler->respondAs("image/png");
-        //$this->set(compact('bal','nal'));
-        //$this->response->type('application/pdf');
-        //$this->response->type(['p'=>'image/png']);
-        $this->response->type('image/png');
-        $this->response->body("catfood");
-        //$this->render('graph_bank');
+        $this->response->body($this->Fingraph->graph->stroke());
         return $this->response;
     }
 
@@ -323,13 +272,37 @@ class BooksController extends AppController {
         $sql = "select " .
             " DATE_FORMAT(transactions.tran_datetime, '%Y') as year, " .
             " DATE_FORMAT(transactions.tran_datetime, '%m') as month, " .
-            " sum(distributions.amount) as sum from distributions " .
+            " sum(distributions.amount * distributions.drcr) as sum from distributions " .
+
+            //" left join transactions on distributions.transaction_id = transactions.id " .
+            //" left join accounts_categories on accounts.id=accounts_categories.account_id ".
+            //" left join categories on accounts_categories.category_id=categories.id ".
+
             " left join transactions on distributions.transaction_id = transactions.id " .
-            " left join accounts_categories on accounts.id=accounts_categories.account_id ".
-            " left join categories on accounts_categories.category_id=categories.id ".
-            " where categories.title='Bank' ".
+            " left join accounts on distributions.account_id = accounts.id " .
+            " left join accounts_categories on accounts.id = accounts_categories.account_id " .
+            " left join categories on accounts_categories.category_id = categories.id " .
+
+            //" where categories.title='Bank' ".
+            //" where categories.symbol in ('B') ".
+            " $where_clause ".
             " group by year, month" .
             " order by year, month" ;
+
+        //select
+        //DATE_FORMAT(transactions.tran_datetime, '%Y') as year,
+        //DATE_FORMAT(transactions.tran_datetime, '%m') as month,
+        //distributions.drcr,
+        //distributions.amount,
+        //accounts.title,
+        //categories.symbol
+        //from distributions
+        //left join transactions on distributions.transaction_id = transactions.id
+        //left join accounts on distributions.account_id = accounts.id
+        //left join accounts_categories on accounts.id = accounts_categories.account_id
+        //left join categories on accounts_categories.category_id = categories.id
+        //where categories.symbol in ('B')
+        //order by year, month
 
         //$db = ConnectionManager::getDataSource('default');
         $db = ConnectionManager::get('default');

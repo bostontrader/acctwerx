@@ -24,7 +24,7 @@ class BreadcrumbHelper extends Helper {
     public function makeTrail($label,$htmlHelper) {
 
         // 1. Read the present trail or init if none.
-        $sessionVar='breadcrumbs';
+        $sessionVar='bcAcctWerx';
         //$this->request->session()->delete($sessionVar);
         $sessionCrumbs=$this->request->session()->read($sessionVar);
         if(is_null($sessionCrumbs))$sessionCrumbs=[];
