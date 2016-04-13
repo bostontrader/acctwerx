@@ -74,7 +74,7 @@ class BooksController extends AppController {
     //}
 
     // display a graph of bank balances + notes
-    public function bank($id = null){
+    public function graphBank($id = null){
 
         // 1. Start with a range of reporting months {y1, m1}, {y2,m2} inclusive...
         $start_period = $this->getStartPeriod();
@@ -98,18 +98,9 @@ class BooksController extends AppController {
             $ydata[] = $n;
         }
 
-        // 4. The graph is implemented as a controller.  Now set that up.
+        // 4. The graph is implemented as a component.  Now set that up.
         $this->loadComponent('Fingraph');
         $this->Fingraph->init("Bank/Notes",$xdata,$ydata);
-
-        // Create a graph instance
-        //$graph = new \Graph($width,$height);
-        //App::uses('Fingraph', 'Lib');
-        //$theGraph = new \Fingraph($xdata, $ydata, "Bank/Notes", 100000);
-        //$theGraph = new \App\View\Helper\FingraphHelper($xdata, $ydata, "Bank/Notes", 100000);
-        //$theGraph->init();
-
-
 
 
         $this->Fingraph->addSeries($ydataBank, "Bank", "green");
@@ -122,6 +113,45 @@ class BooksController extends AppController {
         $this->response->body($this->Fingraph->graph->stroke());
         return $this->response;
     }
+
+    // display a graph of cash balances
+    public function graphCash($id = null){
+
+        // 1. Start with a range of reporting months {y1, m1}, {y2,m2} inclusive...
+        $start_period = $this->getStartPeriod();
+        $stop_period  = $this->getStopPeriod();
+
+        // 2. Query the db and hammer the results into the proper format.
+        $results = $this->doSQL("where categories.symbol in ('C') ");
+        $ydataCash = $this->buildDatapoints($results, $start_period, $stop_period);
+
+        //$results = $this->doSQL("where categories.symbol in ('STN') ");
+        //$ydataNote = $this->buildDatapoints($results, $start_period, $stop_period);
+
+        // 3. Now add the arrays together in order to build a linear regression
+        // trendline on their sum. The arrays should have an equal number of elements.
+        $xdata = $this->getXData();
+        $ydata = [];
+        for ($i = 0; $i < count($xdata); $i++) {
+            $n=0;
+            $n+=$ydataCash[$i];
+            //$n+=$ydataNote[$i];
+            $ydata[] = $n;
+        }
+
+        // 4. The graph is implemented as a component.  Now set that up.
+        $this->loadComponent('Fingraph');
+        $this->Fingraph->init("Cash",$xdata,$ydata);
+
+        $this->Fingraph->addSeries($ydataCash, "Cash", "green");
+
+        $this->Fingraph->buildPlot();
+
+        $this->response->type('image/png');
+        $this->response->body($this->Fingraph->graph->stroke());
+        return $this->response;
+    }
+
 
     public function edit($id = null) {
         $this->request->allowMethod(['get', 'put']);
@@ -171,31 +201,29 @@ class BooksController extends AppController {
         $this->set('book', $book);
     }
 
+    // This is really the 2nd point displayed on the graph.
     private function getStartPeriod() {
-        return ['year'=>2015, 'month'=>6];
+        return ['year'=>2016, 'month'=>1];
     }
 
     private function getStopPeriod() {
-        return ['year'=>2016, 'month'=>3];
+        return ['year'=>2016, 'month'=>4];
     }
 
     // The x-labels on the graph...
     private function getXData() {
-        //  6/2015 ----|
+        //  1/2016 ----|
         // begin ----| |
         //           | |
-        //           | |          3/2016  -|
-        return array(1,2,3,4,5,6,7,8,9,10,11 /*12,13,14,15,16,17,18,19,20,21,22,23,24,25,26*/);
+        //           | |       4/2016  -|
+        return array(1,2,3,4,           5);
     }
 
-    //public function buildDatapoints($results, $start_period, $stop_period) {
     private function buildDatapoints($results, $start_period, $stop_period) {
 
-        //$ydata = array();
         $ydata=[];
 
         $dp_report_range = $start_period;
-        //$dp_sql_result = array('year'=>$results[0][0]['year'], 'month'=>$results[0][0]['month']);
         $dp_sql_result = ['year'=>$results[0]['year'], 'month'=>$results[0]['month']];
         $p_sql_result = 0;
 
@@ -214,7 +242,6 @@ class BooksController extends AppController {
             }	else {
                 // Not at the end. Advance to next row.
                 $p_sql_result++;
-                //$dp_sql_result = array('year'=>$results[$p_sql_result][0]['year'], 'month'=>$results[$p_sql_result][0]['month']);
                 $dp_sql_result = ['year'=>$results[$p_sql_result]['year'], 'month'=>$results[$p_sql_result]['month']];
             }
         }
@@ -223,7 +250,6 @@ class BooksController extends AppController {
         $ydata[] = $running_balance;
 
         // now stroll through the report range
-        // while p_sql <= p_report_range_stop {
         while( $this->periodOf($dp_report_range) <= $this->periodOf($stop_period)) {
             if( $this->periodOf($dp_report_range) == $this->periodOf($dp_sql_result) ) {
                 $running_balance+= $results[$p_sql_result]['sum'];
@@ -240,14 +266,14 @@ class BooksController extends AppController {
                 }	else {
                     // Not at the end. Advance to next row.
                     $p_sql_result++;
-                    //$dp_sql_result = array('year'=>$results[$p_sql_result][0]['year'], 'month'=>$results[$p_sql_result][0]['month']);
                     $dp_sql_result = ['year'=>$results[$p_sql_result]['year'], 'month'=>$results[$p_sql_result]['month']];
                 }
 
             } else if( $this->periodOf($dp_report_range) < $this->periodOf($dp_sql_result)) {
                 $ydata[] = $running_balance; // no activity in this period
                 $dp_report_range = $this->nextPeriod($dp_report_range);
-            } else { // dp_report_range must be > dp_sql_result
+            } else {
+                // dp_report_range must be > dp_sql_result
                 // This should be an error.  $dp_report_range should never
                 // be able to outrun $dp_sql_result
                 $i = 5/0;
@@ -274,42 +300,19 @@ class BooksController extends AppController {
             " DATE_FORMAT(transactions.tran_datetime, '%m') as month, " .
             " sum(distributions.amount * distributions.drcr) as sum from distributions " .
 
-            //" left join transactions on distributions.transaction_id = transactions.id " .
-            //" left join accounts_categories on accounts.id=accounts_categories.account_id ".
-            //" left join categories on accounts_categories.category_id=categories.id ".
-
             " left join transactions on distributions.transaction_id = transactions.id " .
             " left join accounts on distributions.account_id = accounts.id " .
             " left join accounts_categories on accounts.id = accounts_categories.account_id " .
             " left join categories on accounts_categories.category_id = categories.id " .
 
-            //" where categories.title='Bank' ".
-            //" where categories.symbol in ('B') ".
             " $where_clause ".
             " group by year, month" .
             " order by year, month" ;
 
-        //select
-        //DATE_FORMAT(transactions.tran_datetime, '%Y') as year,
-        //DATE_FORMAT(transactions.tran_datetime, '%m') as month,
-        //distributions.drcr,
-        //distributions.amount,
-        //accounts.title,
-        //categories.symbol
-        //from distributions
-        //left join transactions on distributions.transaction_id = transactions.id
-        //left join accounts on distributions.account_id = accounts.id
-        //left join accounts_categories on accounts.id = accounts_categories.account_id
-        //left join categories on accounts_categories.category_id = categories.id
-        //where categories.symbol in ('B')
-        //order by year, month
-
-        //$db = ConnectionManager::getDataSource('default');
         $db = ConnectionManager::get('default');
         $query = $db->query($sql);
-        $n1=$query->execute();
-        $n2=$query->fetchAll('assoc');
-        return $n2;
+        $query->execute();
+        return $query->fetchAll('assoc');
     }
 
     private function periodOf($period) {
