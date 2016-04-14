@@ -1,6 +1,7 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
+use App\Controller\AccountsController;
 use App\Test\Fixture\FixtureConstants;
 use App\Test\Fixture\AccountsFixture;
 use Cake\ORM\TableRegistry;
@@ -120,6 +121,10 @@ class AccountsControllerTest extends DMIntegrationTestCase {
         //$this->assertEquals($fromDbRecord['category_id'],$fixtureRecord['category_id']);
         //$this->assertEquals($fromDbRecord['sort'],$fixtureRecord['sort']);
         $this->assertEquals($fromDbRecord['title'],$fixtureRecord['title']);
+
+        // 3. Can I see the ACCOUNT_SAVED message?
+        $flash=$this->_controller->request->session()->read('Flash.flash');
+        $this->assertEquals($flash[0]['message'],AccountsController::ACCOUNT_SAVED);
     }
 
     //public function testDELETE() {

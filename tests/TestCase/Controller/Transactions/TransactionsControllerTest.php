@@ -1,6 +1,7 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
+use App\Controller\TransactionsController;
 use App\Test\Fixture\FixtureConstants;
 use App\Test\Fixture\TransactionsFixture;
 use Cake\ORM\TableRegistry;
@@ -112,6 +113,10 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
         $t=$fixtureRecord['tran_datetime'];
         $d2=new \Cake\I18n\Time($t['year'].'-'.$t['month'].'-'.$t['day'].' '.$t['hour'].':'.$t['minute']);
         $this->assertTrue($d1->eq($d2));
+
+        // 3. Can I see the TRANSACTION_SAVED message?
+        $flash=$this->_controller->request->session()->read('Flash.flash');
+        $this->assertEquals($flash[0]['message'],TransactionsController::TRANSACTION_SAVED);
     }
 
     // POST A JSON Transaction, fully armed with distributions, the add method.

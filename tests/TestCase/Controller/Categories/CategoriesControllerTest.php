@@ -1,6 +1,7 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
+use App\Controller\CategoriesController;
 use App\Test\Fixture\FixtureConstants;
 use App\Test\Fixture\CategoriesFixture;
 use Cake\ORM\TableRegistry;
@@ -89,6 +90,10 @@ class CategoriesControllerTest extends DMIntegrationTestCase {
         // 2. Now validate that record.
         $this->assertEquals($fromDbRecord['title'],$fixtureRecord['title']);
         $this->assertEquals($fromDbRecord['symbol'],$fixtureRecord['symbol']);
+
+        // 3. Can I see the CATEGORY_SAVED message?
+        $flash=$this->_controller->request->session()->read('Flash.flash');
+        $this->assertEquals($flash[0]['message'],CategoriesController::CATEGORY_SAVED);
     }
 
     //public function testDELETE() {

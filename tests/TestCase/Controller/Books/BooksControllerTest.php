@@ -1,6 +1,7 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
+use App\Controller\BooksController;
 use App\Test\Fixture\FixtureConstants;
 use App\Test\Fixture\BooksFixture;
 use Cake\ORM\TableRegistry;
@@ -86,7 +87,8 @@ class BooksControllerTest extends DMIntegrationTestCase {
         $this->assertEquals($fromDbRecord['title'],$fixtureRecord['title']);
 
         // 3. Can I see the BOOK_SAVED message?
-        $this->assertTrue(false);
+        $flash=$this->_controller->request->session()->read('Flash.flash');
+        $this->assertEquals($flash[0]['message'],BooksController::BOOK_SAVED);
     }
 
     //public function testGET_balance() {

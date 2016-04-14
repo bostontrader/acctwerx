@@ -1,8 +1,7 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
-//use App\Test\Fixture\AccountsFixture;
-//use App\Test\Fixture\CurrenciesFixture;
+use App\Controller\DistributionsController;
 use App\Test\Fixture\DistributionsFixture;
 use App\Test\Fixture\FixtureConstants;
 use Cake\ORM\TableRegistry;
@@ -155,6 +154,10 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $this->assertEquals($fromDbRecord['account_id'],$fixtureRecord['account_id']);
         $this->assertEquals($fromDbRecord['amount'],$fixtureRecord['amount']);
         $this->assertEquals($fromDbRecord['currency_id'],$fixtureRecord['currency_id']);
+
+        // 3. Can I see the DISTRIBUTION_SAVED message?
+        $flash=$this->_controller->request->session()->read('Flash.flash');
+        $this->assertEquals($flash[0]['message'],DistributionsController::DISTRIBUTION_SAVED);
     }
 
     //public function testDELETE() {
