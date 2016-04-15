@@ -19,6 +19,15 @@ class AccountsController extends AppController {
         $book_id=$this->get_book_id($this->request->params);
         $book=$this->Accounts->Books->get($book_id);
 
+        // There should only be one request param named book_id.
+        // Neither GET nor POST should accept any query string params. If found,
+        // silentyly redirect to home.
+        if(count($this->request->query)>0) {
+            return $this->redirect(['action' => 'index','book_id' => $book_id,'_method'=>'GET']);
+        }
+
+
+
         $account = $this->Accounts->newEntity(['contain'=>'books']);
         if ($this->request->is('post')) {
             $account = $this->Accounts->patchEntity($account, $this->request->data);
@@ -29,6 +38,9 @@ class AccountsController extends AppController {
                 $this->Flash->error(__(self::ACCOUNT_NOT_SAVED));
             }
         }
+
+
+
         $categories = $this->Accounts->Categories->find('list');
         $this->set(compact('account','book','categories'));
         return null;

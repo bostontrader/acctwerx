@@ -1,12 +1,13 @@
 <?php
-namespace App\Test\TestCase\Controller;
+namespace App\Test\TestCase\Controller\Accounts;
 
 use App\Controller\AccountsController;
 use App\Test\Fixture\FixtureConstants;
 use App\Test\Fixture\AccountsFixture;
+use App\Test\TestCase\Controller\DMIntegrationTestCase;
 use Cake\ORM\TableRegistry;
 
-class AccountsControllerTest extends DMIntegrationTestCase {
+class BasicCRUD extends DMIntegrationTestCase {
 
     public $fixtures = [
         'app.accounts',
