@@ -7,8 +7,8 @@ class AccountsFixture extends DMFixture {
     // This record will be added during a test.  We don't need or want to control the id here, so omit it.
     public $newAccountRecord = [
         'book_id' => FixtureConstants::bookTypical,
-        'category_id'=>FixtureConstants::categoryTypical,
-        'sort' => 10,'title' => 'Ghost Busting'];
+        'categories' => ['_ids'=>[0=>FixtureConstants::categoryAsset, 1=>FixtureConstants::categoryExpense]],
+        'title' => 'Ghost Busting'];
 
     public function init() {
         $this->tableName='Accounts';

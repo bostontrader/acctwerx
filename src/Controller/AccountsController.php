@@ -15,21 +15,26 @@ class AccountsController extends AppController {
     public function add() {
         $this->request->allowMethod(['get', 'post']);
 
-        // Get the book and book_id.
+        // Neither GET nor POST should accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException("Query string parameters are not allowed on this method.");
+
+        // Get the book_id and book.
         $book_id=$this->get_book_id($this->request->params);
         $book=$this->Accounts->Books->get($book_id);
-
-        // There should only be one request param named book_id.
-        // Neither GET nor POST should accept any query string params. If found,
-        // silentyly redirect to home.
-        if(count($this->request->query)>0) {
-            return $this->redirect(['action' => 'index','book_id' => $book_id,'_method'=>'GET']);
-        }
-
 
 
         $account = $this->Accounts->newEntity(['contain'=>'books']);
         if ($this->request->is('post')) {
+
+            // Only an expected white-list of POST variables should be here.
+            $d=$this->request->data;
+            unset($d['book_id']);
+            unset($d['categories']);
+            unset($d['title']);
+            if(count($d)>0)
+                throw new BadRequestException("Extraneous POST variables present.  Bad, bad, bad.");
+
             $account = $this->Accounts->patchEntity($account, $this->request->data);
             if ($this->Accounts->save($account)) {
                 $this->Flash->success(__(self::ACCOUNT_SAVED));

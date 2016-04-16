@@ -111,7 +111,7 @@ class TransactionsController extends AppController {
             'transactions', $this->Transactions->find()
             ->contain('Books')
             ->where(['book_id'=>$book_id])
-            ->limit(20)
+            ->limit(200)
             ->order(['tran_datetime desc']));
         $this->set(compact('book','book_id'));
     }
