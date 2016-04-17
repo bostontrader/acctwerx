@@ -44,8 +44,6 @@ class AccountsController extends AppController {
             }
         }
 
-
-
         $categories = $this->Accounts->Categories->find('list');
         $this->set(compact('account','book','categories'));
         return null;
@@ -66,10 +64,13 @@ class AccountsController extends AppController {
     public function edit($id = null) {
         $this->request->allowMethod(['get', 'put']);
 
+        // Neither GET nor PUT should accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException("Query string parameters are not allowed on this method.");
+
         // Get the book and book_id.
         $book_id=$this->get_book_id($this->request->params);
         $book=$this->Accounts->Books->get($book_id);
-        //$user = $this->Users->find()->where(['id'=>$id])->contain('Roles')->first();
 
         $account = $this->Accounts->get($id,['contain'=>'Categories']);
         if ($this->request->is(['put'])) {

@@ -11,6 +11,8 @@ class Errors extends DMIntegrationTestCase {
 
     public $fixtures = [
         'app.accounts',
+        'app.accounts_categories',
+        'app.categories',
         'app.books',
     ];
 
@@ -32,7 +34,8 @@ class Errors extends DMIntegrationTestCase {
     // these errors is if somebody's messin' with the URL. If so, providing a user-friendly
     // UI would be the least of our concerns.
     //
-    // 1. Use a verb other than GET or POST. Return 405 Method not allowed.
+    // 1. Each method has a small white-list of acceptable http verbs. Attempt access
+    // with another verb. Return 405 Method not allowed.
     //
     // 2. Neither GET nor PUT should have any query params ($this->request->query).
     // 400. Bad request.
@@ -67,7 +70,7 @@ class Errors extends DMIntegrationTestCase {
         $this->assertResponseCode(400); // bad request
         $this->assertNoRedirect();
 
-        // Because this is a GET, there will be no POST variables.
+        // 3. Because this is a GET, there will be no POST variables.
 
     }
 
@@ -88,5 +91,49 @@ class Errors extends DMIntegrationTestCase {
         $this->assertNoRedirect();
     }
 
+    public function testGET_edit() {
 
+        // 1. Obtain the relevant records and verify their referential integrity.
+        $book_id=FixtureConstants::bookTypical;
+        $account_id=FixtureConstants::accountTypical;
+        //$account=$this->Accounts->get($account_id,['contain'=>'Categories']);
+        //$book_id=FixtureConstants::bookTypical;
+        //$book=$this->Books->get($book_id);
+        //$this->assertEquals($account['book_id'],$book['id']);
+
+        // 1. Verb not (GET or PUT)
+        $this->post("/books/$book_id/accounts/edit/$account_id");
+        $this->assertResponseCode(405); // method not allowed
+        $this->assertNoRedirect();
+
+        // 2. No query string parameters
+        $this->get("/books/$book_id/accounts/add?catfood=yum");
+        $this->assertResponseCode(400); // bad request
+        $this->assertNoRedirect();
+
+        // 3. Because this is a GET, there will be no POST variables.
+    }
+
+    public function testPOST_edit()
+    {
+
+        // 1. Obtain the relevant records and verify their referential integrity.
+        $account_id = FixtureConstants::accountTypical;
+        //$accountNew=$this->accountsFixture->newAccountRecord;
+        $book_id = FixtureConstants::bookTypical;
+        //$book=$this->Books->get($book_id);
+        //$this->assertEquals($accountNew['book_id'],$book['id']);
+
+        // 1. Verb not (GET or PUT) (already tested)
+
+        // 2. No query string parameters
+        $this->put("/books/$book_id/accounts/edit/$account_id?catfood=yum");
+        $this->assertResponseCode(400); // bad request
+        $this->assertNoRedirect();
+
+        // 3. No extra POST variables
+        $this->put("/books/$book_id/accounts/edit/$account_id", ['catfood' => 'yum']);
+        $this->assertResponseCode(400); // bad request
+        $this->assertNoRedirect();
+    }
 }
