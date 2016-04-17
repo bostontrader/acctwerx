@@ -136,4 +136,48 @@ class Errors extends DMIntegrationTestCase {
         $this->assertResponseCode(400); // bad request
         $this->assertNoRedirect();
     }
+
+    public function testGET_index() {
+
+        $book_id=FixtureConstants::bookTypical;
+        $baseURL="/books/$book_id/accounts";
+
+        // 1. Verb not (GET or POST)
+        $this->put($baseURL);
+        $this->assertResponseCode(405); // method not allowed
+        $this->assertNoRedirect();
+
+        // 2. No query string parameters
+        $this->get("$baseURL?catfood=yum");
+        $this->assertResponseCode(400); // bad request
+        $this->assertNoRedirect();
+
+        // 3. Because this is a GET, there will be no POST variables.
+    }
+
+    public function testGET_view() {
+
+        // Obtain the relevant records and verify their referential integrity.
+        $account_id=FixtureConstants::accountTypical;
+        $account=$this->Accounts->get($account_id);
+        $book_id=FixtureConstants::bookTypical;
+        $book=$this->Books->get($book_id);
+        $this->assertEquals($account['book_id'],$book['id']);
+
+        $baseURL="/books/$book_id/accounts/$account_id";
+
+        // 1. Verb not (GET or POST)
+        $this->put($baseURL);
+        $this->assertResponseCode(405); // method not allowed
+        $this->assertNoRedirect();
+
+        // 2. No query string parameters
+        $this->get("$baseURL?catfood=yum");
+        $this->assertResponseCode(400); // bad request
+        $this->assertNoRedirect();
+
+        // 3. Because this is a GET, there will be no POST variables.
+
+    }
+
 }

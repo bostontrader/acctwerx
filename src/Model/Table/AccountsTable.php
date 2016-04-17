@@ -2,17 +2,18 @@
 namespace App\Model\Table;
 
 use Cake\ORM\Table;
+use Cake\Validation\Validator;
 
 class AccountsTable extends Table {
 
-    public function initialize(array $config) {
+    public function initialize(array $config)
+    {
         parent::initialize($config);
 
         $this->displayField('title');
         $this->belongsTo('Books');
         $this->hasMany('Distributions');
 
-        //$this->belongsTo('Categories');
         $this->belongsToMany('Categories',
             [
                 'through' => 'AccountsCategories',
@@ -23,5 +24,10 @@ class AccountsTable extends Table {
             ]
         );
     }
+
+    //public function validationDefault(Validator $v) {
+        //$v->notEmpty('title');
+        //$v->requirePresence('title');
+    //}
 }
 

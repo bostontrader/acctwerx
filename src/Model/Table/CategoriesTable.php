@@ -9,7 +9,6 @@ class CategoriesTable extends Table {
         parent::initialize($config);
 
         $this->displayField('title');
-        //$this->hasMany('Accounts');
         $this->belongsToMany('Account',
             [
                 'through' => 'AccountsCategories',
