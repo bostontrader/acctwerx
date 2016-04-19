@@ -74,6 +74,15 @@ class AccountsController extends AppController {
 
         $account = $this->Accounts->get($id,['contain'=>'Categories']);
         if ($this->request->is(['put'])) {
+
+            // Only an expected white-list of POST variables should be here.
+            $d=$this->request->data;
+            unset($d['book_id']);
+            unset($d['categories']);
+            unset($d['title']);
+            if(count($d)>0)
+                throw new BadRequestException("Extraneous POST variables present.  Bad, bad, bad.");
+
             $account = $this->Accounts->patchEntity($account, $this->request->data);
             if ($this->Accounts->save($account)) {
                 $this->Flash->success(__(self::ACCOUNT_SAVED));
@@ -89,6 +98,11 @@ class AccountsController extends AppController {
 
     // GET /books/:book_id/accounts
     public function index() {
+        $this->request->allowMethod(['get']);
+
+        // No query string params allowed.
+        if(count($this->request->query)>0)
+            throw new BadRequestException("Query string parameters are not allowed on this method.");
 
         $book_id=$this->get_book_id($this->request->params);
         $book=$this->Accounts->Books->get($book_id);
@@ -104,8 +118,11 @@ class AccountsController extends AppController {
 
     // GET /books/:book_id/accounts/:id
     public function view($id = null) {
-
         $this->request->allowMethod(['get']);
+
+        // No query string params allowed.
+        if(count($this->request->query)>0)
+            throw new BadRequestException("Query string parameters are not allowed on this method.");
 
         $book_id=$this->get_book_id($this->request->params);
         $book=$this->Accounts->Books->get($book_id);

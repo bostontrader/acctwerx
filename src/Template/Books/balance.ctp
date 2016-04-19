@@ -24,7 +24,7 @@ $this->Breadcrumb->makeTrail('Balance Sheet',$this->Html);
             <tbody>
             <?php foreach ($lineItems as $lineItem): ?>
                 <tr>
-                    <td><?= $lineItem['ct'] ?></td>
+                    <td><?= 'category' ?></td>
                     <td><?= $lineItem['at'] ?></td>
                     <td><?= $lineItem['amount'] ?></td>
                 </tr>

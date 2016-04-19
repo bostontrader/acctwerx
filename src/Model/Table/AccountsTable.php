@@ -6,8 +6,7 @@ use Cake\Validation\Validator;
 
 class AccountsTable extends Table {
 
-    public function initialize(array $config)
-    {
+    public function initialize(array $config) {
         parent::initialize($config);
 
         $this->displayField('title');
@@ -25,9 +24,10 @@ class AccountsTable extends Table {
         );
     }
 
-    //public function validationDefault(Validator $v) {
-        //$v->notEmpty('title');
+    public function validationDefault(Validator $v) {
+        $v->notEmpty('title');
         //$v->requirePresence('title');
-    //}
+        return $v;
+    }
 }
 

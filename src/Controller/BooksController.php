@@ -15,10 +15,10 @@ class BooksController extends AppController {
     const BOOK_DELETED = "The book has been deleted.";
     const CANNOT_DELETE_BOOK = "The book could not be deleted. Please, try again.";
 
-    public function initialize() {
-        parent::initialize();
-        $this->loadComponent('RequestHandler');
-    }
+    //public function initialize() {
+        //parent::initialize();
+        //$this->loadComponent('RequestHandler');
+    //}
 
     public function add() {
         $this->request->allowMethod(['get','post']);
@@ -43,20 +43,22 @@ class BooksController extends AppController {
         /* @var \Cake\Database\Connection $connection */
         $connection = ConnectionManager::get('default');
         $query="select
-                categories.title as ct,
                 accounts.title as at,
                 currencies.symbol,
                 sum(distributions.amount * distributions.drcr) as amount
             from distributions
+
             left join transactions on distributions.transaction_id=transactions.id
             left join books on transactions.book_id=books.id
             left join accounts on distributions.account_id=accounts.id
-            left join categories on accounts.category_id=categories.id
             left join currencies on distributions.currency_id=currencies.id
+            left join accounts_categories on accounts.id = accounts_categories.account_id
+            left join categories on accounts_categories.category_id = categories.id
+
             where books.id=$id
-            and categories.id in (1,2,3)
+            and categories.symbol in ('A','L','Eq')
             group by accounts.id, currencies.id
-            order by categories.id";
+            ";
         $lineItems=$connection->execute($query)->fetchAll('assoc');
         $this->set(compact('book','lineItems'));
         $this->set('_serialize', ['lineItems']); // makes JSON
