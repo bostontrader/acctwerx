@@ -98,9 +98,16 @@ class Errors extends DMIntegrationTestCase {
         $this->assertNoRedirect();
 
         // 5. Try to trigger validation errors.
-        $this->post("$baseURL",[]);
-        $this->assertResponseCode(400); // bad request
-        $this->assertNoRedirect();
+        $this->post("$baseURL",[]); // no validation errors, just cannot save
+        $this->post("$baseURL",['book_id'=>$book_id]); // no errors, but cannot save
+
+        //$this->post("$baseURL",['title'=>null]); // error caught
+        //$this->post("$baseURL",['book_id'=>$book_id]); // no errors, but cannot save
+
+
+
+        //$this->assertResponseCode(400); // bad request
+        //$this->assertNoRedirect();
         //_method
         //POST
         //book_id

@@ -35,11 +35,14 @@ class AccountsController extends AppController {
             if(count($d)>0)
                 throw new BadRequestException("Extraneous POST variables present.  Bad, bad, bad.");
 
+            //$n1=$this->Accounts->validator();
+            //$n2=$n1->errors(['title'=>null]);
             $account = $this->Accounts->patchEntity($account, $this->request->data);
             if ($this->Accounts->save($account)) {
                 $this->Flash->success(__(self::ACCOUNT_SAVED));
                 return $this->redirect(['action' => 'index','book_id' => $book_id,'_method'=>'GET']);
             } else {
+                $e=$account->errors();
                 $this->Flash->error(__(self::ACCOUNT_NOT_SAVED));
             }
         }
