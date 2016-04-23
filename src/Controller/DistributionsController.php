@@ -15,6 +15,10 @@ class DistributionsController extends AppController {
     public function add() {
         $this->request->allowMethod(['get', 'post']);
 
+        // Neither GET nor POST should accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+
         // Get the book_id and transaction_id.
         $transaction_id=$this->get_transaction_id($this->request->params);
         $book_id=$this->get_book_id($this->request->params);

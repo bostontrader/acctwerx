@@ -8,16 +8,18 @@ There are several basic categories of testing that I'm interested in:
 	I will call every URL I can enumerate. I want to verify basic functionality
 	and screen content.  Also verify successful flash messages.
 
-* Validation.  Make data-entry style errors to trigger validation messages.
+* Validation.  Make data-entry style errors to trigger validation messages. If an
+error won't trigger a validation message, then it's some other kind of error and
+belongs to...
 
-* Request Errors. Make any other kind of error, reasonably within the bound of this
+* Request Errors. Make any other kind of error, reasonably within the bounds of this
  application's testing.
 
 This is a giant can of worms. Here are the considerations:
 
 1. When an http request is received by nginx, nginx may use php-fpm and php
 in order to produce a response. Said request can in principal be as bizarre, twisted, and malicious
-as the evil genius of some demented hacker can possible conceive.  Which http verb? Which headers? What URL?
+as the evil genius of some demented hacker can possibly conceive.  Which http verb? Which headers? What URL?
  Which query string and POST variables, etc. I assume that nginx, et.al. are tested
 "well enough".  Since it's not feasible for me to improve upon their existing testing,
 I'll instead simply rely upon it as "good enough."
@@ -54,20 +56,19 @@ The only reason we'd get bad urls is because somebody is fiddling
  with them.  Not only do they not deserve any error messages, we in fact want to keep them in the dark
  re: what works or doesn't work.
 
+6. More specifically:
 
+6.1 GET
 
+5.1.1 Verify record id referential integrity, if applicable.
 
-5. More specifically:
+5.1.2 Verify only whitelisted query string params are accepted, or maybe none at all.
+The whitelist items should be tested earlier.  Only send one param that's not white listed
+and observe the error.
 
-5.1 GET
+5.1.3 Attempt to invoke the method using a verb other than GET.  In some cases (such as add and edit)
+other verbs are also acceptable (POST and PUT), so be sure to find a verb that will fail.
 
-5.1.1 Only whitelisted query string params are accepted, or maybe none at all.
-
-5.1.1 Record id referential integrity.
-
-A. Do the record ids, if any, in the URL, refer to existing records?
-
-B. Are these records actually properly related?
 
 
 

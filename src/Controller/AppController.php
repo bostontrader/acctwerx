@@ -9,6 +9,8 @@ use Cake\Event\Event;
 
 class AppController extends Controller {
 
+    const THAT_QUERY_PARAMETER_NOT_ALLOWED = "Query string parameter not allowed.";
+
     public function initialize() {
         parent::initialize();
 

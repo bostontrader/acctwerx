@@ -1,5 +1,6 @@
 <?php
 namespace App\Controller;
+use Cake\Network\Exception\BadRequestException;
 
 class CurrenciesController extends AppController {
 
@@ -10,6 +11,11 @@ class CurrenciesController extends AppController {
 
     public function add() {
         $this->request->allowMethod(['get','post']);
+
+        // Neither GET nor POST should accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+
         $currency = $this->Currencies->newEntity();
         if ($this->request->is('post')) {
             $currency = $this->Currencies->patchEntity($currency, $this->request->data);

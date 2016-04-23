@@ -101,11 +101,11 @@ class AccountsController extends AppController {
 
     // GET /books/:book_id/accounts
     public function index() {
-        $this->request->allowMethod(['get']);
+        //$this->request->allowMethod(['get']);
 
         // No query string params allowed.
         if(count($this->request->query)>0)
-            throw new BadRequestException("Query string parameters are not allowed on this method.");
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
         $book_id=$this->get_book_id($this->request->params);
         $book=$this->Accounts->Books->get($book_id);

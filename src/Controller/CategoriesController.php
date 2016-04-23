@@ -1,5 +1,6 @@
 <?php
 namespace App\Controller;
+use Cake\Network\Exception\BadRequestException;
 
 class CategoriesController extends AppController {
 
@@ -10,6 +11,11 @@ class CategoriesController extends AppController {
 
     public function add() {
         $this->request->allowMethod(['get','post']);
+
+        // Neither GET nor POST should accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+
         $category = $this->Categories->newEntity();
         if ($this->request->is('post')) {
             $category = $this->Categories->patchEntity($category, $this->request->data);

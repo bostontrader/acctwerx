@@ -1,6 +1,8 @@
 <?php
 namespace App\Controller;
+
 use Cake\Datasource\ConnectionManager;
+use Cake\Network\Exception\BadRequestException;
 
 require_once(ROOT . DS . 'vendor/jpgraph/jpgraph/lib/JpGraph/src/jpgraph.php');
 require_once(ROOT . DS . 'vendor/jpgraph/jpgraph/lib/JpGraph/src/jpgraph_line.php');
@@ -20,8 +22,14 @@ class BooksController extends AppController {
         //$this->loadComponent('RequestHandler');
     //}
 
+    // GET | POST /books/add
     public function add() {
         $this->request->allowMethod(['get','post']);
+
+        // Neither GET nor POST should accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+
         $book = $this->Books->newEntity();
         if ($this->request->is('post')) {
             $book = $this->Books->patchEntity($book, $this->request->data);
