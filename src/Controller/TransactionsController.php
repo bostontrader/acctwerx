@@ -33,6 +33,10 @@ class TransactionsController extends AppController {
     public function add() {
         $this->request->allowMethod(['get', 'post']);
 
+        // Neither GET nor POST should accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+
         // Get the book and book_id.
         $book_id=$this->get_book_id($this->request->params);
         $book=$this->Transactions->Books->get($book_id);

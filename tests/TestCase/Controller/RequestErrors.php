@@ -55,18 +55,22 @@ class RequestErrors extends IntegrationTestCase {
         return $cnt;
     }
 
-    public function testGET_Books_add() {
-
-        $urlBase="/books/add";
-        $cnt=$this->countAndRemoveMatchingRoutes($urlBase);
-        $this->assertEquals($cnt,1); // only one route
-
-        // 1. There is no record_id referential integrity issue here with this test.
-
-        // 2. No query string parameters should be accepted.
+    // Given a $urlBase, send a GET request with a query string parameter.
+    // Assertion error if not caught properly.
+    private function noQueryStringParametersAllowed($urlBase) {
         $this->get("$urlBase?catfood=yum");
         $this->assertResponseCode(400); // bad request
         $this->assertNoRedirect();
+    }
+
+    public function testGET_Books_add() {
+
+        $urlBase="/books/add";
+        $this->assertEquals($this->countAndRemoveMatchingRoutes($urlBase),1); // only one route
+
+        // 1. There is no record_id referential integrity issue here with this test.
+
+        $this->noQueryStringParametersAllowed($urlBase); // 2
 
         // 3. The verb not be (GET or POST)
         $this->put("$urlBase");
@@ -78,16 +82,44 @@ class RequestErrors extends IntegrationTestCase {
 
         $book_id=FixtureConstants::bookTypical;
         $urlBase="/books/$book_id/accounts/add";
-
-        $cnt=$this->countAndRemoveMatchingRoutes($urlBase);
-        $this->assertEquals($cnt,1); // only one route
+        $this->assertEquals($this->countAndRemoveMatchingRoutes($urlBase),1); // only one route
 
         // 1. There is no record_id referential integrity issue here with this test.
 
-        // 2. No query string parameters should be accepted.
-        $this->get("$urlBase?catfood=yum");
-        $this->assertResponseCode(400); // bad request
+        $this->noQueryStringParametersAllowed($urlBase); // 2
+
+        // 3. The verb not be (GET or POST)
+        $this->put("$urlBase");
+        $this->assertResponseCode(405); // method not allowed
         $this->assertNoRedirect();
+    }
+
+    public function testGET_BooksTransactions_add() {
+
+        $book_id=FixtureConstants::bookTypical;
+        $urlBase="/books/$book_id/transactions/add";
+        $this->assertEquals($this->countAndRemoveMatchingRoutes($urlBase),1); // only one route
+
+        // 1. There is no record_id referential integrity issue here with this test.
+
+        $this->noQueryStringParametersAllowed($urlBase); // 2
+
+        // 3. The verb not be (GET or POST)
+        $this->put("$urlBase");
+        $this->assertResponseCode(405); // method not allowed
+        $this->assertNoRedirect();
+    }
+
+    public function testGET_BooksTransactionsDistributions_add() {
+
+        $book_id=FixtureConstants::bookTypical;
+        $transaction_id=FixtureConstants::transactionTypical;
+        $urlBase="/books/$book_id/transactions/$transaction_id/distributions/add";
+        $this->assertEquals($this->countAndRemoveMatchingRoutes($urlBase),1); // only one route
+
+        // 1. There is no record_id referential integrity issue here with this test.
+
+        $this->noQueryStringParametersAllowed($urlBase); // 2
 
         // 3. The verb not be (GET or POST)
         $this->put("$urlBase");
@@ -98,15 +130,11 @@ class RequestErrors extends IntegrationTestCase {
     public function testGET_Categories_add() {
 
         $urlBase="/categories/add";
-        $cnt=$this->countAndRemoveMatchingRoutes($urlBase);
-        $this->assertEquals($cnt,1); // only one route
+        $this->assertEquals($this->countAndRemoveMatchingRoutes($urlBase),1); // only one route
 
         // 1. There is no record_id referential integrity issue here with this test.
 
-        // 2. No query string parameters should be accepted.
-        $this->get("$urlBase?catfood=yum");
-        $this->assertResponseCode(400); // bad request
-        $this->assertNoRedirect();
+        $this->noQueryStringParametersAllowed($urlBase); // 2
 
         // 3. The verb not be (GET or POST)
         $this->put("$urlBase");
@@ -117,15 +145,11 @@ class RequestErrors extends IntegrationTestCase {
     public function testGET_Currencies_add() {
 
         $urlBase="/currencies/add";
-        $cnt=$this->countAndRemoveMatchingRoutes($urlBase);
-        $this->assertEquals($cnt,1); // only one route
+        $this->assertEquals($this->countAndRemoveMatchingRoutes($urlBase),1); // only one route
 
         // 1. There is no record_id referential integrity issue here with this test.
 
-        // 2. No query string parameters should be accepted.
-        $this->get("$urlBase?catfood=yum");
-        $this->assertResponseCode(400); // bad request
-        $this->assertNoRedirect();
+        $this->noQueryStringParametersAllowed($urlBase); // 2
 
         // 3. The verb not be (GET or POST)
         $this->put("$urlBase");
@@ -133,24 +157,6 @@ class RequestErrors extends IntegrationTestCase {
         $this->assertNoRedirect();
     }
 
-    public function testGET_Distributions_add() {
-
-        $urlBase="/currencies/add";
-        $cnt=$this->countAndRemoveMatchingRoutes($urlBase);
-        $this->assertEquals($cnt,1); // only one route
-
-        // 1. There is no record_id referential integrity issue here with this test.
-
-        // 2. No query string parameters should be accepted.
-        $this->get("$urlBase?catfood=yum");
-        $this->assertResponseCode(400); // bad request
-        $this->assertNoRedirect();
-
-        // 3. The verb not be (GET or POST)
-        $this->put("$urlBase");
-        $this->assertResponseCode(405); // method not allowed
-        $this->assertNoRedirect();
-    }
 
     public function testPOST_add() {
 
