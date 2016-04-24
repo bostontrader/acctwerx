@@ -106,6 +106,11 @@ class TransactionsController extends AppController {
 
     // GET /books/:book_id/transactions
     public function index() {
+        $this->request->allowMethod(['get']);
+
+        // Should not accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
         $book_id=$this->get_book_id($this->request->params);
         $book=$this->Transactions->Books->get($book_id);

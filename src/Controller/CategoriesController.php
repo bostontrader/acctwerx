@@ -59,6 +59,12 @@ class CategoriesController extends AppController {
 
     public function index() {
         $this->request->allowMethod(['get']);
+
+        // Should not accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+
+        $this->request->allowMethod(['get']);
         $this->set('categories', $this->Categories->find());
     }
 

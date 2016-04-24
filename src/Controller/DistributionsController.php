@@ -82,8 +82,11 @@ class DistributionsController extends AppController {
     // GET /books/:book_id/accounts/:account_id/distributions
     // GET /books/:book_id/transactions/:transaction_id/distributions
     public function index() {
-
         $this->request->allowMethod(['get']);
+
+        // Should not accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
         $book_id=$this->get_book_id($this->request->params);
 

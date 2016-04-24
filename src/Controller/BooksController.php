@@ -202,6 +202,11 @@ class BooksController extends AppController {
 
     public function index() {
         $this->request->allowMethod(['get']);
+
+        // Should not accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+
         $this->set('books', $this->Books->find());
     }
 
