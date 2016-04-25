@@ -56,6 +56,10 @@ class DistributionsController extends AppController {
     public function edit($id = null) {
         $this->request->allowMethod(['get', 'put']);
 
+        // Neither GET nor PUT should accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+
         // Get the transaction and transaction_id.
         $transaction_id=$this->get_transaction_id($this->request->params);
         //$transaction=$this->Distributions->Transactions->get($transaction_id);
@@ -122,6 +126,11 @@ class DistributionsController extends AppController {
     // GET /books/:book_id/transactions/:transaction_id/distributions/:id
     public function view($id = null) {
         $this->request->allowMethod(['get']);
+
+        // Should not accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+
         $distribution = $this->Distributions->get($id,['contain'=>['Accounts.Categories','Currencies']]);
         $this->set('distribution', $distribution);
     }

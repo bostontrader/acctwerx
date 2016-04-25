@@ -60,81 +60,41 @@ class RequestErrors extends IntegrationTestCase {
     }
 
     // Which errors should we try to create for methods that accept GET?
-    private function makeGETErrors($url,$expectedResponseCode) {
+    private function makeGETErrors($url,$verb,$expectedResponseCode) {
         $this->noQueryStringParametersAllowed($url);
         $this->assertEquals($this->countAndRemoveMatchingRoutes($url),1); // only one route
-        $this->tryVerbWeKnowShouldFail($url,'put',$expectedResponseCode);
+        $this->tryVerbWeKnowShouldFail($url,$verb,$expectedResponseCode);
     }
 
-    public function testGET_Books_add() {
-        $urlBase="/books/add";
-        $this->makeGETErrors($urlBase,405);
-    }
+    // Because these errors are triggered before any records are actually read, we can just
+    // hardwire record ids (to pass routing) and fuggedabout referential integrity.
+    public function testGET_Books_add() {$this->makeGETErrors("/books/add",'put',405);}
+    public function testGET_BooksAccounts_add() {$this->makeGETErrors("/books/1/accounts/add",'put',405);}
+    public function testGET_BooksTransactions_add() {$this->makeGETErrors("/books/1/transactions/add",'put',405);}
+    public function testGET_BooksTransactionsDistributions_add() {$this->makeGETErrors("/books/1/transactions/1/distributions/add",'put',405);}
+    public function testGET_Categories_add() {$this->makeGETErrors("/categories/add",'put',405);}
+    public function testGET_Currencies_add() {$this->makeGETErrors("/currencies/add",'put',405);}
 
-    public function testGET_BooksAccounts_add() {
-        $book_id=FixtureConstants::bookTypical;
-        $urlBase="/books/$book_id/accounts/add";
-        $this->makeGETErrors($urlBase,405);
-    }
+    public function testGET_Books_edit() {$this->makeGETErrors("/books/edit/1",'post',405);}
+    public function testGET_BooksAccounts_edit() {$this->makeGETErrors("/books/1/accounts/edit/1",'post',405);}
+    public function testGET_BooksTransactions_edit() {$this->makeGETErrors("/books/1/transactions/edit/1",'post',405);}
+    public function testGET_BooksTransactionsDistributions_edit() {$this->makeGETErrors("/books/1/transactions/1/distributions/edit/1",'post',405);}
+    public function testGET_Categories_edit() {$this->makeGETErrors("/categories/edit/1",'post',405);}
+    public function testGET_Currencies_edit() {$this->makeGETErrors("/currencies/edit/1",'post',405);}
 
-    public function testGET_BooksTransactions_add() {
-        $book_id=FixtureConstants::bookTypical;
-        $urlBase="/books/$book_id/transactions/add";
-        $this->makeGETErrors($urlBase,405);
-    }
+    public function testGET_Books_index() {$this->makeGETErrors("/books",'put',404);}
+    public function testGET_BooksAccounts_index() {$this->makeGETErrors("/books/1/accounts",'put',404);}
+    public function testGET_BooksTransactions_index() {$this->makeGETErrors("/books/1/transactions",'put',404);}
+    public function testGET_BooksTransactionsDistributions_index() {$this->makeGETErrors("/books/1/transactions/1/distributions",'put',404);}
+    public function testGET_Categories_index() {$this->makeGETErrors("/categories",'put',404);}
+    public function testGET_Currencies_index() {$this->makeGETErrors("/currencies",'put',404);}
 
-    public function testGET_BooksTransactionsDistributions_add() {
-        $book_id=FixtureConstants::bookTypical;
-        $transaction_id=FixtureConstants::transactionTypical;
-        $urlBase="/books/$book_id/transactions/$transaction_id/distributions/add";
-        $this->makeGETErrors($urlBase,405);
-    }
-
-    public function testGET_Categories_add() {
-        $urlBase="/categories/add";
-        $this->makeGETErrors($urlBase,405);
-    }
-
-    public function testGET_Currencies_add() {
-        $urlBase="/currencies/add";
-        $this->makeGETErrors($urlBase,405);
-    }
-
-
-    public function testGET_Books_index() {
-        $urlBase="/books";
-        $this->makeGETErrors($urlBase,404);
-    }
-
-    public function testGET_BooksAccounts_index() {
-        $book_id=FixtureConstants::bookTypical;
-        $urlBase="/books/$book_id/accounts";
-        $this->makeGETErrors($urlBase,404);
-    }
-
-    public function testGET_BooksTransactions_index() {
-        $book_id=FixtureConstants::bookTypical;
-        $urlBase="/books/$book_id/transactions";
-        $this->makeGETErrors($urlBase,404);
-    }
-
-    public function testGET_BooksTransactionsDistributions_index() {
-        $book_id=FixtureConstants::bookTypical;
-        $transaction_id=FixtureConstants::transactionTypical;
-        $urlBase="/books/$book_id/transactions/$transaction_id/distributions";
-        $this->makeGETErrors($urlBase,404);
-    }
-
-    public function testGET_Categories_index() {
-        $urlBase="/categories";
-        $this->makeGETErrors($urlBase,404);
-    }
-
-    public function testGET_Currencies_index() {
-        $urlBase="/currencies";
-        $this->makeGETErrors($urlBase,404);
-    }
-
+    public function testGET_Books_view() {$this->makeGETErrors("/books/1",'post',404);}
+    public function testGET_BooksAccounts_view() {$this->makeGETErrors("/books/1/accounts/1",'post',404);}
+    public function testGET_BooksTransactions_view() {$this->makeGETErrors("/books/1/transactions/1",'post',404);}
+    public function testGET_BooksTransactionsDistributions_view() {$this->makeGETErrors("/books/1/transactions/1/distributions/1",'post',404);}
+    public function testGET_Categories_view() {$this->makeGETErrors("/categories/1",'post',404);}
+    public function testGET_Currencies_view() {$this->makeGETErrors("/currencies/1",'post',404);}
 
     /*public function testPOST_add() {
 

@@ -43,6 +43,11 @@ class CategoriesController extends AppController {
 
     public function edit($id = null) {
         $this->request->allowMethod(['get', 'put']);
+        
+        // Neither GET nor PUT should accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+        
         $category = $this->Categories->get($id);
         if ($this->request->is(['put'])) {
             $category = $this->Categories->patchEntity($category, $this->request->data);
@@ -70,6 +75,11 @@ class CategoriesController extends AppController {
 
     public function view($id = null) {
         $this->request->allowMethod(['get']);
+
+        // Should not accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+
         $category = $this->Categories->get($id);
         $this->set('category', $category);
     }

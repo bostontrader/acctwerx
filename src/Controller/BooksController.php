@@ -165,6 +165,11 @@ class BooksController extends AppController {
 
     public function edit($id = null) {
         $this->request->allowMethod(['get', 'put']);
+
+        // Neither GET nor PUT should accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+
         $book = $this->Books->get($id);
         if ($this->request->is(['put'])) {
             $book = $this->Books->patchEntity($book, $this->request->data);
@@ -212,6 +217,11 @@ class BooksController extends AppController {
 
     public function view($id = null) {
         $this->request->allowMethod(['get']);
+
+        // Should not accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+
         $book = $this->Books->get($id);
         $this->set('book', $book);
     }

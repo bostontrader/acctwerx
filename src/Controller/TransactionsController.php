@@ -86,6 +86,10 @@ class TransactionsController extends AppController {
     public function edit($id = null) {
         $this->request->allowMethod(['get', 'put']);
 
+        // Neither GET nor PUT should accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+
         // Get the book and book_id.
         $book_id=$this->get_book_id($this->request->params);
         $book=$this->Transactions->Books->get($book_id);
@@ -127,8 +131,11 @@ class TransactionsController extends AppController {
 
     // GET /books/:book_id/transactions/:id
     public function view($id = null) {
-
         $this->request->allowMethod(['get']);
+
+        // Should not accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
         $book_id=$this->get_book_id($this->request->params);
 
