@@ -46,28 +46,55 @@ class BooksController extends AppController {
 
     public function balance($id = null) {
         $this->request->allowMethod(['get']);
+
+        // Should not accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+
         $book = $this->Books->get($id);
+
+
+
 
         /* @var \Cake\Database\Connection $connection */
         $connection = ConnectionManager::get('default');
-        $query="select
-                accounts.title as at,
-                currencies.symbol,
-                sum(distributions.amount * distributions.drcr) as amount
-            from distributions
 
-            left join transactions on distributions.transaction_id=transactions.id
-            left join books on transactions.book_id=books.id
-            left join accounts on distributions.account_id=accounts.id
-            left join currencies on distributions.currency_id=currencies.id
-            left join accounts_categories on accounts.id = accounts_categories.account_id
-            left join categories on accounts_categories.category_id = categories.id
+        // 1. Get a list of all accounts, from book_id, along with the denormalized
+        // list of categories said account is tagged with.
+        // | id | ct    |
+        // |  1 | A,B   |
+        // |  2 | A,C,D |
+        $q1 = "select accounts.id, group_concat(categories.symbol order by categories.symbol) as ct
+    from accounts 
+    left join accounts_categories on accounts.id = accounts_categories.account_id
+    left join categories on accounts_categories.category_id = categories.id
+	where accounts.book_id = $id
+	group by accounts.id";
 
-            where books.id=$id
-            and categories.symbol in ('A','L','Eq')
-            group by accounts.id, currencies.id
-            ";
-        $lineItems=$connection->execute($query)->fetchAll('assoc');
+        // 2. Prune this list to include only the account_ids of accounts, with a very
+        // specific concatenated list of category.symbols.
+        // | id |
+        // |  1 |
+        // |  2 |
+        $ct='A,C';
+        $q2="select id from ($q1) as t2 where ct = '$ct'";
+
+        // 3. Now find all distributions for these accounts.
+        // | at     | symbol | amount   |
+        // | Bank 1 | RMB    |   100.00 |
+        // | Bank 2 | RUB    |   250.00 |
+        $q3="select
+    accounts.title as at,
+    currencies.symbol,
+    sum(distributions.amount * distributions.drcr) as amount
+    from distributions 
+    left join accounts on distributions.account_id=accounts.id
+    left join currencies on distributions.currency_id=currencies.id 
+    where account_id in ($q2)
+    group by accounts.id, currencies.id";
+
+
+        $lineItems=$connection->execute($q3)->fetchAll('assoc');
         $this->set(compact('book','lineItems'));
         $this->set('_serialize', ['lineItems']); // makes JSON
     }
@@ -85,6 +112,11 @@ class BooksController extends AppController {
 
     // display a graph of bank balances + notes
     public function graphBank($id = null){
+        $this->request->allowMethod(['get']);
+
+        // Should not accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
         // 1. Start with a range of reporting months {y1, m1}, {y2,m2} inclusive...
         $start_period = $this->getStartPeriod();
@@ -126,6 +158,12 @@ class BooksController extends AppController {
 
     // display a graph of cash balances
     public function graphCash($id = null){
+
+        $this->request->allowMethod(['get']);
+
+        // Should not accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
         // 1. Start with a range of reporting months {y1, m1}, {y2,m2} inclusive...
         $start_period = $this->getStartPeriod();
@@ -186,6 +224,11 @@ class BooksController extends AppController {
 
     public function income($id = null) {
         $this->request->allowMethod(['get']);
+
+        // Should not accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+
         $book = $this->Books->get($id);
 
         /* @var \Cake\Database\Connection $connection */

@@ -23,14 +23,11 @@ class RequestErrors extends IntegrationTestCase {
     // from the array. Return the total count of Routes that match.
     private function countAndRemoveMatchingRoutes($url) {
         $cnt=0;
-        $idx=0;
         foreach(static::$routes as $key=>$r) {
-            $n=$r->getName();
             if($r->parse($url)) {
                 unset(static::$routes[$key]);
                 $cnt++;
             }
-            $idx++;
         }
         return $cnt;
     }
@@ -71,6 +68,7 @@ class RequestErrors extends IntegrationTestCase {
     public function testGET_Books_add() {$this->makeGETErrors("/books/add",'put',405);}
     public function testGET_BooksAccounts_add() {$this->makeGETErrors("/books/1/accounts/add",'put',405);}
     public function testGET_BooksTransactions_add() {$this->makeGETErrors("/books/1/transactions/add",'put',405);}
+    public function testGET_BooksAccountsDistributions_add() {$this->makeGETErrors("/books/1/accounts/1/distributions/add",'put',405);}
     public function testGET_BooksTransactionsDistributions_add() {$this->makeGETErrors("/books/1/transactions/1/distributions/add",'put',405);}
     public function testGET_Categories_add() {$this->makeGETErrors("/categories/add",'put',405);}
     public function testGET_Currencies_add() {$this->makeGETErrors("/currencies/add",'put',405);}
@@ -78,6 +76,7 @@ class RequestErrors extends IntegrationTestCase {
     public function testGET_Books_edit() {$this->makeGETErrors("/books/edit/1",'post',405);}
     public function testGET_BooksAccounts_edit() {$this->makeGETErrors("/books/1/accounts/edit/1",'post',405);}
     public function testGET_BooksTransactions_edit() {$this->makeGETErrors("/books/1/transactions/edit/1",'post',405);}
+    public function testGET_BooksAccountsDistributions_edit() {$this->makeGETErrors("/books/1/accounts/1/distributions/edit/1",'post',405);}
     public function testGET_BooksTransactionsDistributions_edit() {$this->makeGETErrors("/books/1/transactions/1/distributions/edit/1",'post',405);}
     public function testGET_Categories_edit() {$this->makeGETErrors("/categories/edit/1",'post',405);}
     public function testGET_Currencies_edit() {$this->makeGETErrors("/currencies/edit/1",'post',405);}
@@ -85,6 +84,7 @@ class RequestErrors extends IntegrationTestCase {
     public function testGET_Books_index() {$this->makeGETErrors("/books",'put',404);}
     public function testGET_BooksAccounts_index() {$this->makeGETErrors("/books/1/accounts",'put',404);}
     public function testGET_BooksTransactions_index() {$this->makeGETErrors("/books/1/transactions",'put',404);}
+    public function testGET_BooksAccountsDistributions_index() {$this->makeGETErrors("/books/1/accounts/1/distributions",'put',404);}
     public function testGET_BooksTransactionsDistributions_index() {$this->makeGETErrors("/books/1/transactions/1/distributions",'put',404);}
     public function testGET_Categories_index() {$this->makeGETErrors("/categories",'put',404);}
     public function testGET_Currencies_index() {$this->makeGETErrors("/currencies",'put',404);}
@@ -92,9 +92,15 @@ class RequestErrors extends IntegrationTestCase {
     public function testGET_Books_view() {$this->makeGETErrors("/books/1",'post',404);}
     public function testGET_BooksAccounts_view() {$this->makeGETErrors("/books/1/accounts/1",'post',404);}
     public function testGET_BooksTransactions_view() {$this->makeGETErrors("/books/1/transactions/1",'post',404);}
+    public function testGET_BooksAccountsDistributions_view() {$this->makeGETErrors("/books/1/accounts/1/distributions/1",'post',404);}
     public function testGET_BooksTransactionsDistributions_view() {$this->makeGETErrors("/books/1/transactions/1/distributions/1",'post',404);}
     public function testGET_Categories_view() {$this->makeGETErrors("/categories/1",'post',404);}
     public function testGET_Currencies_view() {$this->makeGETErrors("/currencies/1",'post',404);}
+
+    public function testGET_Books_balance() {$this->makeGETErrors("/books/balance/1",'put',405);}
+    public function testGET_Books_graph_bank() {$this->makeGETErrors("/books/graph_bank/1",'put',405);}
+    public function testGET_Books_graph_cash() {$this->makeGETErrors("/books/graph_cash/1",'put',405);}
+    public function testGET_Books_income() {$this->makeGETErrors("/books/income/1",'put',405);}
 
     /*public function testPOST_add() {
 
