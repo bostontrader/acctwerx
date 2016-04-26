@@ -59,6 +59,19 @@ class BooksController extends AppController {
         /* @var \Cake\Database\Connection $connection */
         $connection = ConnectionManager::get('default');
 
+        $query=$this->buildBalanceSheetQuery('A,C',$id);
+        $lineItemsCash=$connection->execute($query)->fetchAll('assoc');
+        $this->set(compact('book','lineItemsCash'));
+
+        $query=$this->buildBalanceSheetQuery('A,B',$id);
+        $lineItemsBank=$connection->execute($query)->fetchAll('assoc');
+        $this->set(compact('book','lineItemsBank'));
+        //$this->set('_serialize', ['lineItems']); // makes JSON
+    }
+
+    // Given a string to match concatenated category symbols, build the
+    // query string for element of the balance sheet
+    private function buildBalanceSheetQuery($ct,$book_id) {
         // 1. Get a list of all accounts, from book_id, along with the denormalized
         // list of categories said account is tagged with.
         // | id | ct    |
@@ -68,7 +81,7 @@ class BooksController extends AppController {
     from accounts 
     left join accounts_categories on accounts.id = accounts_categories.account_id
     left join categories on accounts_categories.category_id = categories.id
-	where accounts.book_id = $id
+	where accounts.book_id = $book_id
 	group by accounts.id";
 
         // 2. Prune this list to include only the account_ids of accounts, with a very
@@ -76,7 +89,7 @@ class BooksController extends AppController {
         // | id |
         // |  1 |
         // |  2 |
-        $ct='A,C';
+        //$ct='A,C';
         $q2="select id from ($q1) as t2 where ct = '$ct'";
 
         // 3. Now find all distributions for these accounts.
@@ -93,10 +106,7 @@ class BooksController extends AppController {
     where account_id in ($q2)
     group by accounts.id, currencies.id";
 
-
-        $lineItems=$connection->execute($q3)->fetchAll('assoc');
-        $this->set(compact('book','lineItems'));
-        $this->set('_serialize', ['lineItems']); // makes JSON
+        return $q3;
     }
 
     //public function delete($id = null) {
