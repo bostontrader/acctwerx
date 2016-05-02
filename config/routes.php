@@ -50,39 +50,49 @@ Router::scope('/', function ($routes) {
     // PATCH /recipes/123.format RecipesController::edit(123)
     // DELETE /recipes/123.format RecipesController::delete(123)
 
-    $routes->extensions(['json']);
+    //$routes->extensions(['json']);
 
-    $routes->resources('Books', function ($routes) {
-        $routes->resources('Accounts', function ($routes) {
-            $routes->resources('Distributions');
-            $routes->connect('/distributions/add', ['controller' => 'distributions', 'action' => 'add']);
-            $routes->connect('/distributions/edit/*', ['controller' => 'distributions', 'action' => 'edit']);
-        });
-        $routes->connect('/accounts/add', ['controller' => 'accounts', 'action' => 'add']);
-        $routes->connect('/accounts/edit/*', ['controller' => 'accounts', 'action' => 'edit']);
+    $routes->scope('/books', function ($routes) {
+        $routes->connect('/add', ['controller'=>'books','action'=>'add']);
+        $routes->connect('/add', ['controller'=>'books','action'=>'add', '_method'=>'POST']);
 
-        $routes->resources('Transactions', function ($routes) {
-            $routes->resources('Distributions');
-            $routes->connect('/distributions/add', ['controller' => 'distributions', 'action' => 'add']);
-            $routes->connect('/distributions/edit/*', ['controller' => 'distributions', 'action' => 'edit']);   
+        $routes->scope('/:book_id/accounts', function ($routes) {
+            $routes->connect('/add', ['controller' => 'accounts', 'action' => 'add']);
         });
-        $routes->connect('/transactions/add', ['controller' => 'transactions', 'action' => 'add']);
-        $routes->connect('/transactions/edit/*', ['controller' => 'transactions', 'action' => 'edit']);
+
     });
-    $routes->connect('/books/add', ['controller' => 'books', 'action' => 'add']);
-    $routes->connect('/books/edit/*', ['controller' => 'books', 'action' => 'edit']);
-    $routes->connect('/books/graph_bank/*', ['controller' => 'books', 'action' => 'graph_bank']);
-    $routes->connect('/books/graph_cash/*', ['controller' => 'books', 'action' => 'graph_cash']);
-    $routes->connect('/books/balance/*', ['controller' => 'books', 'action' => 'balance']);
-    $routes->connect('/books/income/*', ['controller' => 'books', 'action' => 'income']);
 
-    $routes->resources('Categories');
-    $routes->connect('/categories/add', ['controller' => 'categories', 'action' => 'add']);
-    $routes->connect('/categories/edit/*', ['controller' => 'categories', 'action' => 'edit']);
+    //$routes->resources('Books', ['_name'=>'catfood'], function ($routes) {
+        //$routes->resources('Accounts', function ($routes) {
+            //$routes->resources('Distributions');
+            //$routes->connect('/distributions/add', ['controller' => 'distributions', 'action' => 'add',''=>'']);
+            //$routes->connect('/distributions/edit/*', ['controller' => 'distributions', 'action' => 'edit']);
+        //});
+        //$routes->connect('/accounts/add', ['controller' => 'accounts', 'action' => 'add']);
+        //$routes->connect('/accounts/edit/*', ['controller' => 'accounts', 'action' => 'edit']);
 
-    $routes->resources('Currencies');
-    $routes->connect('/currencies/add', ['controller' => 'currencies', 'action' => 'add']);
-    $routes->connect('/currencies/edit/*', ['controller' => 'currencies', 'action' => 'edit']);
+        //$routes->resources('Transactions', function ($routes) {
+            //$routes->resources('Distributions');
+            //$routes->connect('/distributions/add', ['controller' => 'distributions', 'action' => 'add']);
+            //$routes->connect('/distributions/edit/*', ['controller' => 'distributions', 'action' => 'edit']);
+        //});
+        //$routes->connect('/transactions/add', ['controller' => 'transactions', 'action' => 'add']);
+        //$routes->connect('/transactions/edit/*', ['controller' => 'transactions', 'action' => 'edit']);
+    //});
+    //$routes->connect('/books/add', ['controller' => 'books', 'action' => 'add']);
+    //$routes->connect('/books/edit/*', ['controller' => 'books', 'action' => 'edit']);
+    //$routes->connect('/books/graph_bank/*', ['controller' => 'books', 'action' => 'graph_bank']);
+    //$routes->connect('/books/graph_cash/*', ['controller' => 'books', 'action' => 'graph_cash']);
+    //$routes->connect('/books/balance/*', ['controller' => 'books', 'action' => 'balance']);
+    //$routes->connect('/books/income/*', ['controller' => 'books', 'action' => 'income']);
+
+    //$routes->resources('Categories');
+    //$routes->connect('/categories/add', ['controller' => 'categories', 'action' => 'add']);
+    //$routes->connect('/categories/edit/*', ['controller' => 'categories', 'action' => 'edit']);
+
+    //$routes->resources('Currencies');
+    //$routes->connect('/currencies/add', ['controller' => 'currencies', 'action' => 'add']);
+    //$routes->connect('/currencies/edit/*', ['controller' => 'currencies', 'action' => 'edit']);
 
     /**
      * Here, we are connecting '/' (base path) to a controller called 'Pages',
@@ -94,7 +104,7 @@ Router::scope('/', function ($routes) {
     /**
      * ...and connect the rest of 'Pages' controller's URLs.
      */
-    $routes->connect('/pages/*', ['controller' => 'Pages', 'action' => 'display']);
+    //$routes->connect('/pages/*', ['controller' => 'Pages', 'action' => 'display']);
 
     /**
      * Connect catchall routes for all controllers.
