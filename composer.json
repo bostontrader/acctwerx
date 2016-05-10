@@ -6,13 +6,12 @@
     "license": "MIT",
     "require": {
         "php": ">=5.4.16",
-        "cakephp/cakephp": "~3.1",
+        "cakephp/cakephp": "3.1.1",
         "mobiledetect/mobiledetectlib": "2.*",
         "cakephp/migrations": "~1.0",
         "cakephp/plugin-installer": "*",
         "phpunit/phpunit": "4.8.21",
         "phpmd/phpmd": "2.3.2",
-        "shark/simple_html_dom": "dev-master",
         "jpgraph/jpgraph": "dev-master"
 	},
     "require-dev": {

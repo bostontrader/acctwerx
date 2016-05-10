@@ -4,9 +4,9 @@ namespace App\Controller;
 use Cake\Datasource\ConnectionManager;
 use Cake\Network\Exception\BadRequestException;
 
-require_once(ROOT . DS . 'vendor/jpgraph/jpgraph/lib/JpGraph/src/jpgraph.php');
-require_once(ROOT . DS . 'vendor/jpgraph/jpgraph/lib/JpGraph/src/jpgraph_line.php');
-require_once(ROOT . DS . 'vendor/jpgraph/jpgraph/lib/JpGraph/src/jpgraph_utils.inc.php');
+require_once(ROOT.DS.'vendor/jpgraph/jpgraph/lib/JpGraph/src/jpgraph.php');
+require_once(ROOT.DS.'vendor/jpgraph/jpgraph/lib/JpGraph/src/jpgraph_line.php');
+require_once(ROOT.DS.'vendor/jpgraph/jpgraph/lib/JpGraph/src/jpgraph_utils.inc.php');
 
 class BooksController extends AppController {
 
@@ -22,16 +22,16 @@ class BooksController extends AppController {
         //$this->loadComponent('RequestHandler');
     //}
 
-    // GET | POST /books/add
+    // CREATE: POST /books/add
     public function add() {
-        $this->request->allowMethod(['get','post']);
+        $this->request->allowMethod(['post']);
 
-        // Neither GET nor POST should accept any query string params.
+        // Should not accept any query string params.
         if(count($this->request->query)>0)
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
         $book = $this->Books->newEntity();
-        if ($this->request->is('post')) {
+        //if ($this->request->is('post')) {
             $book = $this->Books->patchEntity($book, $this->request->data);
             if ($this->Books->save($book)) {
                 $this->Flash->success(__(self::BOOK_SAVED));
@@ -39,7 +39,29 @@ class BooksController extends AppController {
             } else {
                 $this->Flash->error(__(self::BOOK_NOT_SAVED));
             }
-        }
+        //}
+        //$this->set(compact('book'));
+        //return null;
+    }
+
+    // GET /books/add
+    public function newform() {
+        $this->request->allowMethod(['get']);
+
+        // Should not accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+
+        $book = $this->Books->newEntity();
+        //if ($this->request->is('post')) {
+            //$book = $this->Books->patchEntity($book, $this->request->data);
+            //if ($this->Books->save($book)) {
+                //$this->Flash->success(__(self::BOOK_SAVED));
+                //return $this->redirect(['controller'=>'books','action' => 'index','_method'=>'GET']);
+            //} else {
+                //$this->Flash->error(__(self::BOOK_NOT_SAVED));
+            //}
+        //}
         $this->set(compact('book'));
         return null;
     }
@@ -109,7 +131,7 @@ class BooksController extends AppController {
         return $q3;
     }
 
-    //public function delete($id = null) {
+    public function delete($id = null) {
         //$this->request->allowMethod(['post', 'delete']);
         //$book = $this->Books->get($id);
         //if ($this->Books->delete($book)) {
@@ -118,7 +140,7 @@ class BooksController extends AppController {
             //$this->Flash->error(__(self::CANNOT_DELETE_BOOK));
         //}
         //return $this->redirect(['action' => 'index']);
-    //}
+    }
 
     // display a graph of bank balances + notes
     public function graphBank($id = null){
@@ -210,16 +232,16 @@ class BooksController extends AppController {
         return $this->response;
     }
 
-
+    // UPDATE PUT /books/:id
     public function edit($id = null) {
-        $this->request->allowMethod(['get', 'put']);
+        $this->request->allowMethod(['put']);
 
-        // Neither GET nor PUT should accept any query string params.
+        // Should not accept any query string params.
         if(count($this->request->query)>0)
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
         $book = $this->Books->get($id);
-        if ($this->request->is(['put'])) {
+        //if ($this->request->is(['put'])) {
             $book = $this->Books->patchEntity($book, $this->request->data);
             if ($this->Books->save($book)) {
                 $this->Flash->success(__(self::BOOK_SAVED));
@@ -227,9 +249,9 @@ class BooksController extends AppController {
             } else {
                 $this->Flash->error(__(self::BOOK_NOT_SAVED));
             }
-        }
+        //}
         $this->set(compact('book'));
-        return null;
+        //return null;
     }
 
     public function income($id = null) {

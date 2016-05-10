@@ -50,19 +50,31 @@ Router::scope('/', function ($routes) {
     // PATCH /recipes/123.format RecipesController::edit(123)
     // DELETE /recipes/123.format RecipesController::delete(123)
 
+    // The view method is notoriously useless because other methods provide what we want.
+    // We can use view to display a form to edit the record, and then PUT edit to update.
+    //
+    // In addition to the standard REST routes, we also need a method to obtain an entry form
+    // for a new record.
+    //
+    //
     //$routes->extensions(['json']);
 
-    $routes->scope('/books', function ($routes) {
-        $routes->connect('/add', ['controller'=>'books','action'=>'add']);
-        $routes->connect('/add', ['controller'=>'books','action'=>'add', '_method'=>'POST']);
+    // Guess A. Try to make restful and nested routes myself
+    //$routes->scope('/books', function ($routes) {
+        //$routes->connect('/', ['controller'=>'books','action'=>'index']);
+        //$routes->connect('/add', ['controller'=>'books','action'=>'add']);
+        //$routes->connect('/edit/*', ['controller'=>'books','action'=>'edit']);
+        //$routes->connect('/view', ['controller'=>'books','action'=>'view']);
+        //$routes->connect('/add', ['controller'=>'books','action'=>'add', '_method'=>'POST']);
 
-        $routes->scope('/:book_id/accounts', function ($routes) {
-            $routes->connect('/add', ['controller' => 'accounts', 'action' => 'add']);
-        });
+        //$routes->scope('/:book_id/accounts', function ($routes) {
+            //$routes->connect('/add', ['controller' => 'accounts', 'action' => 'add']);
+        //});
 
-    });
+    //});
 
-    //$routes->resources('Books', ['_name'=>'catfood'], function ($routes) {
+    // Guess B. Use Cake to do this
+    $routes->resources('Books', ['map'=>['update'=>['action'=>'edit','method'=>'PUT','path'=>':id']]], function ($routes) {
         //$routes->resources('Accounts', function ($routes) {
             //$routes->resources('Distributions');
             //$routes->connect('/distributions/add', ['controller' => 'distributions', 'action' => 'add',''=>'']);
@@ -78,7 +90,8 @@ Router::scope('/', function ($routes) {
         //});
         //$routes->connect('/transactions/add', ['controller' => 'transactions', 'action' => 'add']);
         //$routes->connect('/transactions/edit/*', ['controller' => 'transactions', 'action' => 'edit']);
-    //});
+    });
+    $routes->connect('/books/newform', ['controller'=>'books','action'=>'newform']);
     //$routes->connect('/books/add', ['controller' => 'books', 'action' => 'add']);
     //$routes->connect('/books/edit/*', ['controller' => 'books', 'action' => 'edit']);
     //$routes->connect('/books/graph_bank/*', ['controller' => 'books', 'action' => 'graph_bank']);
