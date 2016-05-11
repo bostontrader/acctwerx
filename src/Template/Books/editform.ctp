@@ -10,7 +10,7 @@ $this->Breadcrumb->makeTrail($book->title,$this->Html);
         </ul>
     </nav>
     <div class="books form large-9 medium-8 columns content">
-        <?= $this->Form->create($book,['id'=>'BookEditForm']) ?>
+        <?= $this->Form->create($book,['id'=>'BookEditForm','url'=>['action'=>'edit','[method]'=>'put']]) ?>
         <fieldset>
             <legend><?= __('Edit Book') ?></legend>
             <?php

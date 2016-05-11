@@ -254,6 +254,34 @@ class BooksController extends AppController {
         //return null;
     }
 
+    // Either way works, but no $id param is passed,
+    // but I can find it as $this->request->params['id']
+    // GET /books/editform/:id
+    // GET /books/:id/editform
+    public function editform($id = null) {
+
+        $id=$this->request->params['id'];
+
+        $this->request->allowMethod(['get']);
+
+        // Should not accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+
+        $book = $this->Books->get($id);
+        //if ($this->request->is(['put'])) {
+        //$book = $this->Books->patchEntity($book, $this->request->data);
+        //if ($this->Books->save($book)) {
+            //$this->Flash->success(__(self::BOOK_SAVED));
+            //return $this->redirect(['controller'=>'books','action' => 'index','_method'=>'GET']);
+        //} else {
+            //$this->Flash->error(__(self::BOOK_NOT_SAVED));
+        //}
+        //}
+        $this->set(compact('book'));
+        //return null;
+    }
+
     public function income($id = null) {
         $this->request->allowMethod(['get']);
 

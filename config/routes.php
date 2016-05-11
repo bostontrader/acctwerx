@@ -74,6 +74,8 @@ Router::scope('/', function ($routes) {
     //});
 
     // Guess B. Use Cake to do this
+    // By default this method wants to set edit/update to accept PUT and PATCH. Here I
+    // change it to only accept PUT.
     $routes->resources('Books', ['map'=>['update'=>['action'=>'edit','method'=>'PUT','path'=>':id']]], function ($routes) {
         //$routes->resources('Accounts', function ($routes) {
             //$routes->resources('Distributions');
@@ -92,6 +94,11 @@ Router::scope('/', function ($routes) {
         //$routes->connect('/transactions/edit/*', ['controller' => 'transactions', 'action' => 'edit']);
     });
     $routes->connect('/books/newform', ['controller'=>'books','action'=>'newform']);
+
+    // either way works, but can't pass :id into the controller method as an argument
+    //$routes->connect('/books/editform/:id', ['controller'=>'books','action'=>'editform']);
+    $routes->connect('/books/:id/editform', ['controller'=>'books','action'=>'editform']);
+
     //$routes->connect('/books/add', ['controller' => 'books', 'action' => 'add']);
     //$routes->connect('/books/edit/*', ['controller' => 'books', 'action' => 'edit']);
     //$routes->connect('/books/graph_bank/*', ['controller' => 'books', 'action' => 'graph_bank']);

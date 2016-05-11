@@ -8,16 +8,7 @@
     </nav>
     <div class="books form large-9 medium-8 columns content">
         <?=
-            //$this->Form->create($book,['id'=>'BookNewform','url'=>['action'=>'']])
-            //$this->Form->create($book,['id'=>'BookNewform','url'=>['action'=>'index']])
-            //$this->Form->create($book,['id'=>'BookNewform','url'=>['action'=>'add']])
-            //$this->Form->create($book,['id'=>'BookNewform','url'=>['action'=>'add'],'type'=>'post'])
-            //$this->Form->create($book,['id'=>'BookNewform','url'=>['action'=>'add','type'=>'post']])
             $this->Form->create($book,['id'=>'BookNewform','url'=>['action'=>'add','[method]'=>'post']])
-            //$this->Form->create($book,['id'=>'BookNewform','url'=>['action'=>'create']])
-            //$this->Form->create($book,['id'=>'BookNewform','url'=>['action'=>'create','type'=>'post']])
-            //$this->Form->create($book,['id'=>'BookNewform','url'=>['action'=>'create'],'type'=>'post'])
-            //$this->Form->create($book,['id'=>'BookNewform','url'=>'/books'])
         ?>
         <fieldset>
             <legend><?= __('Add Book') ?></legend>
