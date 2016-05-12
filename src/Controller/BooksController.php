@@ -22,7 +22,7 @@ class BooksController extends AppController {
         //$this->loadComponent('RequestHandler');
     //}
 
-    // CREATE: POST /books/add
+    // POST /books/add
     public function add() {
         $this->request->allowMethod(['post']);
 
@@ -31,17 +31,13 @@ class BooksController extends AppController {
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
         $book = $this->Books->newEntity();
-        //if ($this->request->is('post')) {
-            $book = $this->Books->patchEntity($book, $this->request->data);
-            if ($this->Books->save($book)) {
-                $this->Flash->success(__(self::BOOK_SAVED));
-                return $this->redirect(['controller'=>'books','action' => 'index','_method'=>'GET']);
-            } else {
-                $this->Flash->error(__(self::BOOK_NOT_SAVED));
-            }
-        //}
-        //$this->set(compact('book'));
-        //return null;
+        $book = $this->Books->patchEntity($book, $this->request->data);
+        if ($this->Books->save($book)) {
+            $this->Flash->success(__(self::BOOK_SAVED));
+            return $this->redirect(['controller'=>'books','action' => 'index','_method'=>'GET']);
+        } else {
+            $this->Flash->error(__(self::BOOK_NOT_SAVED));
+        }
     }
 
     // GET /books/add
@@ -53,15 +49,6 @@ class BooksController extends AppController {
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
         $book = $this->Books->newEntity();
-        //if ($this->request->is('post')) {
-            //$book = $this->Books->patchEntity($book, $this->request->data);
-            //if ($this->Books->save($book)) {
-                //$this->Flash->success(__(self::BOOK_SAVED));
-                //return $this->redirect(['controller'=>'books','action' => 'index','_method'=>'GET']);
-            //} else {
-                //$this->Flash->error(__(self::BOOK_NOT_SAVED));
-            //}
-        //}
         $this->set(compact('book'));
         return null;
     }
@@ -131,6 +118,7 @@ class BooksController extends AppController {
         return $q3;
     }
 
+    // DELETE /books/:id
     public function delete($id = null) {
         //$this->request->allowMethod(['post', 'delete']);
         //$book = $this->Books->get($id);
@@ -232,7 +220,7 @@ class BooksController extends AppController {
         return $this->response;
     }
 
-    // UPDATE PUT /books/:id
+    // PUT /books/:id
     public function edit($id = null) {
         $this->request->allowMethod(['put']);
 
@@ -241,27 +229,20 @@ class BooksController extends AppController {
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
         $book = $this->Books->get($id);
-        //if ($this->request->is(['put'])) {
-            $book = $this->Books->patchEntity($book, $this->request->data);
-            if ($this->Books->save($book)) {
-                $this->Flash->success(__(self::BOOK_SAVED));
-                return $this->redirect(['controller'=>'books','action' => 'index','_method'=>'GET']);
-            } else {
-                $this->Flash->error(__(self::BOOK_NOT_SAVED));
-            }
-        //}
-        $this->set(compact('book'));
-        //return null;
+        $book = $this->Books->patchEntity($book, $this->request->data);
+        if ($this->Books->save($book)) {
+            $this->Flash->success(__(self::BOOK_SAVED));
+            return $this->redirect(['controller'=>'books','action' => 'index','_method'=>'GET']);
+        } else {
+            $this->Flash->error(__(self::BOOK_NOT_SAVED));
+        }
     }
 
-    // Either way works, but no $id param is passed,
-    // but I can find it as $this->request->params['id']
-    // GET /books/editform/:id
+    // There's something wrong with my routing because no $id param is passed.
+    // But I can find it as $this->request->params['id']
     // GET /books/:id/editform
     public function editform($id = null) {
-
         $id=$this->request->params['id'];
-
         $this->request->allowMethod(['get']);
 
         // Should not accept any query string params.
@@ -269,17 +250,7 @@ class BooksController extends AppController {
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
         $book = $this->Books->get($id);
-        //if ($this->request->is(['put'])) {
-        //$book = $this->Books->patchEntity($book, $this->request->data);
-        //if ($this->Books->save($book)) {
-            //$this->Flash->success(__(self::BOOK_SAVED));
-            //return $this->redirect(['controller'=>'books','action' => 'index','_method'=>'GET']);
-        //} else {
-            //$this->Flash->error(__(self::BOOK_NOT_SAVED));
-        //}
-        //}
         $this->set(compact('book'));
-        //return null;
     }
 
     public function income($id = null) {
@@ -315,7 +286,7 @@ class BooksController extends AppController {
         if(count($this->request->query)>0)
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
-        $this->set('books', $this->Books->find());
+        $this->set('books', $this->Books->find()->order(['id']));
     }
 
     public function view($id = null) {

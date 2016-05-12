@@ -1,6 +1,6 @@
 <?php  /* @var \Cake\ORM\Entity $book */ ?>
 
-<div id="BooksAdd">
+<div id="BooksNewform">
     <nav class="large-3 medium-4 columns" id="actions-sidebar">
         <ul class="side-nav">
             <li class="heading"><?= __('Actions') ?></li>
@@ -8,7 +8,7 @@
     </nav>
     <div class="books form large-9 medium-8 columns content">
         <?=
-            $this->Form->create($book,['id'=>'BookNewform','url'=>['action'=>'add','[method]'=>'post']])
+            $this->Form->create($book,['id'=>'BookNewformForm','url'=>['action'=>'add','[method]'=>'post']])
         ?>
         <fieldset>
             <legend><?= __('Add Book') ?></legend>

@@ -1,33 +1,33 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
-use App\Controller\CategoriesController;
+use App\Controller\BooksController;
 use App\Test\Fixture\FixtureConstants;
-use App\Test\Fixture\CategoriesFixture;
+use App\Test\Fixture\BooksFixture;
 use Cake\ORM\TableRegistry;
 
-class CategoriesControllerTest extends DMIntegrationTestCase {
+class BasicCRUD extends DMIntegrationTestCase {
 
     public $fixtures = [
-        'app.categories'
+        'app.books'
     ];
 
     /** @var \Cake\ORM\Table */
-    private $Categories;
+    private $Books;
 
-    /** @var \App\Test\Fixture\CategoriesFixture */
-    private $categoriesFixture;
+    /** @var \App\Test\Fixture\BooksFixture */
+    private $booksFixture;
 
     public function setUp() {
         parent::setUp();
-        $this->Categories = TableRegistry::get('Categories');
-        $this->categoriesFixture = new CategoriesFixture();
+        $this->Books = TableRegistry::get('Books');
+        $this->booksFixture = new BooksFixture();
     }
 
-    public function testGET_add() {
+    public function testGET_newform() {
 
         // 1. GET the url and parse the response.
-        $this->get('/categories/add');
+        $this->get('/books/newform');
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
         $dom = new \DomDocument();
@@ -35,17 +35,17 @@ class CategoriesControllerTest extends DMIntegrationTestCase {
         $xpath=new \DomXPath($dom);
 
         // 2. Isolate the content produced by this controller method (excluding the layout.)
-        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='CategoriesAdd']");
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='BooksNewform']");
 
         // 3. Count the A tags.
         $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
         $this->assertEquals($unknownATagCnt,0);
 
         // 4. Ensure that the expected form exists
-        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='CategoryAddForm']",$content_node);
+        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='BookNewformForm']",$content_node);
 
         // 5. Now inspect the legend of the form.
-        $this->assertContains("Add Category",$this->getTheOnlyOne($xpath,"//legend",$form_node)->textContent);
+        $this->assertContains("Add Book",$this->getTheOnlyOne($xpath,"//legend",$form_node)->textContent);
 
         // 6. Now inspect the fields on the form.  We want to know that:
         // A. The correct fields are there and no other fields.
@@ -64,11 +64,7 @@ class CategoriesControllerTest extends DMIntegrationTestCase {
         $unknownInputCnt--;
 
         // 6.3 Ensure that there's an input field for title, of type text, and that it is empty
-        $this->assertTrue($xpath->query("//input[@id='CategoryTitle' and @type='text' and not(@value)]",$form_node)->length==1);
-        $unknownInputCnt--;
-
-        // 6.4 Ensure that there's an input field for symbol, of type text, and that it is empty
-        $this->assertTrue($xpath->query("//input[@id='CategorySymbol' and @type='text' and not(@value)]",$form_node)->length==1);
+        $this->assertTrue($xpath->query("//input[@id='BookTitle' and @type='text' and not(@value)]",$form_node)->length==1);
         $unknownInputCnt--;
 
         // 7. Have all the input and selects been accounted for?
@@ -80,36 +76,35 @@ class CategoriesControllerTest extends DMIntegrationTestCase {
 
         // 1. POST a suitable record to the url, observe redirection, and return the record just
         // posted, as read from the db.
-        $fixtureRecord=$this->categoriesFixture->newCategoryRecord;
+        $fixtureRecord=$this->booksFixture->newBookRecord;
         $fromDbRecord=$this->genericPOSTAddProlog(
             null, // no login
-            '/categories/add', $fixtureRecord,
-            '/categories', $this->Categories
+            '/books', $fixtureRecord,
+            '/books', $this->Books
         );
 
         // 2. Now validate that record.
         $this->assertEquals($fromDbRecord['title'],$fixtureRecord['title']);
-        $this->assertEquals($fromDbRecord['symbol'],$fixtureRecord['symbol']);
 
-        // 3. Can I see the CATEGORY_SAVED message?
+        // 3. Can I see the BOOK_SAVED message?
         $flash=$this->_controller->request->session()->read('Flash.flash');
-        $this->assertEquals($flash[0]['message'],CategoriesController::CATEGORY_SAVED);
+        $this->assertEquals($flash[0]['message'],BooksController::BOOK_SAVED);
     }
 
     //public function testDELETE() {
-    //$this->deletePOST(
-    //null, // no login
-    //'/categories/delete/',
-    //FixtureConstants::bookTypical, '/categories', $this->Categories
-    //);
+        //$this->deletePOST(
+            //null, // no login
+            //'/books/delete/',
+            //FixtureConstants::bookTypical, '/books', $this->Books
+        //);
     //}
 
-    public function testGET_edit() {
+    public function testGET_editform() {
 
         // 1. Obtain a record to edit, GET the url, and parse the response.
-        $category_id=FixtureConstants::categoryTypical;
-        $category=$this->Categories->get($category_id);
-        $this->get("/categories/edit/$category_id");
+        $book_id=FixtureConstants::bookTypical;
+        $book=$this->Books->get($book_id);
+        $this->get("/books/$book_id/editform");
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
         $dom = new \DomDocument();
@@ -117,17 +112,17 @@ class CategoriesControllerTest extends DMIntegrationTestCase {
         $xpath=new \DomXPath($dom);
 
         // 2. Isolate the content produced by this controller method (excluding the layout.)
-        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='CategoriesEdit']");
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='BooksEditform']");
 
         // 3. Count the A tags.
         $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
         $this->assertEquals($unknownATagCnt,0);
 
         // 4. Ensure that the expected form exists
-        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='CategoryEditForm']",$content_node);
+        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='BookEditformForm']",$content_node);
 
         // 5. Now inspect the legend of the form.
-        $this->assertContains("Edit Category",$this->getTheOnlyOne($xpath,"//legend",$form_node)->textContent);
+        $this->assertContains("Edit Book",$this->getTheOnlyOne($xpath,"//legend",$form_node)->textContent);
 
         // 6. Now inspect the fields on the form.  We want to know that:
         // A. The correct fields are there and no other fields.
@@ -137,7 +132,7 @@ class CategoriesControllerTest extends DMIntegrationTestCase {
         //  The actual order that the fields are listed on the form is hereby deemed unimportant.
 
         // 6.1 These are counts of the select and input fields on the form.  They
-        // are presently unCategoryed for.
+        // are presently unBooked for.
         $unknownSelectCnt=$xpath->query("//select",$form_node)->length;
         $unknownInputCnt=$xpath->query("//input",$form_node)->length;
 
@@ -146,39 +141,36 @@ class CategoriesControllerTest extends DMIntegrationTestCase {
         $unknownInputCnt--;
 
         // 6.3 Ensure that there's an input field for title, of type text, that is correctly set
-        $this->assertTrue($xpath->query("//input[@id='CategoryTitle' and @type='text' and @value='$category->title']",$form_node)->length==1);
+        $this->assertTrue($xpath->query("//input[@id='BookTitle' and @type='text' and @value='$book->title']",$form_node)->length==1);
         $unknownInputCnt--;
 
-        // 6.4 Ensure that there's an input field for symbol, of type text, that is correctly set
-        $this->assertTrue($xpath->query("//input[@id='CategorySymbol' and @type='text' and @value='$category->symbol']",$form_node)->length==1);
-        $unknownInputCnt--;
-
-        // 7. Have all the input and selects been Categoryed for?
+        // 7. Have all the input and selects been Booked for?
         $this->assertEquals(0, $unknownInputCnt);
         $this->assertEquals(0, $unknownSelectCnt);
     }
 
-    public function testPOST_edit() {
+    public function testPUT_edit() {
 
         // 1. Obtain the relevant records.
-        $category_id=FixtureConstants::categoryTypical;
-        $categoryNew=$this->categoriesFixture->newCategoryRecord;
+        $book_id=FixtureConstants::bookTypical;
+        $bookNew=$this->booksFixture->newBookRecord;
 
-        // 2. POST a suitable record to the url, observe the redirect, and parse the response.
-        $baseUrl="/categories";
-        $this->put("$baseUrl/$category_id", $categoryNew);
+        // 2. PUT a suitable record to the url and observe the redirect.
+        $baseUrl="/books";
+        $this->put("$baseUrl/$book_id", $bookNew);
         $this->assertResponseCode(302);
         $this->assertRedirect($baseUrl);
 
         // 3. Now retrieve that 1 record and validate it.
-        $fromDbRecord=$this->Categories->get($category_id);
-        $this->assertEquals($fromDbRecord['title'],$categoryNew['title']);
+        $fromDbRecord=$this->Books->get($book_id);
+        $this->assertEquals($fromDbRecord['title'],$bookNew['title']);
     }
+
 
     public function testGET_index() {
 
         // 1. Submit request, examine response, observe no redirect, and parse the response.
-        $this->get("/categories");
+        $this->get("/books");
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
         $dom = new \DomDocument();
@@ -186,32 +178,31 @@ class CategoriesControllerTest extends DMIntegrationTestCase {
         $xpath=new \DomXPath($dom);
 
         // 2. Isolate the content produced by this controller method (excluding the layout.)
-        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='CategoriesIndex']");
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='BooksIndex']");
 
         // 3. Count the A tags.
         $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
 
-        // 4. Look for the create new category link
-        $this->getTheOnlyOne($xpath,"//a[@id='CategoryAdd']",$content_node);
+        // 4. Look for the create new book link
+        $this->getTheOnlyOne($xpath,"//a[@id='BookNewform']",$content_node);
         $unknownATagCnt--;
 
         // 5. Ensure that there is a suitably named table to display the results.
-        $table_node=$this->getTheOnlyOne($xpath,"//table[@id='CategoriesTable']",$content_node);
+        $table_node=$this->getTheOnlyOne($xpath,"//table[@id='BooksTable']",$content_node);
 
         // 6. Now inspect the heading of the table.
-        $this->getTheOnlyOne($xpath,"//header[contains(text(),'Categories')]",$content_node);
+        $this->getTheOnlyOne($xpath,"//header[contains(text(),'Books')]",$content_node);
 
         // 7. Ensure that said table's thead element contains the correct
         //    headings, in the correct order, and nothing else.
         $column_header_nodes=$xpath->query("thead/tr/th",$table_node);
-        $this->assertEquals($column_header_nodes->length,3); // no other columns
+        $this->assertEquals($column_header_nodes->length,2); // no other columns
 
         $this->getTheOnlyOne($xpath,"thead/tr/th[1][@id='title']",$table_node);
-        $this->getTheOnlyOne($xpath,"thead/tr/th[2][@id='symbol']",$table_node);
-        $this->getTheOnlyOne($xpath,"thead/tr/th[3][@id='actions']",$table_node);
+        $this->getTheOnlyOne($xpath,"thead/tr/th[2][@id='actions']",$table_node);
 
         // 8. Ensure that the tbody section has the correct quantity of rows.
-        $dbRecords=$this->Categories->find()
+        $dbRecords=$this->Books->find()
             ->order(['id']);
         $tbody_nodes=$xpath->query("tbody/tr",$table_node);
         $this->assertTrue($tbody_nodes->length==$dbRecords->count());
@@ -228,20 +219,19 @@ class CategoriesControllerTest extends DMIntegrationTestCase {
             $row_node = $values[1];
             $column_nodes=$xpath->query("td",$row_node);
 
-            $this->assertEquals($fixtureRecord['Categories__title'],  $column_nodes->item(0)->textContent);
-            $this->assertEquals($fixtureRecord['Categories__symbol'],  $column_nodes->item(1)->textContent);
+            $this->assertEquals($fixtureRecord['Books__title'],  $column_nodes->item(0)->textContent);
 
             // 9.1 Now examine the action links
-            $action_nodes=$xpath->query("a",$column_nodes->item(2));
+            $action_nodes=$xpath->query("a",$column_nodes->item(1));
             $this->assertTrue($action_nodes->length==2);
 
-            $this->getTheOnlyOne($xpath,"a[@name='CategoryView']",$column_nodes->item(2));
+            $this->getTheOnlyOne($xpath,"a[@name='BookView']",$column_nodes->item(1));
             $unknownATagCnt--;
 
-            $this->getTheOnlyOne($xpath,"a[@name='CategoryEdit']",$column_nodes->item(2));
+            $this->getTheOnlyOne($xpath,"a[@name='BookEdit']",$column_nodes->item(1));
             $unknownATagCnt--;
 
-            // 9.9 No other columns
+            // 9.9 No other colu mns
             $this->assertEquals($column_nodes->length,$column_header_nodes->length);
         }
 
@@ -252,11 +242,11 @@ class CategoriesControllerTest extends DMIntegrationTestCase {
     public function testGET_view() {
 
         // 1. Obtain the relevant records.
-        $category_id=FixtureConstants::categoryTypical;
-        $category=$this->Categories->get($category_id);
+        $book_id=FixtureConstants::bookTypical;
+        $book=$this->Books->get($book_id);
 
         // 2. Submit request, examine response, observe no redirect, and parse the response.
-        $this->get("/categories/$category_id");
+        $this->get("/books/$book_id");
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
         $dom = new \DomDocument();
@@ -264,16 +254,32 @@ class CategoriesControllerTest extends DMIntegrationTestCase {
         $xpath=new \DomXPath($dom);
 
         // 3. Isolate the content produced by this controller method (excluding the layout.)
-        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='CategoriesView']");
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='BooksView']");
 
         // 4. Count the A tags.
         $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
 
-        // 4.9 Ensure that all the <A> tags have been accounted for
+        // 4.1 Look for the accounts link
+        $this->getTheOnlyOne($xpath,"//a[@id='BookAccounts']",$content_node);
+        $unknownATagCnt--;
+
+        // 4.2 Look for the transactions link
+        $this->getTheOnlyOne($xpath,"//a[@id='BookTransactions']",$content_node);
+        $unknownATagCnt--;
+
+        // 4.3 Look for the balance sheet link
+        $this->getTheOnlyOne($xpath,"//a[@id='BookBalanceSheet']",$content_node);
+        $unknownATagCnt--;
+
+        // 4.4 Look for the income statement link
+        $this->getTheOnlyOne($xpath,"//a[@id='BookIncomeStatement']",$content_node);
+        $unknownATagCnt--;
+
+        // 4.5 Ensure that all the <A> tags have been accounted for
         $this->assertEquals(0, $unknownATagCnt);
 
         // 5. Ensure that there is a suitably named table to display the results.
-        $table_node=$this->getTheOnlyOne($xpath,"//table[@id='CategoryViewTable']",$content_node);
+        $table_node=$this->getTheOnlyOne($xpath,"//table[@id='BookViewTable']",$content_node);
 
         // 6. Now inspect the fields in the table.  We want to know that:
         // A. The correct fields are there and no other fields.
@@ -284,15 +290,10 @@ class CategoriesControllerTest extends DMIntegrationTestCase {
         $unknownRowCnt=$xpath->query("//tr",$table_node)->length;
 
         // 6.1 title
-        $this->getTheOnlyOne($xpath,"//tr[1][@id='title']/td[text()='$category->title']",$table_node);
-        $unknownRowCnt--;
-
-        // 6.2 symbol
-        $this->getTheOnlyOne($xpath,"//tr[2][@id='symbol']/td[text()='$category->symbol']",$table_node);
+        $this->getTheOnlyOne($xpath,"//tr[1][@id='title']/td[text()='$book->title']",$table_node);
         $unknownRowCnt--;
 
         // 6.9 Have all the rows been accounted for?  Are there any extras?
         $this->assertEquals(0, $unknownRowCnt);
     }
 }
-

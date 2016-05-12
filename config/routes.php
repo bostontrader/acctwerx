@@ -50,46 +50,30 @@ Router::scope('/', function ($routes) {
     // PATCH /recipes/123.format RecipesController::edit(123)
     // DELETE /recipes/123.format RecipesController::delete(123)
 
-    // The view method is notoriously useless because other methods provide what we want.
-    // We can use view to display a form to edit the record, and then PUT edit to update.
-    //
     // In addition to the standard REST routes, we also need a method to obtain an entry form
-    // for a new record.
-    //
-    //
+    // for a new record and an edited record.
+    // GET /recipies/newform.format
+    // GET /recipies/123/editform.format
+
     //$routes->extensions(['json']);
 
-    // Guess A. Try to make restful and nested routes myself
-    //$routes->scope('/books', function ($routes) {
-        //$routes->connect('/', ['controller'=>'books','action'=>'index']);
-        //$routes->connect('/add', ['controller'=>'books','action'=>'add']);
-        //$routes->connect('/edit/*', ['controller'=>'books','action'=>'edit']);
-        //$routes->connect('/view', ['controller'=>'books','action'=>'view']);
-        //$routes->connect('/add', ['controller'=>'books','action'=>'add', '_method'=>'POST']);
-
-        //$routes->scope('/:book_id/accounts', function ($routes) {
-            //$routes->connect('/add', ['controller' => 'accounts', 'action' => 'add']);
-        //});
-
-    //});
-
-    // Guess B. Use Cake to do this
+    // Option A. Use Cake to do this
     // By default this method wants to set edit/update to accept PUT and PATCH. Here I
     // change it to only accept PUT.
     $routes->resources('Books', ['map'=>['update'=>['action'=>'edit','method'=>'PUT','path'=>':id']]], function ($routes) {
-        //$routes->resources('Accounts', function ($routes) {
+        $routes->resources('Accounts', ['map'=>['update'=>['action'=>'edit','method'=>'PUT','path'=>':id']]], function ($routes) {
             //$routes->resources('Distributions');
             //$routes->connect('/distributions/add', ['controller' => 'distributions', 'action' => 'add',''=>'']);
             //$routes->connect('/distributions/edit/*', ['controller' => 'distributions', 'action' => 'edit']);
-        //});
+        });
         //$routes->connect('/accounts/add', ['controller' => 'accounts', 'action' => 'add']);
         //$routes->connect('/accounts/edit/*', ['controller' => 'accounts', 'action' => 'edit']);
 
-        //$routes->resources('Transactions', function ($routes) {
+        $routes->resources('Transactions', ['map'=>['update'=>['action'=>'edit','method'=>'PUT','path'=>':id']]], function ($routes) {
             //$routes->resources('Distributions');
             //$routes->connect('/distributions/add', ['controller' => 'distributions', 'action' => 'add']);
             //$routes->connect('/distributions/edit/*', ['controller' => 'distributions', 'action' => 'edit']);
-        //});
+        });
         //$routes->connect('/transactions/add', ['controller' => 'transactions', 'action' => 'add']);
         //$routes->connect('/transactions/edit/*', ['controller' => 'transactions', 'action' => 'edit']);
     });
@@ -98,21 +82,46 @@ Router::scope('/', function ($routes) {
     // either way works, but can't pass :id into the controller method as an argument
     //$routes->connect('/books/editform/:id', ['controller'=>'books','action'=>'editform']);
     $routes->connect('/books/:id/editform', ['controller'=>'books','action'=>'editform']);
+    $routes->connect('/books/:id/balance', ['controller'=>'books','action'=>'balance']);
+    $routes->connect('/books/:id/income', ['controller'=>'books','action'=>'income']);
 
-    //$routes->connect('/books/add', ['controller' => 'books', 'action' => 'add']);
-    //$routes->connect('/books/edit/*', ['controller' => 'books', 'action' => 'edit']);
     //$routes->connect('/books/graph_bank/*', ['controller' => 'books', 'action' => 'graph_bank']);
     //$routes->connect('/books/graph_cash/*', ['controller' => 'books', 'action' => 'graph_cash']);
     //$routes->connect('/books/balance/*', ['controller' => 'books', 'action' => 'balance']);
     //$routes->connect('/books/income/*', ['controller' => 'books', 'action' => 'income']);
 
+    
     //$routes->resources('Categories');
     //$routes->connect('/categories/add', ['controller' => 'categories', 'action' => 'add']);
     //$routes->connect('/categories/edit/*', ['controller' => 'categories', 'action' => 'edit']);
 
+    // By default this method wants to set edit/update to accept PUT and PATCH. Here I
+    // change it to only accept PUT.
+    $routes->resources('Categories', ['map'=>['update'=>['action'=>'edit','method'=>'PUT','path'=>':id']]], function ($routes) {});
+    $routes->connect('/categories/newform', ['controller'=>'categories','action'=>'newform']);
+
+    // either way works, but can't pass :id into the controller method as an argument
+    //$routes->connect('/categories/editform/:id', ['controller'=>'categories','action'=>'editform']);
+    $routes->connect('/categories/:id/editform', ['controller'=>'categories','action'=>'editform']);
+
+
     //$routes->resources('Currencies');
     //$routes->connect('/currencies/add', ['controller' => 'currencies', 'action' => 'add']);
     //$routes->connect('/currencies/edit/*', ['controller' => 'currencies', 'action' => 'edit']);
+
+    // Option B. Try to make restful and nested routes myself
+    //$routes->scope('/books', function ($routes) {
+    //$routes->connect('/', ['controller'=>'books','action'=>'index']);
+    //$routes->connect('/add', ['controller'=>'books','action'=>'add']);
+    //$routes->connect('/edit/*', ['controller'=>'books','action'=>'edit']);
+    //$routes->connect('/view', ['controller'=>'books','action'=>'view']);
+    //$routes->connect('/add', ['controller'=>'books','action'=>'add', '_method'=>'POST']);
+
+    //$routes->scope('/:book_id/accounts', function ($routes) {
+    //$routes->connect('/add', ['controller' => 'accounts', 'action' => 'add']);
+    //});
+
+    //});
 
     /**
      * Here, we are connecting '/' (base path) to a controller called 'Pages',

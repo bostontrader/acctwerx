@@ -26,7 +26,11 @@ $this->Breadcrumb->makeTrail('Books',$this->Html);
                     <td class="actions">
                         <?=
                         //$this->Html->link(__('View/Edit'), ['action' => 'view', 'id'=>$book->id, '_method'=>'GET'],['name'=>'BookView'])
-                        $this->Html->link(__('View/Edit'), ['action'=>'editform', 'id'=>$book->id],['name'=>'BookView'])
+                        $this->Html->link(__('View'), ['action' => 'view', 'id'=>$book->id, '_method'=>'GET'],['name'=>'BookView'])
+                        ?>
+                        <?=
+                        //$this->Html->link(__('View/Edit'), ['action' => 'view', 'id'=>$book->id, '_method'=>'GET'],['name'=>'BookView'])
+                        $this->Html->link(__('Edit'), ['action'=>'editform', 'id'=>$book->id],['name'=>'BookEdit'])
                         ?>
                         <?php // $this->Form->postLink(__('Delete'), ['action' => 'delete',  '_method'=>'DELETE', 'id'=>$book->id], ['name'=>'BookDelete','confirm' => __('Are you sure you want to delete # {0}?', $book->id)]) ?>
                     </td>
