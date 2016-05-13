@@ -1,15 +1,15 @@
-<?php  /* @var \Cake\ORM\Entity $currency */ ?>
+<?php  /* @var \Cake\ORM\Entity $currency  */ ?>
 
-<div id="CurrenciesAdd">
+<div id="CurrenciesEditform">
     <nav class="large-3 medium-4 columns" id="actions-sidebar">
         <ul class="side-nav">
             <li class="heading"><?= __('Actions') ?></li>
         </ul>
     </nav>
     <div class="currencies form large-9 medium-8 columns content">
-        <?= $this->Form->create($currency,['id'=>'CurrencyAddForm']) ?>
+        <?= $this->Form->create($currency,['id'=>'CurrencyEditformForm']) ?>
         <fieldset>
-            <legend><?= __('Add Currency') ?></legend>
+            <legend><?= __('Edit Currency') ?></legend>
             <?php
                 echo $this->Form->input('title',['id'=>'CurrencyTitle']);
                 echo $this->Form->input('symbol',['id'=>'CurrencySymbol']);

@@ -40,7 +40,7 @@ class BooksController extends AppController {
         }
     }
 
-    // GET /books/add
+    // GET /books/newform
     public function newform() {
         $this->request->allowMethod(['get']);
 
@@ -279,6 +279,7 @@ class BooksController extends AppController {
         $this->set(compact('book','lineItems' ));
     }
 
+    // GET /books
     public function index() {
         $this->request->allowMethod(['get']);
 
@@ -289,6 +290,7 @@ class BooksController extends AppController {
         $this->set('books', $this->Books->find()->order(['id']));
     }
 
+    // GET /books/:id
     public function view($id = null) {
         $this->request->allowMethod(['get']);
 

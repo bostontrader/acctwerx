@@ -7,7 +7,7 @@
     <nav class="large-3 medium-4 columns" id="actions-sidebar">
         <ul class="side-nav">
             <li class="heading"><?= __('Actions') ?></li>
-            <li><?= $this->Html->link(__('New Currency'), ['action' => 'add'], ['id'=>'CurrencyAdd']) ?></li>
+            <li><?= $this->Html->link(__('New Currency'),['action'=>'newform'], ['id'=>'CurrencyNewform']) ?></li>
         </ul>
     </nav>
     <div class="currencys index large-9 medium-8 columns content">
@@ -27,8 +27,8 @@
                     <td><?= $currency->title ?></td>
                     <td><?= $currency->symbol ?></td>
                     <td class="actions">
-                        <?= $this->Html->link(__('View'), ['action' => 'view', 'id'=>$currency->id, '_method'=>'GET'],['name'=>'CurrencyView']) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit',$currency->id],['name'=>'CurrencyEdit']) ?>
+                        <?= $this->Html->link(__('View'),['action'=>'view','id'=>$currency->id,'_method'=>'GET'],['name'=>'CurrencyView']) ?>
+                        <?= $this->Html->link(__('Edit'),['action'=>'editform','id'=>$currency->id],['name'=>'CurrencyEditform']) ?>
                         <?php // $this->Form->postLink(__('Delete'), ['action' => 'delete',  '_method'=>'DELETE', 'id'=>$currency->id], ['name'=>'CurrencyDelete','confirm' => __('Are you sure you want to delete # {0}?', $currency->id)]) ?>
                     </td>
                 </tr>

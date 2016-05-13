@@ -24,10 +24,10 @@ class CurrenciesControllerTest extends DMIntegrationTestCase {
         $this->currenciesFixture = new CurrenciesFixture();
     }
 
-    public function testGET_add() {
+    public function testGET_newform() {
 
         // 1. GET the url and parse the response.
-        $this->get('/currencies/add');
+        $this->get('/currencies/newform');
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
         $dom = new \DomDocument();
@@ -35,14 +35,14 @@ class CurrenciesControllerTest extends DMIntegrationTestCase {
         $xpath=new \DomXPath($dom);
 
         // 2. Isolate the content produced by this controller method (excluding the layout.)
-        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='CurrenciesAdd']");
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='CurrenciesNewform']");
 
         // 3. Count the A tags.
         $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
         $this->assertEquals($unknownATagCnt,0);
 
         // 4. Ensure that the expected form exists
-        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='CurrencyAddForm']",$content_node);
+        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='CurrencyNewformForm']",$content_node);
 
         // 5. Now inspect the legend of the form.
         $this->assertContains("Add Currency",$this->getTheOnlyOne($xpath,"//legend",$form_node)->textContent);
@@ -83,7 +83,7 @@ class CurrenciesControllerTest extends DMIntegrationTestCase {
         $fixtureRecord=$this->currenciesFixture->newCurrencyRecord;
         $fromDbRecord=$this->genericPOSTAddProlog(
             null, // no login
-            '/currencies/add', $fixtureRecord,
+            '/currencies', $fixtureRecord,
             '/currencies', $this->Currencies
         );
 
@@ -104,12 +104,12 @@ class CurrenciesControllerTest extends DMIntegrationTestCase {
     //);
     //}
 
-    public function testGET_edit() {
+    public function testGET_editform() {
 
         // 1. Obtain a record to edit, GET the url, and parse the response.
         $currency_id=FixtureConstants::currencyTypical;
         $currency=$this->Currencies->get($currency_id);
-        $this->get("/currencies/edit/$currency_id");
+        $this->get("/currencies/$currency_id/editform");
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
         $dom = new \DomDocument();
@@ -117,14 +117,14 @@ class CurrenciesControllerTest extends DMIntegrationTestCase {
         $xpath=new \DomXPath($dom);
 
         // 2. Isolate the content produced by this controller method (excluding the layout.)
-        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='CurrenciesEdit']");
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='CurrenciesEditform']");
 
         // 3. Count the A tags.
         $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
         $this->assertEquals($unknownATagCnt,0);
 
         // 4. Ensure that the expected form exists
-        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='CurrencyEditForm']",$content_node);
+        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='CurrencyEditformForm']",$content_node);
 
         // 5. Now inspect the legend of the form.
         $this->assertContains("Edit Currency",$this->getTheOnlyOne($xpath,"//legend",$form_node)->textContent);
@@ -158,13 +158,13 @@ class CurrenciesControllerTest extends DMIntegrationTestCase {
         $this->assertEquals(0, $unknownSelectCnt);
     }
 
-    public function testPOST_edit() {
+    public function testPUT_edit() {
 
         // 1. Obtain the relevant records.
         $currency_id=FixtureConstants::currencyTypical;
         $currencyNew=$this->currenciesFixture->newCurrencyRecord;
 
-        // 2. POST a suitable record to the url, observe the redirect, and parse the response.
+        // 2. PUT a suitable record to the url and observe the redirect.
         $baseUrl="/currencies";
         $this->put("$baseUrl/$currency_id", $currencyNew);
         $this->assertResponseCode(302);
@@ -192,7 +192,7 @@ class CurrenciesControllerTest extends DMIntegrationTestCase {
         $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
 
         // 4. Look for the create new currency link
-        $this->getTheOnlyOne($xpath,"//a[@id='CurrencyAdd']",$content_node);
+        $this->getTheOnlyOne($xpath,"//a[@id='CurrencyNewform']",$content_node);
         $unknownATagCnt--;
 
         // 5. Ensure that there is a suitably named table to display the results.
@@ -238,7 +238,7 @@ class CurrenciesControllerTest extends DMIntegrationTestCase {
             $this->getTheOnlyOne($xpath,"a[@name='CurrencyView']",$column_nodes->item(2));
             $unknownATagCnt--;
 
-            $this->getTheOnlyOne($xpath,"a[@name='CurrencyEdit']",$column_nodes->item(2));
+            $this->getTheOnlyOne($xpath,"a[@name='CurrencyEditform']",$column_nodes->item(2));
             $unknownATagCnt--;
 
             // 9.9 No other columns

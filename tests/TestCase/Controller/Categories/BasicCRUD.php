@@ -164,7 +164,7 @@ class CategoriesControllerTest extends DMIntegrationTestCase {
         $category_id=FixtureConstants::categoryAsset;
         $categoryNew=$this->categoriesFixture->newCategoryRecord;
 
-        // 2. POST a suitable record to the url, observe the redirect, and parse the response.
+        // 2. PUT a suitable record to the url and observe the redirect.
         $baseUrl="/categories";
         $this->put("$baseUrl/$category_id", $categoryNew);
         $this->assertResponseCode(302);

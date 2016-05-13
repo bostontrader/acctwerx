@@ -11,11 +11,11 @@ class DistributionsController extends AppController {
     const DISTRIBUTION_DELETED = "The distribution has been deleted.";
     const CANNOT_DELETE_DISTRIBUTION = "The distribution could not be deleted. Please, try again.";
 
-    // GET | POST /books/:book_id/transactions/:transaction_id/distributions/add
+    // POST /books/:book_id/transactions/:transaction_id/distributions/add
     public function add() {
-        $this->request->allowMethod(['get', 'post']);
+        $this->request->allowMethod(['post']);
 
-        // Neither GET nor POST should accept any query string params.
+        // Should not accept any query string params.
         if(count($this->request->query)>0)
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
@@ -26,7 +26,7 @@ class DistributionsController extends AppController {
         $distribution = $this->Distributions->newEntity(['contain'=>'transactions']);
         $distribution->drcr=1; // default to dr
 
-        if ($this->request->is('post')) {
+        //if ($this->request->is('post')) {
             $distribution = $this->Distributions->patchEntity($distribution, $this->request->data);
             if ($this->Distributions->save($distribution)) {
                 $this->Flash->success(__(self::DISTRIBUTION_SAVED));
@@ -34,7 +34,37 @@ class DistributionsController extends AppController {
             } else {
                 $this->Flash->error(__(self::DISTRIBUTION_NOT_SAVED));
             }
-        }
+        //}
+        //$accounts = $this->Distributions->Accounts->find('list');
+        //$currencies = $this->Distributions->Currencies->find('list');
+        //$this->set(compact('accounts','currencies','distribution','transaction_id'));
+        //return null;
+    }
+
+    // GET /books/:book_id/transactions/:transaction_id/distributions/newform
+    public function newform() {
+        $this->request->allowMethod(['get']);
+
+        // Should not accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+
+        // Get the book_id and transaction_id.
+        $transaction_id=$this->get_transaction_id($this->request->params);
+        //$book_id=$this->get_book_id($this->request->params);
+
+        $distribution = $this->Distributions->newEntity(['contain'=>'transactions']);
+        $distribution->drcr=1; // default to dr
+
+        //if ($this->request->is('post')) {
+            //$distribution = $this->Distributions->patchEntity($distribution, $this->request->data);
+            //if ($this->Distributions->save($distribution)) {
+                //$this->Flash->success(__(self::DISTRIBUTION_SAVED));
+                //return $this->redirect(['book_id' => $book_id, 'transaction_id' => $transaction_id, 'action' => 'index', '_method'=>'GET']);
+            //} else {
+                //$this->Flash->error(__(self::DISTRIBUTION_NOT_SAVED));
+            //}
+        //}
         $accounts = $this->Distributions->Accounts->find('list');
         $currencies = $this->Distributions->Currencies->find('list');
         $this->set(compact('accounts','currencies','distribution','transaction_id'));

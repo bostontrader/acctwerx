@@ -9,7 +9,7 @@ $this->Breadcrumb->makeTrail('Transactions',$this->Html);
     <nav class="large-3 medium-4 columns" id="actions-sidebar">
         <ul class="side-nav">
             <li class="heading"><?= __('Actions') ?></li>
-            <li><?= $this->Html->link(__('New Transaction'), ['book_id'=>$book['id'],'action'=>'add','_method'=>'GET'],['id'=>'TransactionAdd']) ?></li>
+            <li><?= $this->Html->link(__('New Transaction'),['book_id'=>$book['id'],'action'=>'newform','_method'=>'GET'],['id'=>'TransactionNewform']) ?></li>
             <li><?php //$this->Html->link(__('New Transaction'), '/books/'.$book_id.'/transactions',['id'=>'TransactionAdd']) ?></li>
         </ul>
     </nav>
@@ -30,7 +30,7 @@ $this->Breadcrumb->makeTrail('Transactions',$this->Html);
                     <td><?= $transaction->tran_datetime ?></td>
                     <td class="actions">
                         <?= $this->Html->link(__('View'), ['book_id'=>$book['id'],'action'=>'view','id'=>$transaction->id,'_method'=>'GET'],['name'=>'TransactionView']) ?>
-                        <?= $this->Html->link(__('Edit'), ['book_id'=>$book['id'],'action'=>'edit', $transaction->id, 'book_id'=>$book_id, '_method'=>'GET'],['name'=>'TransactionEdit']) ?>
+                        <?= $this->Html->link(__('Edit'), ['book_id'=>$book['id'],'action'=>'editform', 'id'=>$transaction->id, 'book_id'=>$book_id, '_method'=>'GET'],['name'=>'TransactionEditform']) ?>
                         <?php //$this->Form->postLink(__('Delete'), ['action' => 'delete', $transaction->id], ['name'=>'TransactionDelete','confirm' => __('Are you sure you want to delete # {0}?', $transaction->id)]) ?>
                     </td>
                 </tr>

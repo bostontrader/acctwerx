@@ -6,14 +6,14 @@
  */
 ?>
 
-<div id="DistributionsAdd">
+<div id="DistributionsNewform">
     <nav class="large-3 medium-4 columns" id="actions-sidebar">
         <ul class="side-nav">
             <li class="heading"><?= __('Actions') ?></li>
         </ul>
     </nav>
     <div class="distributions form large-9 medium-8 columns content">
-        <?= $this->Form->create($distribution,['id'=>'DistributionAddForm']) ?>
+        <?= $this->Form->create($distribution,['id'=>'DistributionNewformForm','url'=>['book_id'=>$book['id'],'transaction_id'=>$transaction['id'],'action'=>'add','[method]'=>'post']]) ?>
         <fieldset>
             <legend><?= __('Add Distribution for transaction: '.$transaction_id) ?></legend>
             <?php
