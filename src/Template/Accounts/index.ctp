@@ -9,7 +9,7 @@ $this->Breadcrumb->makeTrail('Accounts',$this->Html);
     <nav class="large-3 medium-4 columns" id="actions-sidebar">
         <ul class="side-nav">
             <li class="heading"><?= __('Actions') ?></li>
-            <li><?= $this->Html->link(__('New Account'), ['book_id'=>$book['id'],'action'=>'add','_method'=>'GET'],['id'=>'AccountAdd']) ?></li>
+            <li><?= $this->Html->link(__('New Account'),['book_id'=>$book['id'],'action'=>'newform','_method'=>'GET'],['id'=>'AccountNewform']) ?></li>
         </ul>
     </nav>
     <div class="accounts index large-9 medium-8 columns content">
@@ -28,8 +28,8 @@ $this->Breadcrumb->makeTrail('Accounts',$this->Html);
                     <td><?= $account->catstring ?></td>
                     <td><?= $account->title ?></td>
                     <td class="actions">
-                        <?= $this->Html->link(__('View'), ['book_id'=>$book['id'],'action'=>'view','id'=>$account->id,'_method'=>'GET'],['name'=>'AccountView']) ?>
-                        <?= $this->Html->link(__('Edit'), ['book_id'=>$book['id'],'action'=>'edit',$account->id,'_method'=>'GET'],['name'=>'AccountEdit']) ?>
+                        <?= $this->Html->link(__('View'),['book_id'=>$book['id'],'action'=>'view','id'=>$account->id,'_method'=>'GET'],['name'=>'AccountView']) ?>
+                        <?= $this->Html->link(__('Edit'),['book_id'=>$book['id'],'action'=>'editform','id'=>$account->id,'_method'=>'GET'],['name'=>'AccountEditform']) ?>
                         <?php //$this->Form->postLink(__('Delete'), ['action' => 'delete', $account->id], ['name'=>'AccountDelete','confirm' => __('Are you sure you want to delete # {0}?', $account->id)]) ?>
                     </td>
                 </tr>

@@ -51,7 +51,7 @@ class DistributionsController extends AppController {
 
         // Get the book_id and transaction_id.
         $transaction_id=$this->get_transaction_id($this->request->params);
-        //$book_id=$this->get_book_id($this->request->params);
+        $book_id=$this->get_book_id($this->request->params);
 
         $distribution = $this->Distributions->newEntity(['contain'=>'transactions']);
         $distribution->drcr=1; // default to dr
@@ -67,11 +67,11 @@ class DistributionsController extends AppController {
         //}
         $accounts = $this->Distributions->Accounts->find('list');
         $currencies = $this->Distributions->Currencies->find('list');
-        $this->set(compact('accounts','currencies','distribution','transaction_id'));
+        $this->set(compact('accounts','book_id','currencies','distribution','transaction_id'));
         return null;
     }
 
-    //public function delete($id = null) {
+    public function delete($id = null) {
     //$this->request->allowMethod(['post', 'delete']);
     //$distribution = $this->Distributions->get($id);
     //if ($this->Distributions->delete($distribution)) {
@@ -80,13 +80,13 @@ class DistributionsController extends AppController {
     //$this->Flash->error(__(self::CANNOT_DELETE_DISTRIBUTION));
     //}
     //return $this->redirect(['action' => 'index']);
-    //}
+    }
 
-    // GET | POST /books/:book_id/transactions/:transaction_id/distributions/edit/:id
+    // PUT /books/:book_id/transactions/:transaction_id/distributions/:id/edit
     public function edit($id = null) {
-        $this->request->allowMethod(['get', 'put']);
+        $this->request->allowMethod(['put']);
 
-        // Neither GET nor PUT should accept any query string params.
+        // Should not accept any query string params.
         if(count($this->request->query)>0)
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
@@ -96,7 +96,7 @@ class DistributionsController extends AppController {
         $book_id=$this->get_book_id($this->request->params);
 
         $distribution = $this->Distributions->get($id);
-        if ($this->request->is(['put'])) {
+        //if ($this->request->is(['put'])) {
             $distribution = $this->Distributions->patchEntity($distribution, $this->request->data);
             if ($this->Distributions->save($distribution)) {
                 $this->Flash->success(__(self::DISTRIBUTION_SAVED));
@@ -104,7 +104,36 @@ class DistributionsController extends AppController {
             } else {
                 $this->Flash->error(__(self::DISTRIBUTION_NOT_SAVED));
             }
-        }
+        //}
+        //$accounts = $this->Distributions->Accounts->find('list');
+        //$currencies = $this->Distributions->Currencies->find('list');
+        //$this->set(compact('accounts','currencies','distribution','transaction_id'));
+        //return null;
+    }
+
+    // GET /books/:book_id/transactions/:transaction_id/distributions/:id/editform
+    public function editform($id = null) {
+        $this->request->allowMethod(['get']);
+
+        // Should not accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+
+        // Get the transaction and transaction_id.
+        $transaction_id=$this->get_transaction_id($this->request->params);
+        //$transaction=$this->Distributions->Transactions->get($transaction_id);
+        //$book_id=$this->get_book_id($this->request->params);
+
+        $distribution = $this->Distributions->get($id);
+        //if ($this->request->is(['put'])) {
+            //$distribution = $this->Distributions->patchEntity($distribution, $this->request->data);
+            //if ($this->Distributions->save($distribution)) {
+                //$this->Flash->success(__(self::DISTRIBUTION_SAVED));
+                //return $this->redirect(['book_id' => $book_id,'transaction_id' => $transaction_id,'action' => 'index','_method'=>'GET']);
+            //} else {
+                //$this->Flash->error(__(self::DISTRIBUTION_NOT_SAVED));
+            //}
+        //}
         $accounts = $this->Distributions->Accounts->find('list');
         $currencies = $this->Distributions->Currencies->find('list');
         $this->set(compact('accounts','currencies','distribution','transaction_id'));

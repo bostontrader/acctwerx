@@ -1,6 +1,8 @@
 <?php
 /**
  * @var \Cake\ORM\Table $accounts
+ * @var int $book_id
+ * @var \Cake\ORM\Table $currencies
  * @var \Cake\ORM\Entity $distribution
  * @var int $transaction_id
  */
@@ -13,7 +15,7 @@
         </ul>
     </nav>
     <div class="distributions form large-9 medium-8 columns content">
-        <?= $this->Form->create($distribution,['id'=>'DistributionNewformForm','url'=>['book_id'=>$book['id'],'transaction_id'=>$transaction['id'],'action'=>'add','[method]'=>'post']]) ?>
+        <?= $this->Form->create($distribution,['id'=>'DistributionNewformForm','url'=>['book_id'=>$book_id,'transaction_id'=>$transaction_id,'action'=>'add','[method]'=>'post']]) ?>
         <fieldset>
             <legend><?= __('Add Distribution for transaction: '.$transaction_id) ?></legend>
             <?php

@@ -73,11 +73,13 @@ Router::scope('/', function ($routes) {
         });
         //$routes->connect('/accounts/add', ['controller' => 'accounts', 'action' => 'add']);
         //$routes->connect('/accounts/edit/*', ['controller' => 'accounts', 'action' => 'edit']);
+        $routes->connect('/accounts/newform',['controller'=>'accounts','action'=>'newform']);
+        $routes->connect('/accounts/:id/editform',['controller'=>'accounts','action'=>'editform']);
 
         $routes->resources('Transactions',
             ['map'=>[
                 'update'=>['action'=>'edit','method'=>'PUT','path'=>':id'], // only PUT, not PATCH
-                'editform'=>['action'=>'editform','method'=>'GET'],
+                //'editform'=>['action'=>'editform','method'=>'GET'],
                 'newform'=>['action'=>'newform','method'=>'GET'],
                 ]
             ],
@@ -85,21 +87,23 @@ Router::scope('/', function ($routes) {
                 $routes->resources('Distributions',
                     ['map'=>[
                     'update'=>['action'=>'edit','method'=>'PUT','path'=>':id'], // only PUT, not PATCH
-                    'editform'=>['action'=>'editform','method'=>'GET'],
+                    //'editform'=>['action'=>'editform','method'=>'GET'],
                     'newform'=>['action'=>'newform','method'=>'GET'],
                 ]
             ]);
-                //$routes->connect('/distributions/add', ['controller' => 'distributions', 'action' => 'add']);
-                //$routes->connect('/distributions/edit/*', ['controller' => 'distributions', 'action' => 'edit']);
-                //$routes->connect('/transactions/newform', ['controller'=>'transactions','action'=>'newform']);
-                //$routes->connect('/newform', ['action'=>'newform']);
-                // either way works, but can't pass :id into the controller method as an argument
-                //$routes->connect('/transactions/editform/:id', ['controller'=>'transactions','action'=>'editform']);
-                //$routes->connect('/transactions/:id/editform', ['controller'=>'transactions','action'=>'editform']);
+            //$routes->connect('/distributions/add', ['controller' => 'distributions', 'action' => 'add']);
+            //$routes->connect('/distributions/edit/*', ['controller' => 'distributions', 'action' => 'edit']);
+            $routes->connect('/distributions/:id/editform',['controller'=>'distributions','action'=>'editform']);
+            //$routes->connect('/transactions/newform', ['controller'=>'transactions','action'=>'newform']);
+            //$routes->connect('/newform', ['action'=>'newform']);
+            // either way works, but can't pass :id into the controller method as an argument
+            //$routes->connect('/transactions/editform/:id', ['controller'=>'transactions','action'=>'editform']);
+            //$routes->connect('/transactions/:id/editform', ['controller'=>'transactions','action'=>'editform']);
             }
         );
         //$routes->connect('/transactions/add', ['controller' => 'transactions', 'action' => 'add']);
         //$routes->connect('/transactions/edit/*', ['controller' => 'transactions', 'action' => 'edit']);
+        $routes->connect('/transactions/:id/editform',['controller'=>'transactions','action'=>'editform']);
     });
     $routes->connect('/books/newform', ['controller'=>'books','action'=>'newform']);
 
