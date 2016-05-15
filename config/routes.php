@@ -118,6 +118,8 @@ Router::scope('/', function ($routes) {
     //$routes->connect('/books/editform/:id', ['controller'=>'books','action'=>'editform']);
     $routes->connect('/books/:id/editform', ['controller'=>'books','action'=>'editform']);
     $routes->connect('/books/:id/balance', ['controller'=>'books','action'=>'balance']);
+    $routes->connect('/books/:id/graph_bank', ['controller'=>'books','action'=>'graph_bank']);
+    $routes->connect('/books/:id/graph_cash', ['controller'=>'books','action'=>'graph_cash']);
     $routes->connect('/books/:id/income', ['controller'=>'books','action'=>'income']);
 
     //$routes->connect('/books/graph_bank/*', ['controller' => 'books', 'action' => 'graph_bank']);

@@ -41,7 +41,12 @@ class CurrenciesController extends AppController {
     }
 
     public function delete($id = null) {
-        //$this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['delete']);
+
+        // Should not accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+        
         //$currency = $this->Currencies->get($id);
         //if ($this->Currencies->delete($currency)) {
             //$this->Flash->success(__(self::CURRENCY_DELETED));

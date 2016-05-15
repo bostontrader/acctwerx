@@ -115,7 +115,12 @@ class TransactionsController extends AppController {
 
     // DELETE /books/:book_id/transactions/:id
     public function delete($id = null) {
-        //$this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['delete']);
+
+        // Should not accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+
         //$transaction = $this->Transactions->get($id);
         //if ($this->Transactions->delete($transaction)) {
         //$this->Flash->success(__(self::TRANSACTION_DELETED));

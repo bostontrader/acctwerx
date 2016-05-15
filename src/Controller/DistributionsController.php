@@ -72,14 +72,19 @@ class DistributionsController extends AppController {
     }
 
     public function delete($id = null) {
-    //$this->request->allowMethod(['post', 'delete']);
-    //$distribution = $this->Distributions->get($id);
-    //if ($this->Distributions->delete($distribution)) {
-    //$this->Flash->success(__(self::DISTRIBUTION_DELETED));
-    //} else {
-    //$this->Flash->error(__(self::CANNOT_DELETE_DISTRIBUTION));
-    //}
-    //return $this->redirect(['action' => 'index']);
+        $this->request->allowMethod(['delete']);
+
+        // Should not accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+        
+        //$distribution = $this->Distributions->get($id);
+        //if ($this->Distributions->delete($distribution)) {
+        //$this->Flash->success(__(self::DISTRIBUTION_DELETED));
+        //} else {
+        //$this->Flash->error(__(self::CANNOT_DELETE_DISTRIBUTION));
+        //}
+        //return $this->redirect(['action' => 'index']);
     }
 
     // PUT /books/:book_id/transactions/:transaction_id/distributions/:id/edit

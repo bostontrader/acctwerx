@@ -120,7 +120,12 @@ class BooksController extends AppController {
 
     // DELETE /books/:id
     public function delete($id = null) {
-        //$this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['delete']);
+
+        // Should not accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+
         //$book = $this->Books->get($id);
         //if ($this->Books->delete($book)) {
             //$this->Flash->success(__(self::BOOK_DELETED));

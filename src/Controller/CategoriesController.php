@@ -42,7 +42,12 @@ class CategoriesController extends AppController {
 
     // DELETE /categories/:id
     public function delete($id = null) {
-        //$this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['delete']);
+
+        // Should not accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+        
         //$category = $this->Categories->get($id);
         //if ($this->Categories->delete($category)) {
             //$this->Flash->success(__(self::CATEGORY_DELETED));

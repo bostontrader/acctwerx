@@ -17,7 +17,7 @@ class AccountsController extends AppController {
 
         // Should not accept any query string params.
         if(count($this->request->query)>0)
-            throw new BadRequestException("Query string parameters are not allowed on this method.");
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
         // Get the book_id and book.
         $book_id=$this->get_book_id($this->request->params);
@@ -57,7 +57,7 @@ class AccountsController extends AppController {
 
         // Should not accept any query string params.
         if(count($this->request->query)>0)
-            throw new BadRequestException("Query string parameters are not allowed on this method.");
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
         // Get the book_id and book.
         $book_id=$this->get_book_id($this->request->params);
@@ -93,7 +93,12 @@ class AccountsController extends AppController {
     }
 
     public function delete($id = null) {
-        //$this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['delete']);
+
+        // Should not accept any query string params.
+        if(count($this->request->query)>0)
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
+
         //$account = $this->Accounts->get($id);
         //if ($this->Accounts->delete($account)) {
             //$this->Flash->success(__(self::ACCOUNT_DELETED));
@@ -109,7 +114,7 @@ class AccountsController extends AppController {
 
         // Should not accept any query string params.
         if(count($this->request->query)>0)
-            throw new BadRequestException("Query string parameters are not allowed on this method.");
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
         // Get the book and book_id.
         $book_id=$this->get_book_id($this->request->params);
@@ -145,7 +150,7 @@ class AccountsController extends AppController {
 
         // Should not accept any query string params.
         if(count($this->request->query)>0)
-            throw new BadRequestException("Query string parameters are not allowed on this method.");
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
         // Get the book and book_id.
         $book_id=$this->get_book_id($this->request->params);
@@ -201,7 +206,7 @@ class AccountsController extends AppController {
 
         // No query string params allowed.
         if(count($this->request->query)>0)
-            throw new BadRequestException("Query string parameters are not allowed on this method.");
+            throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
         $book_id=$this->get_book_id($this->request->params);
         $book=$this->Accounts->Books->get($book_id);
