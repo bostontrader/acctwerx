@@ -66,11 +66,18 @@ Router::scope('/', function ($routes) {
     $deepMagic=['map'=>['update'=>['action'=>'edit','method'=>'PUT','path'=>':id']]];
     // change it to only accept PUT.
     $routes->resources('Books',$deepMagic,function ($routes) {
-        $routes->resources('Accounts', ['map'=>['update'=>['action'=>'edit','method'=>'PUT','path'=>':id']]], function ($routes) {
-            //$routes->resources('Distributions');
-            //$routes->connect('/distributions/add', ['controller' => 'distributions', 'action' => 'add',''=>'']);
-            //$routes->connect('/distributions/edit/*', ['controller' => 'distributions', 'action' => 'edit']);
-        });
+        $routes->resources('Accounts',
+            ['map'=>['update'=>['action'=>'edit','method'=>'PUT','path'=>':id']]],
+            function ($routes) {
+                $routes->resources('Distributions',['map'=>[
+                    'update'=>['action'=>'edit','method'=>'PUT','path'=>':id'], // only PUT, not PATCH
+                    //'editform'=>['action'=>'editform','method'=>'GET'],
+                    'newform'=>['action'=>'newform','method'=>'GET']
+                ]
+                ]);
+                //$routes->connect('/distributions/add', ['controller' => 'distributions', 'action' => 'add',''=>'']);
+                //$routes->connect('/distributions/edit/*', ['controller' => 'distributions', 'action' => 'edit']);
+            });
         //$routes->connect('/accounts/add', ['controller' => 'accounts', 'action' => 'add']);
         //$routes->connect('/accounts/edit/*', ['controller' => 'accounts', 'action' => 'edit']);
         $routes->connect('/accounts/newform',['controller'=>'accounts','action'=>'newform']);
@@ -88,7 +95,7 @@ Router::scope('/', function ($routes) {
                     ['map'=>[
                     'update'=>['action'=>'edit','method'=>'PUT','path'=>':id'], // only PUT, not PATCH
                     //'editform'=>['action'=>'editform','method'=>'GET'],
-                    'newform'=>['action'=>'newform','method'=>'GET'],
+                    'newform'=>['action'=>'newform','method'=>'GET']
                 ]
             ]);
             //$routes->connect('/distributions/add', ['controller' => 'distributions', 'action' => 'add']);
