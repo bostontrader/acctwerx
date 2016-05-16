@@ -55,64 +55,82 @@ Router::scope('/', function ($routes) {
     // GET /recipies/newform.format
     // GET /recipies/123/editform.format
 
-    // I have remove the PATCH edit route cuz I don't see the necessity.
+    // I have removed the PATCH edit default route cuz I don't see the necessity.
 
     //$routes->extensions(['json']);
 
-    // Option A. Use Cake to do this
-
     // By default, resources wants to set edit/update to accept PUT and PATCH.  But I only
-    // want PUT.  I need to invoke deep magic to change that.
-    $deepMagic=['map'=>['update'=>['action'=>'edit','method'=>'PUT','path'=>':id']]];
-    // change it to only accept PUT.
-    $routes->resources('Books',$deepMagic,function ($routes) {
-        $routes->resources('Accounts',
-            ['map'=>['update'=>['action'=>'edit','method'=>'PUT','path'=>':id']]],
-            function ($routes) {
-                $routes->resources('Distributions',['map'=>[
-                    'update'=>['action'=>'edit','method'=>'PUT','path'=>':id'], // only PUT, not PATCH
-                    //'editform'=>['action'=>'editform','method'=>'GET'],
-                    'newform'=>['action'=>'newform','method'=>'GET']
-                ]
-                ]);
-                //$routes->connect('/distributions/add', ['controller' => 'distributions', 'action' => 'add',''=>'']);
-                //$routes->connect('/distributions/edit/*', ['controller' => 'distributions', 'action' => 'edit']);
-            });
-        //$routes->connect('/accounts/add', ['controller' => 'accounts', 'action' => 'add']);
-        //$routes->connect('/accounts/edit/*', ['controller' => 'accounts', 'action' => 'edit']);
-        $routes->connect('/accounts/newform',['controller'=>'accounts','action'=>'newform']);
-        $routes->connect('/accounts/:id/editform',['controller'=>'accounts','action'=>'editform']);
-
-        $routes->resources('Transactions',
-            ['map'=>[
-                'update'=>['action'=>'edit','method'=>'PUT','path'=>':id'], // only PUT, not PATCH
+    // want PUT.  That's what the map=>update bit is about.
+    /** @var \Cake\Routing\RouteBuilder $routes */
+    $routes->resources(
+        'Books',[
+            'map'=>[
                 //'editform'=>['action'=>'editform','method'=>'GET'],
                 'newform'=>['action'=>'newform','method'=>'GET'],
-                ]
+                'update'=>['action'=>'edit','method'=>'PUT','path'=>':id']] // only PUT, not PATCH
             ],
-            function ($routes) {
-                $routes->resources('Distributions',
-                    ['map'=>[
+
+        function ($routes) {
+            /** @var \Cake\Routing\RouteBuilder $routes */
+            $routes->resources(
+                'Accounts',[
+                    'map'=>[
+                        //'editform'=>['action'=>'editform','method'=>'GET'],
+                        'newform'=>['action'=>'newform','method'=>'GET'],
+                        'update'=>['action'=>'edit','method'=>'PUT','path'=>':id'] // only PUT, not PATCH
+                    ]
+                ],
+
+                function ($routes) {
+                    /** @var \Cake\Routing\RouteBuilder $routes */
+                    $routes->resources(
+                        'Distributions',[
+                            'map'=>[
+                                //'editform'=>['action'=>'editform','method'=>'GET'],
+                                'newform'=>['action'=>'newform','method'=>'GET'],
+                                'update'=>['action'=>'edit','method'=>'PUT','path'=>':id'] // only PUT, not PATCH
+                            ]
+                        ]
+                    );
+                }
+            );
+
+            $routes->connect('/accounts/:id/editform',['controller'=>'accounts','action'=>'editform']);
+
+            $routes->resources('Transactions',
+                ['map'=>[
                     'update'=>['action'=>'edit','method'=>'PUT','path'=>':id'], // only PUT, not PATCH
                     //'editform'=>['action'=>'editform','method'=>'GET'],
-                    'newform'=>['action'=>'newform','method'=>'GET']
-                ]
-            ]);
-            //$routes->connect('/distributions/add', ['controller' => 'distributions', 'action' => 'add']);
-            //$routes->connect('/distributions/edit/*', ['controller' => 'distributions', 'action' => 'edit']);
-            $routes->connect('/distributions/:id/editform',['controller'=>'distributions','action'=>'editform']);
-            //$routes->connect('/transactions/newform', ['controller'=>'transactions','action'=>'newform']);
-            //$routes->connect('/newform', ['action'=>'newform']);
-            // either way works, but can't pass :id into the controller method as an argument
-            //$routes->connect('/transactions/editform/:id', ['controller'=>'transactions','action'=>'editform']);
-            //$routes->connect('/transactions/:id/editform', ['controller'=>'transactions','action'=>'editform']);
-            }
-        );
-        //$routes->connect('/transactions/add', ['controller' => 'transactions', 'action' => 'add']);
-        //$routes->connect('/transactions/edit/*', ['controller' => 'transactions', 'action' => 'edit']);
-        $routes->connect('/transactions/:id/editform',['controller'=>'transactions','action'=>'editform']);
-    });
-    $routes->connect('/books/newform', ['controller'=>'books','action'=>'newform']);
+                    'newform'=>['action'=>'newform','method'=>'GET'],
+                    ]
+                ],
+                function ($routes) {
+                    /** @var \Cake\Routing\RouteBuilder $routes */
+                    $routes->resources(
+                        'Distributions',[
+                            'map'=>[
+                                //'editform'=>['action'=>'editform','method'=>'GET'],
+                                'newform'=>['action'=>'newform','method'=>'GET'],
+                                'update'=>['action'=>'edit','method'=>'PUT','path'=>':id'] // only PUT, not PATCH
+                            ]
+                        ]
+                    );
+
+                    $routes->connect('/distributions/:id/editform',['controller'=>'distributions','action'=>'editform']);
+                    //$routes->connect('/transactions/newform', ['controller'=>'transactions','action'=>'newform']);
+                    //$routes->connect('/newform', ['action'=>'newform']);
+                    // either way works, but can't pass :id into the controller method as an argument
+                    //$routes->connect('/transactions/editform/:id', ['controller'=>'transactions','action'=>'editform']);
+                    //$routes->connect('/transactions/:id/editform', ['controller'=>'transactions','action'=>'editform']);
+                }
+            );
+            //$routes->connect('/transactions/add', ['controller' => 'transactions', 'action' => 'add']);
+            //$routes->connect('/transactions/edit/*', ['controller' => 'transactions', 'action' => 'edit']);
+            $routes->connect('/transactions/:id/editform',['controller'=>'transactions','action'=>'editform']);
+        }
+    );
+
+    //$routes->connect('/books/newform', ['controller'=>'books','action'=>'newform']);
 
     // either way works, but can't pass :id into the controller method as an argument
     //$routes->connect('/books/editform/:id', ['controller'=>'books','action'=>'editform']);
@@ -122,37 +140,19 @@ Router::scope('/', function ($routes) {
     $routes->connect('/books/:id/graph_cash', ['controller'=>'books','action'=>'graph_cash']);
     $routes->connect('/books/:id/income', ['controller'=>'books','action'=>'income']);
 
-    //$routes->connect('/books/graph_bank/*', ['controller' => 'books', 'action' => 'graph_bank']);
-    //$routes->connect('/books/graph_cash/*', ['controller' => 'books', 'action' => 'graph_cash']);
-    //$routes->connect('/books/balance/*', ['controller' => 'books', 'action' => 'balance']);
-    //$routes->connect('/books/income/*', ['controller' => 'books', 'action' => 'income']);
 
     
-    $routes->resources('Categories',$deepMagic,function ($routes) {});
+    $routes->resources('Categories',['map'=>['update'=>['action'=>'edit','method'=>'PUT','path'=>':id']]],function ($routes) {});
     $routes->connect('/categories/newform', ['controller'=>'categories','action'=>'newform']);
     // either way works, but can't pass :id into the controller method as an argument
     //$routes->connect('/categories/editform/:id', ['controller'=>'categories','action'=>'editform']);
     $routes->connect('/categories/:id/editform', ['controller'=>'categories','action'=>'editform']);
 
-    $routes->resources('Currencies',$deepMagic,function ($routes) {});
+    $routes->resources('Currencies',['map'=>['update'=>['action'=>'edit','method'=>'PUT','path'=>':id']]],function ($routes) {});
     $routes->connect('/currencies/newform', ['controller'=>'currencies','action'=>'newform']);
     // either way works, but can't pass :id into the controller method as an argument
     //$routes->connect('/currencies/editform/:id', ['controller'=>'currencies','action'=>'editform']);
     $routes->connect('/currencies/:id/editform', ['controller'=>'currencies','action'=>'editform']);
-
-    // Option B. Try to make restful and nested routes myself
-    //$routes->scope('/books', function ($routes) {
-    //$routes->connect('/', ['controller'=>'books','action'=>'index']);
-    //$routes->connect('/add', ['controller'=>'books','action'=>'add']);
-    //$routes->connect('/edit/*', ['controller'=>'books','action'=>'edit']);
-    //$routes->connect('/view', ['controller'=>'books','action'=>'view']);
-    //$routes->connect('/add', ['controller'=>'books','action'=>'add', '_method'=>'POST']);
-
-    //$routes->scope('/:book_id/accounts', function ($routes) {
-    //$routes->connect('/add', ['controller' => 'accounts', 'action' => 'add']);
-    //});
-
-    //});
 
     /**
      * Here, we are connecting '/' (base path) to a controller called 'Pages',

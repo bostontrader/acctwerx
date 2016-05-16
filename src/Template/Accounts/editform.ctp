@@ -13,7 +13,7 @@
         </ul>
     </nav>
     <div class="accounts form large-9 medium-8 columns content">
-        <?= $this->Form->create($account,['id'=>'AccountEditformForm','url'=>['action'=>'edit','[method]'=>'put']]) ?>
+        <?= $this->Form->create($account,['id'=>'AccountEditformForm','url'=>['book_id'=>$book['id'],'action'=>'edit','[method]'=>'PUT']]) ?>
         <fieldset>
             <legend><?= __('Edit Account for '.$book->title) ?></legend>
             <?php

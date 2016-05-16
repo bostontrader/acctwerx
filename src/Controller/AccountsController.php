@@ -3,6 +3,9 @@ namespace App\Controller;
 
 use Cake\Network\Exception\BadRequestException;
 
+/**
+ @property \Cake\ORM\Table $Accounts
+ */
 class AccountsController extends AppController {
 
     const ACCOUNT_SAVED = "The account has been saved.";
@@ -11,7 +14,7 @@ class AccountsController extends AppController {
     const ACCOUNT_DELETED = "The account has been deleted.";
     const CANNOT_DELETE_ACCOUNT = "The account could not be deleted. Please, try again.";
 
-    // POST /books/:book_id/accounts/add
+    // POST /books/:book_id/accounts
     public function add() {
         $this->request->allowMethod(['post']);
 
@@ -24,30 +27,26 @@ class AccountsController extends AppController {
         //$book=$this->Accounts->Books->get($book_id);
 
         $account = $this->Accounts->newEntity(['contain'=>'books']);
-        //if ($this->request->is('post')) {
 
-            // Only an expected white-list of POST variables should be here.
-            $d=$this->request->data;
-            unset($d['book_id']);
-            unset($d['categories']);
-            unset($d['title']);
-            if(count($d)>0)
-                throw new BadRequestException("Extraneous POST variables present.  Bad, bad, bad.");
+        // Only an expected white-list of POST variables should be here.
+        $d=$this->request->data;
+        unset($d['book_id']);
+        unset($d['categories']);
+        unset($d['title']);
+        if(count($d)>0)
+            throw new BadRequestException("Extraneous POST variables present.  Bad, bad, bad.");
 
-            //$n1=$this->Accounts->validator();
-            //$n2=$n1->errors(['title'=>null]);
-            $account = $this->Accounts->patchEntity($account, $this->request->data);
-            if ($this->Accounts->save($account)) {
-                $this->Flash->success(__(self::ACCOUNT_SAVED));
-                return $this->redirect(['action' => 'index','book_id' => $book_id,'_method'=>'GET']);
-            } else {
-                $e=$account->errors();
-                $this->Flash->error(__(self::ACCOUNT_NOT_SAVED));
-            }
-        //}
+        //$n1=$this->Accounts->validator();
+        //$n2=$n1->errors(['title'=>null]);
+        $account = $this->Accounts->patchEntity($account, $this->request->data);
+        if ($this->Accounts->save($account)) {
+            $this->Flash->success(__(self::ACCOUNT_SAVED));
+            return $this->redirect(['action' => 'index','book_id' => $book_id,'_method'=>'GET']);
+        } else {
+            $e=$account->errors();
+            $this->Flash->error(__(self::ACCOUNT_NOT_SAVED));
+        }
 
-        //$categories = $this->Accounts->Categories->find('list');
-        //$this->set(compact('account','book','categories'));
         //return null;
     }
 
@@ -144,8 +143,11 @@ class AccountsController extends AppController {
         //return null;
     }
 
+    // There's something wrong with my routing because no $id param is passed.
+    // But I can find it as $this->request->params['id']
     // GET /books/:book_id/accounts/:id/editform
     public function editform($id = null) {
+        $id=$this->request->params['id'];
         $this->request->allowMethod(['get']);
 
         // Should not accept any query string params.

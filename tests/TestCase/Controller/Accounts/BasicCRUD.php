@@ -36,12 +36,12 @@ class BasicCRUD extends DMIntegrationTestCase {
         $this->accountsFixture = new AccountsFixture();
     }
 
-    public function testGET_add() {
+    public function testGET_newform() {
 
         // 1. GET the url and parse the response.
         $book_id=FixtureConstants::bookTypical;
         $book=$this->Books->get($book_id);
-        $this->get("/books/$book_id/accounts/add");
+        $this->get("/books/$book_id/accounts/newform");
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
         $dom = new \DomDocument();
@@ -49,14 +49,14 @@ class BasicCRUD extends DMIntegrationTestCase {
         $xpath=new \DomXPath($dom);
 
         // 2. Isolate the content produced by this controller method (excluding the layout.)
-        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='AccountsAdd']");
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='AccountsNewform']");
 
         // 3. Count the A tags.
         $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
         $this->assertEquals($unknownATagCnt,0);
 
         // 4. Ensure that the expected form exists
-        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='AccountAddForm']",$content_node);
+        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='AccountNewformForm']",$content_node);
 
         // 5. Now inspect the legend of the form.
         $this->assertContains($book['title'],$this->getTheOnlyOne($xpath,"//legend",$form_node)->textContent);
@@ -113,7 +113,7 @@ class BasicCRUD extends DMIntegrationTestCase {
         $urlBase='/books/'.FixtureConstants::bookTypical.'/accounts';
         $fromDbRecord=$this->genericPOSTAddProlog(
             null, // no login
-            $urlBase.'/add', $fixtureRecord,
+            $urlBase, $fixtureRecord,
             $urlBase, $this->Accounts
         );
 
@@ -136,7 +136,7 @@ class BasicCRUD extends DMIntegrationTestCase {
         //);
     //}
 
-    public function testGET_edit() {
+    public function testGET_editform() {
 
         // 1. Obtain the relevant records and verify their referential integrity.
         $account_id=FixtureConstants::accountTypical;
@@ -146,7 +146,8 @@ class BasicCRUD extends DMIntegrationTestCase {
         $this->assertEquals($account['book_id'],$book['id']);
 
         // 2. GET the url and parse the response.
-        $this->get('/books/'.$book['id'].'/accounts/edit/' . $account_id);
+        $this->get("/books/$book_id/accounts/$account_id/editform");
+        //$this->get('/books/'.$book['id'].'/accounts/edit/' . $account_id);
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
         $dom = new \DomDocument();
@@ -154,14 +155,14 @@ class BasicCRUD extends DMIntegrationTestCase {
         $xpath=new \DomXPath($dom);
 
         // 3. Isolate the content produced by this controller method (excluding the layout.)
-        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='AccountsEdit']");
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='AccountsEditform']");
 
         // 4. Count the A tags.
         $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
         $this->assertEquals($unknownATagCnt,0);
 
         // 5. Ensure that the expected form exists
-        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='AccountEditForm']",$content_node);
+        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='AccountEditformForm']",$content_node);
 
         // 6. Now inspect the legend of the form.
         $this->assertContains($book['title'],$this->getTheOnlyOne($xpath,"//legend",$form_node)->textContent);
@@ -209,7 +210,7 @@ class BasicCRUD extends DMIntegrationTestCase {
         $this->assertEquals(0, $unknownSelectCnt);
     }
 
-    public function testPOST_edit() {
+    public function testPUT_edit() {
 
         // 1. Obtain the relevant records and verify their referential integrity.
         $account_id=FixtureConstants::accountTypical;
@@ -218,8 +219,8 @@ class BasicCRUD extends DMIntegrationTestCase {
         $book=$this->Books->get($book_id);
         $this->assertEquals($accountNew['book_id'],$book['id']);
 
-        // 2. POST a suitable record to the url and observe the redirect.
-        $baseUrl='/books/'.$book_id.'/accounts';
+        // 2. PUT a suitable record to the url and observe the redirect.
+        $baseUrl="/books/$book_id/accounts";
         $this->put("$baseUrl/$account_id", $accountNew);
         $this->assertResponseCode(302);
         $this->assertRedirect( $baseUrl );
@@ -251,7 +252,7 @@ class BasicCRUD extends DMIntegrationTestCase {
         $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
 
         // 4. Look for the create new account link
-        $this->getTheOnlyOne($xpath,"//a[@id='AccountAdd']",$content_node);
+        $this->getTheOnlyOne($xpath,"//a[@id='AccountNewform']",$content_node);
         $unknownATagCnt--;
 
         // 5. Ensure that there is a suitably named table to display the results.
@@ -301,7 +302,7 @@ class BasicCRUD extends DMIntegrationTestCase {
             $this->getTheOnlyOne($xpath,"a[@name='AccountView']",$column_nodes->item(2));
             $unknownATagCnt--;
 
-            $this->getTheOnlyOne($xpath,"a[@name='AccountEdit']",$column_nodes->item(2));
+            $this->getTheOnlyOne($xpath,"a[@name='AccountEditform']",$column_nodes->item(2));
             $unknownATagCnt--;
 
             // 9.9 No other columns

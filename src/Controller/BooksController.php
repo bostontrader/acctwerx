@@ -4,13 +4,13 @@ namespace App\Controller;
 use Cake\Datasource\ConnectionManager;
 use Cake\Network\Exception\BadRequestException;
 
-require_once(ROOT.DS.'vendor/jpgraph/jpgraph/lib/JpGraph/src/jpgraph.php');
-require_once(ROOT.DS.'vendor/jpgraph/jpgraph/lib/JpGraph/src/jpgraph_line.php');
-require_once(ROOT.DS.'vendor/jpgraph/jpgraph/lib/JpGraph/src/jpgraph_utils.inc.php');
+//require_once(ROOT.DS.'vendor/jpgraph/jpgraph/lib/JpGraph/src/jpgraph.php');
+//require_once(ROOT.DS.'vendor/jpgraph/jpgraph/lib/JpGraph/src/jpgraph_line.php');
+//require_once(ROOT.DS.'vendor/jpgraph/jpgraph/lib/JpGraph/src/jpgraph_utils.inc.php');
 
 class BooksController extends AppController {
 
-    public $helpers = ['Fingraph','FinStat'];
+    //public $helpers = ['Fingraph','FinStat'];
 
     const BOOK_SAVED = "The book has been saved.";
     const BOOK_NOT_SAVED = "The book could not be saved. Please, try again.";
