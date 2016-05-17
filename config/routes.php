@@ -126,16 +126,36 @@ Router::scope('/', function ($routes) {
     $routes->connect('/books/:id/graph_cash', ['controller'=>'books','action'=>'graph_cash']);
     $routes->connect('/books/:id/income', ['controller'=>'books','action'=>'income']);
 
-    $routes->resources('Categories',['map'=>['update'=>['action'=>'edit','method'=>'PUT','path'=>':id']]],function ($routes) {});
+    $routes->resources(
+        'Categories',[
+            'map'=>[
+                //'editform'=>['action'=>'editform','method'=>'GET'],
+                //'newform'=>['action'=>'newform','method'=>'GET'], // why doesn't this work?
+                'update'=>['action'=>'edit','method'=>'PUT','path'=>':id']
+            ]
+        ],
+        function ($routes) {}
+    );
     $routes->connect('/categories/newform', ['controller'=>'categories','action'=>'newform']);
     // either way works, but can't pass :id into the controller method as an argument
     //$routes->connect('/categories/editform/:id', ['controller'=>'categories','action'=>'editform']);
     $routes->connect('/categories/:id/editform', ['controller'=>'categories','action'=>'editform']);
-    $routes->resources('Currencies',['map'=>['update'=>['action'=>'edit','method'=>'PUT','path'=>':id']]],function ($routes) {});
+
+    $routes->resources(
+        'Currencies',[
+            'map'=>[
+                //'editform'=>['action'=>'editform','method'=>'GET'],
+                //'newform'=>['action'=>'newform','method'=>'GET'], // why doesn't this work?
+                'update'=>['action'=>'edit','method'=>'PUT','path'=>':id']
+            ]
+        ],
+        function ($routes) {}
+    );
     $routes->connect('/currencies/newform', ['controller'=>'currencies','action'=>'newform']);
     // either way works, but can't pass :id into the controller method as an argument
     //$routes->connect('/currencies/editform/:id', ['controller'=>'currencies','action'=>'editform']);
     $routes->connect('/currencies/:id/editform', ['controller'=>'currencies','action'=>'editform']);
+
     /**
      * Here, we are connecting '/' (base path) to a controller called 'Pages',
      * its action called 'display', and we pass a param to select the view file

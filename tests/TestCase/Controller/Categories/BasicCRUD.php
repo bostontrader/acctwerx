@@ -198,8 +198,6 @@ class CategoriesControllerTest extends DMIntegrationTestCase {
         // 5. Ensure that there is a suitably named table to display the results.
         $table_node=$this->getTheOnlyOne($xpath,"//table[@id='CategoriesTable']",$content_node);
 
-        // 6. Now inspect the heading of the table.
-        //$this->getTheOnlyOne($xpath,"//header[contains(text(),'Categories')]",$content_node);
         // 6. Now inspect the caption of the table.
         $this->assertContains("Categories",$this->getTheOnlyOne($xpath,"caption",$table_node)->textContent);
 
