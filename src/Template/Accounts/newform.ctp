@@ -15,7 +15,7 @@
     <div class="accounts form large-9 medium-8 columns content">
         <?= $this->Form->create($account,['id'=>'AccountNewformForm']) ?>
         <fieldset>
-            <legend><?= __('Add Account for '.$book->title) ?></legend>
+            <legend><?= __('Add Account for '.$book['title']) ?></legend>
             <?php
                 echo $this->Form->input('book_id',['id'=>'AccountBookId','value'=>$book['id'],'type'=>'hidden']);
                 echo $this->Form->input('categories._ids', ['id'=>'AccountsCategories', 'options' => $categories, 'multiple'=>true]);

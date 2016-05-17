@@ -17,9 +17,7 @@
  * @link          http://cakephp.org CakePHP(tm) Project
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
 use Cake\Routing\Router;
-
 /**
  * The default class to use for all routes
  *
@@ -39,9 +37,7 @@ use Cake\Routing\Router;
  *
  */
 Router::defaultRouteClass('DashedRoute');
-
 Router::scope('/', function ($routes) {
-
     // By default, resources provides the following routes...
     // GET /recipes.format RecipesController::index()
     // GET /recipes/123.format RecipesController::view(123)
@@ -49,16 +45,12 @@ Router::scope('/', function ($routes) {
     // PUT /recipes/123.format RecipesController::edit(123)
     // PATCH /recipes/123.format RecipesController::edit(123)
     // DELETE /recipes/123.format RecipesController::delete(123)
-
     // In addition to the standard REST routes, we also need a method to obtain an entry form
     // for a new record and an edited record.
     // GET /recipies/newform.format
     // GET /recipies/123/editform.format
-
     // I have removed the PATCH edit default route cuz I don't see the necessity.
-
     //$routes->extensions(['json']);
-
     // By default, resources wants to set edit/update to accept PUT and PATCH.  But I only
     // want PUT.  That's what the map=>update bit is about.
     /** @var \Cake\Routing\RouteBuilder $routes */
@@ -67,8 +59,9 @@ Router::scope('/', function ($routes) {
             'map'=>[
                 //'editform'=>['action'=>'editform','method'=>'GET'],
                 'newform'=>['action'=>'newform','method'=>'GET'],
-                'update'=>['action'=>'edit','method'=>'PUT','path'=>':id']] // only PUT, not PATCH
-            ],
+                'update'=>['action'=>'edit','method'=>'PUT','path'=>':id'] // only PUT, not PATCH
+            ]
+        ],
 
         function ($routes) {
             /** @var \Cake\Routing\RouteBuilder $routes */
@@ -97,13 +90,15 @@ Router::scope('/', function ($routes) {
 
             $routes->connect('/accounts/:id/editform',['controller'=>'accounts','action'=>'editform']);
 
-            $routes->resources('Transactions',
-                ['map'=>[
-                    'update'=>['action'=>'edit','method'=>'PUT','path'=>':id'], // only PUT, not PATCH
-                    //'editform'=>['action'=>'editform','method'=>'GET'],
-                    'newform'=>['action'=>'newform','method'=>'GET'],
+            $routes->resources(
+                'Transactions',[
+                    'map'=>[
+                        //'editform'=>['action'=>'editform','method'=>'GET'],
+                        'newform'=>['action'=>'newform','method'=>'GET'],
+                        'update'=>['action'=>'edit','method'=>'PUT','path'=>':id'], // only PUT, not PATCH
                     ]
                 ],
+
                 function ($routes) {
                     /** @var \Cake\Routing\RouteBuilder $routes */
                     $routes->resources(
@@ -117,21 +112,12 @@ Router::scope('/', function ($routes) {
                     );
 
                     $routes->connect('/distributions/:id/editform',['controller'=>'distributions','action'=>'editform']);
-                    //$routes->connect('/transactions/newform', ['controller'=>'transactions','action'=>'newform']);
-                    //$routes->connect('/newform', ['action'=>'newform']);
-                    // either way works, but can't pass :id into the controller method as an argument
-                    //$routes->connect('/transactions/editform/:id', ['controller'=>'transactions','action'=>'editform']);
-                    //$routes->connect('/transactions/:id/editform', ['controller'=>'transactions','action'=>'editform']);
                 }
             );
-            //$routes->connect('/transactions/add', ['controller' => 'transactions', 'action' => 'add']);
-            //$routes->connect('/transactions/edit/*', ['controller' => 'transactions', 'action' => 'edit']);
             $routes->connect('/transactions/:id/editform',['controller'=>'transactions','action'=>'editform']);
         }
     );
-
     //$routes->connect('/books/newform', ['controller'=>'books','action'=>'newform']);
-
     // either way works, but can't pass :id into the controller method as an argument
     //$routes->connect('/books/editform/:id', ['controller'=>'books','action'=>'editform']);
     $routes->connect('/books/:id/editform', ['controller'=>'books','action'=>'editform']);
@@ -140,32 +126,26 @@ Router::scope('/', function ($routes) {
     $routes->connect('/books/:id/graph_cash', ['controller'=>'books','action'=>'graph_cash']);
     $routes->connect('/books/:id/income', ['controller'=>'books','action'=>'income']);
 
-
-    
     $routes->resources('Categories',['map'=>['update'=>['action'=>'edit','method'=>'PUT','path'=>':id']]],function ($routes) {});
     $routes->connect('/categories/newform', ['controller'=>'categories','action'=>'newform']);
     // either way works, but can't pass :id into the controller method as an argument
     //$routes->connect('/categories/editform/:id', ['controller'=>'categories','action'=>'editform']);
     $routes->connect('/categories/:id/editform', ['controller'=>'categories','action'=>'editform']);
-
     $routes->resources('Currencies',['map'=>['update'=>['action'=>'edit','method'=>'PUT','path'=>':id']]],function ($routes) {});
     $routes->connect('/currencies/newform', ['controller'=>'currencies','action'=>'newform']);
     // either way works, but can't pass :id into the controller method as an argument
     //$routes->connect('/currencies/editform/:id', ['controller'=>'currencies','action'=>'editform']);
     $routes->connect('/currencies/:id/editform', ['controller'=>'currencies','action'=>'editform']);
-
     /**
      * Here, we are connecting '/' (base path) to a controller called 'Pages',
      * its action called 'display', and we pass a param to select the view file
      * to use (in this case, src/Template/Pages/home.ctp)...
      */
     $routes->connect('/', ['controller' => 'Pages', 'action' => 'display', 'home']);
-
     /**
      * ...and connect the rest of 'Pages' controller's URLs.
      */
     //$routes->connect('/pages/*', ['controller' => 'Pages', 'action' => 'display']);
-
     /**
      * Connect catchall routes for all controllers.
      *
@@ -182,9 +162,8 @@ Router::scope('/', function ($routes) {
      * You can remove these routes once you've connected the
      * routes you want in your application.
      */
-     //$routes->fallbacks('DashedRoute');
+    //$routes->fallbacks('DashedRoute');
 });
-
 /**
  * Load all plugin routes.  See the Plugin documentation on
  * how to customize the loading of plugin routes.

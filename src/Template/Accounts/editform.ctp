@@ -15,7 +15,7 @@
     <div class="accounts form large-9 medium-8 columns content">
         <?= $this->Form->create($account,['id'=>'AccountEditformForm','url'=>['book_id'=>$book['id'],'action'=>'edit','[method]'=>'PUT']]) ?>
         <fieldset>
-            <legend><?= __('Edit Account for '.$book->title) ?></legend>
+            <legend><?= __('Edit Account for '.$book['title']) ?></legend>
             <?php
                 echo $this->Form->input('categories._ids', ['id'=>'AccountsCategories', 'options' => $categories, 'multiple'=>true]);
                 echo $this->Form->input('title',['id'=>'AccountTitle']);

@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * @var \Cake\ORM\Entity $book
  * @var \Cake\ORM\Table $accounts
  */
@@ -13,8 +13,8 @@ $this->Breadcrumb->makeTrail('Accounts',$this->Html);
         </ul>
     </nav>
     <div class="accounts index large-9 medium-8 columns content">
-        <h4><header><?= __('Accounts for Book: '.$book['title']) ?></header></h4>
         <table id="AccountsTable" cellpadding="0" cellspacing="0">
+            <caption><h4><?= __('Accounts for Book: '.$book['title']) ?></h4></caption>
             <thead>
                 <tr>
                     <th id="category" ><?= __('Category') ?></th>

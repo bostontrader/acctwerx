@@ -258,8 +258,8 @@ class BasicCRUD extends DMIntegrationTestCase {
         // 5. Ensure that there is a suitably named table to display the results.
         $table_node=$this->getTheOnlyOne($xpath,"//table[@id='AccountsTable']",$content_node);
 
-        // 6. Now inspect the heading of the table.
-        $this->getTheOnlyOne($xpath,"//header[contains(text(),'$book->title')]",$content_node);
+        // 6. Now inspect the caption of the table.
+        $this->assertContains($book['title'],$this->getTheOnlyOne($xpath,"caption",$table_node)->textContent);
 
         // 7. Ensure that said table's thead element contains the correct
         //    headings, in the correct order, and nothing else.
