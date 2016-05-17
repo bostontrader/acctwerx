@@ -11,8 +11,8 @@
         </ul>
     </nav>
     <div class="categorys index large-9 medium-8 columns content">
-        <h3><header><?= __('Categories') ?></header></h3>
         <table id="CategoriesTable" cellpadding="0" cellspacing="0">
+            <caption><h3><?= __('Categories') ?></h3></caption>
             <thead>
                 <tr>
                     <th id="title" ><?= __('Title') ?></th>

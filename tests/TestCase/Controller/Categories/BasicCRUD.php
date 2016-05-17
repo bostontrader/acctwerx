@@ -199,7 +199,9 @@ class CategoriesControllerTest extends DMIntegrationTestCase {
         $table_node=$this->getTheOnlyOne($xpath,"//table[@id='CategoriesTable']",$content_node);
 
         // 6. Now inspect the heading of the table.
-        $this->getTheOnlyOne($xpath,"//header[contains(text(),'Categories')]",$content_node);
+        //$this->getTheOnlyOne($xpath,"//header[contains(text(),'Categories')]",$content_node);
+        // 6. Now inspect the caption of the table.
+        $this->assertContains("Categories",$this->getTheOnlyOne($xpath,"caption",$table_node)->textContent);
 
         // 7. Ensure that said table's thead element contains the correct
         //    headings, in the correct order, and nothing else.
@@ -274,6 +276,9 @@ class CategoriesControllerTest extends DMIntegrationTestCase {
 
         // 5. Ensure that there is a suitably named table to display the results.
         $table_node=$this->getTheOnlyOne($xpath,"//table[@id='CategoryViewTable']",$content_node);
+
+        // 5.1 Inspect the caption of the table.
+        $this->assertContains("$category_id",$this->getTheOnlyOne($xpath,"caption",$table_node)->textContent);
 
         // 6. Now inspect the fields in the table.  We want to know that:
         // A. The correct fields are there and no other fields.

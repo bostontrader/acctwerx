@@ -6,8 +6,8 @@
         </ul>
     </nav>
     <div class="categories view large-9 medium-8 columns content">
-        <h3><?= h($category->id) ?></h3>
         <table id="CategoryViewTable" class="vertical-table">
+            <caption><h3><?= h($category->id) ?></h3></caption>
             <tr id="title">
                 <th><?= __('Title') ?></th>
                 <td><?= $category->title ?></td>

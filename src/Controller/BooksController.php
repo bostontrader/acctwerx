@@ -4,9 +4,9 @@ namespace App\Controller;
 use Cake\Datasource\ConnectionManager;
 use Cake\Network\Exception\BadRequestException;
 
-//require_once(ROOT.DS.'vendor/jpgraph/jpgraph/lib/JpGraph/src/jpgraph.php');
-//require_once(ROOT.DS.'vendor/jpgraph/jpgraph/lib/JpGraph/src/jpgraph_line.php');
-//require_once(ROOT.DS.'vendor/jpgraph/jpgraph/lib/JpGraph/src/jpgraph_utils.inc.php');
+require_once(ROOT.DS.'vendor/jpgraph/jpgraph/lib/JpGraph/src/jpgraph.php');
+require_once(ROOT.DS.'vendor/jpgraph/jpgraph/lib/JpGraph/src/jpgraph_line.php');
+require_once(ROOT.DS.'vendor/jpgraph/jpgraph/lib/JpGraph/src/jpgraph_utils.inc.php');
 
 class BooksController extends AppController {
 
@@ -312,7 +312,7 @@ class BooksController extends AppController {
     }
 
     private function getStopPeriod() {
-        return ['year'=>2016, 'month'=>4];
+        return ['year'=>2016, 'month'=>5];
     }
 
     // The x-labels on the graph...
@@ -320,8 +320,8 @@ class BooksController extends AppController {
         //  1/2016 ----|
         // begin ----| |
         //           | |
-        //           | |       4/2016  -|
-        return array(1,2,3,4,           5);
+        //           | |         5/2016  -|
+        return array(1,2,3,4,           5,6);
     }
 
     private function buildDatapoints($results, $start_period, $stop_period) {
