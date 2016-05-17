@@ -11,8 +11,8 @@ $this->Breadcrumb->makeTrail($account['title'],$this->Html);
         </ul>
     </nav>
     <div class="accounts view large-9 medium-8 columns content">
-        <h3><?= h($account['id']) ?></h3>
         <table id="AccountViewTable" class="vertical-table">
+            <caption><h3><?= h($account['id']) ?></h3></caption>
             <tr id="book_title">
                 <th><?= __('Book Title') ?></th>
                 <td><?= $account['book']['title'] ?></td>

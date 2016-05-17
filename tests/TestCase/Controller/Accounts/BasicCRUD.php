@@ -349,6 +349,9 @@ class BasicCRUD extends DMIntegrationTestCase {
         // 5. Ensure that there is a suitably named table to display the results.
         $table_node=$this->getTheOnlyOne($xpath,"//table[@id='AccountViewTable']",$content_node);
 
+        // 5.1 Inspect the caption of the table.
+        $this->assertContains("$account_id",$this->getTheOnlyOne($xpath,"caption",$table_node)->textContent);
+
         // 6. Now inspect the fields in the table.  We want to know that:
         // A. The correct fields are there and no other fields.
         // B. The fields have correct values.

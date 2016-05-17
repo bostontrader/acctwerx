@@ -1,6 +1,6 @@
 <?php
 /* @var \Cake\ORM\Entity $book $book */
-$this->Breadcrumb->makeTrail($book->title,$this->Html);
+$this->Breadcrumb->makeTrail($book['title'],$this->Html);
 ?>
 
 <div id="BooksEditform">

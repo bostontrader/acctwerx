@@ -22,7 +22,7 @@ class BooksController extends AppController {
         //$this->loadComponent('RequestHandler');
     //}
 
-    // POST /books/add
+    // POST /books
     public function add() {
         $this->request->allowMethod(['post']);
 
@@ -30,14 +30,15 @@ class BooksController extends AppController {
         if(count($this->request->query)>0)
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
-        $book = $this->Books->newEntity();
-        $book = $this->Books->patchEntity($book, $this->request->data);
-        if ($this->Books->save($book)) {
-            $this->Flash->success(__(self::BOOK_SAVED));
+        $book = $this->{'Books'}->newEntity();
+        $book = $this->{'Books'}->patchEntity($book, $this->request->data);
+        if ($this->{'Books'}->save($book)) {
+            $this->Flash->{'success'}(__(self::BOOK_SAVED));
             return $this->redirect(['controller'=>'books','action' => 'index','_method'=>'GET']);
         } else {
-            $this->Flash->error(__(self::BOOK_NOT_SAVED));
+            $this->Flash->{'error'}(__(self::BOOK_NOT_SAVED));
         }
+        return null;
     }
 
     // GET /books/newform
@@ -48,7 +49,7 @@ class BooksController extends AppController {
         if(count($this->request->query)>0)
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
-        $book = $this->Books->newEntity();
+        $book = $this->{'Books'}->newEntity();
         $this->set(compact('book'));
         return null;
     }
@@ -60,10 +61,7 @@ class BooksController extends AppController {
         if(count($this->request->query)>0)
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
-        $book = $this->Books->get($id);
-
-
-
+        $book = $this->{'Books'}->get($id);
 
         /* @var \Cake\Database\Connection $connection */
         $connection = ConnectionManager::get('default');
@@ -126,12 +124,12 @@ class BooksController extends AppController {
         if(count($this->request->query)>0)
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
-        //$book = $this->Books->get($id);
-        //if ($this->Books->delete($book)) {
-            //$this->Flash->success(__(self::BOOK_DELETED));
-        //} else {
-            //$this->Flash->error(__(self::CANNOT_DELETE_BOOK));
-        //}
+        $book = $this->{'Books'}->get($id);
+        if ($this->{'Books'}->delete($book)) {
+            //$this->Flash->{'success'}(__(self::BOOK_DELETED));
+        } else {
+            //$this->Flash->{'error'}(__(self::CANNOT_DELETE_BOOK));
+        }
         //return $this->redirect(['action' => 'index']);
     }
 
@@ -233,20 +231,21 @@ class BooksController extends AppController {
         if(count($this->request->query)>0)
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
-        $book = $this->Books->get($id);
-        $book = $this->Books->patchEntity($book, $this->request->data);
-        if ($this->Books->save($book)) {
-            $this->Flash->success(__(self::BOOK_SAVED));
+        $book = $this->{'Books'}->get($id);
+        $book = $this->{'Books'}->patchEntity($book, $this->request->data);
+        if ($this->{'Books'}->save($book)) {
+            $this->Flash->{'success'}(__(self::BOOK_SAVED));
             return $this->redirect(['controller'=>'books','action' => 'index','_method'=>'GET']);
         } else {
-            $this->Flash->error(__(self::BOOK_NOT_SAVED));
+            $this->Flash->{'error'}(__(self::BOOK_NOT_SAVED));
         }
+        return null;
     }
 
     // There's something wrong with my routing because no $id param is passed.
     // But I can find it as $this->request->params['id']
     // GET /books/:id/editform
-    public function editform($id = null) {
+    public function editform() {
         $id=$this->request->params['id'];
         $this->request->allowMethod(['get']);
 
@@ -254,7 +253,7 @@ class BooksController extends AppController {
         if(count($this->request->query)>0)
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
-        $book = $this->Books->get($id);
+        $book = $this->{'Books'}->get($id);
         $this->set(compact('book'));
     }
 
@@ -265,7 +264,7 @@ class BooksController extends AppController {
         if(count($this->request->query)>0)
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
-        $book = $this->Books->get($id);
+        $book = $this->{'Books'}->get($id);
 
         /* @var \Cake\Database\Connection $connection */
         $connection = ConnectionManager::get('default');
@@ -292,7 +291,7 @@ class BooksController extends AppController {
         if(count($this->request->query)>0)
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
-        $this->set('books', $this->Books->find()->order(['id']));
+        $this->set('books', $this->{'Books'}->find()->order(['id']));
     }
 
     // GET /books/:id
@@ -303,7 +302,7 @@ class BooksController extends AppController {
         if(count($this->request->query)>0)
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
-        $book = $this->Books->get($id);
+        $book = $this->{'Books'}->get($id);
         $this->set('book', $book);
     }
 
@@ -436,6 +435,5 @@ class BooksController extends AppController {
         $period = array('year'=>$year, 'month'=>$month);
         return $period;
     }
-
 
 }
