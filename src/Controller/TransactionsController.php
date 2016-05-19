@@ -29,7 +29,7 @@ class TransactionsController extends AppController {
      *
      * @return \Cake\Network\Response|null
      */
-    // POST /books/:book_id/transactions/add
+    // POST /books/:book_id/transactions
     public function add() {
         $this->request->allowMethod(['post']);
 
@@ -37,38 +37,35 @@ class TransactionsController extends AppController {
         if(count($this->request->query)>0)
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
-        // Get the book and book_id.
         $book_id=$this->get_book_id($this->request->params);
-        //$book=$this->Transactions->Books->get($book_id);
+        //$book=$this->{'Transactions'}->Books->get($book_id);
 
-        $transaction = $this->Transactions->newEntity(['contain'=>'books']);
-        //if ($this->request->is('post')) {
+        $transaction = $this->{'Transactions'}->newEntity(['contain'=>'books']);
 
         // Is there a better way to determine whether or not JSON is here?
         //$fullTransaction=$this->request->input('json_decode',true);
         //if(is_null($fullTransaction)) {
-            // No JSON, do it the normal way.
-            $transaction = $this->Transactions->patchEntity($transaction, $this->request->data);
-            if ($this->Transactions->save($transaction)) {
-                $this->Flash->success(__(self::TRANSACTION_SAVED));
-                return $this->redirect(['action'=>'view','book_id'=>$book_id,'id' => $transaction->id,'_method'=>'GET']);
-            } else {
-                $this->Flash->error(__(self::TRANSACTION_NOT_SAVED));
-            }
+        // No JSON, do it the normal way.
+        $transaction = $this->{'Transactions'}->patchEntity($transaction, $this->request->data);
+        if ($this->{'Transactions'}->save($transaction)) {
+            $this->Flash->{'success'}(__(self::TRANSACTION_SAVED));
+            return $this->redirect(['action'=>'view','book_id'=>$book_id,'id' => $transaction->id,'_method'=>'GET']);
+        } else {
+            $this->Flash->{'error'}(__(self::TRANSACTION_NOT_SAVED));
+        }
         //} else {
             // JSON found.
-            //$transaction = $this->Transactions->patchEntity($transaction, $fullTransaction);
-            //if ($this->Transactions->save($transaction)) {
+            //$transaction = $this->{'Transactions'}->patchEntity($transaction, $fullTransaction);
+            //if ($this->{'Transactions'}->save($transaction)) {
                 //$reply=['result'=>'ok'];
                 //$this->set(compact('reply'));
                 //$this->set('_serialize', ['reply']);
             //} else {
-                //$this->Flash->error(__(self::TRANSACTION_NOT_SAVED));
+                //$this->Flash->{'error'}(__(self::TRANSACTION_NOT_SAVED));
             //}
         //}
         //}
-        //$this->set(compact('transaction','book'));
-        //return null;
+        return null;
     }
 
     // GET /books/:book_id/transactions/newform
@@ -79,38 +76,12 @@ class TransactionsController extends AppController {
         if(count($this->request->query)>0)
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
-        // Get the book and book_id.
         $book_id=$this->get_book_id($this->request->params);
-        $book=$this->Transactions->Books->get($book_id);
+        $book=$this->{'Transactions'}->Books->get($book_id);
 
-        $transaction = $this->Transactions->newEntity(['contain'=>'books']);
-        //if ($this->request->is('post')) {
+        $transaction = $this->{'Transactions'}->newEntity(['contain'=>'books']);
 
-            // Is there a better way to determine whether or not JSON is here?
-            //$fullTransaction=$this->request->input('json_decode',true);
-            //if(is_null($fullTransaction)) {
-                // No JSON, do it the normal way.
-                //$transaction = $this->Transactions->patchEntity($transaction, $this->request->data);
-                //if ($this->Transactions->save($transaction)) {
-                    //$this->Flash->success(__(self::TRANSACTION_SAVED));
-                    //return $this->redirect(['action' => 'view','book_id' => $book_id,'id' => $transaction->id,'_method'=>'GET']);
-                //} else {
-                    //$this->Flash->error(__(self::TRANSACTION_NOT_SAVED));
-                //}
-            //} else {
-                // JSON found.
-                //$transaction = $this->Transactions->patchEntity($transaction, $fullTransaction);
-                //if ($this->Transactions->save($transaction)) {
-                    //$reply=['result'=>'ok'];
-                    //$this->set(compact('reply'));
-                    //$this->set('_serialize', ['reply']);
-                //} else {
-                    //$this->Flash->error(__(self::TRANSACTION_NOT_SAVED));
-                //}
-            //}
-        //}
         $this->set(compact('transaction','book'));
-        return null;
     }
 
     // DELETE /books/:book_id/transactions/:id
@@ -121,65 +92,59 @@ class TransactionsController extends AppController {
         if(count($this->request->query)>0)
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
-        //$transaction = $this->Transactions->get($id);
-        //if ($this->Transactions->delete($transaction)) {
-        //$this->Flash->success(__(self::TRANSACTION_DELETED));
-        //} else {
-        //$this->Flash->error(__(self::CANNOT_DELETE_TRANSACTION));
-        //}
+        $transaction = $this->{'Transactions'}->get($id);
+        if ($this->{'Transactions'}->delete($transaction)) {
+            //$this->Flash->{'success'}(__(self::TRANSACTION_DELETED));
+        } else {
+        //$this->Flash->{'error'}(__(self::CANNOT_DELETE_TRANSACTION));
+        }
         //return $this->redirect(['action' => 'index']);
     }
 
     // PUT /books/:book_id/transactions/:id
     public function edit($id = null) {
-        $this->request->allowMethod(['get', 'put']);
+        $this->request->allowMethod(['put']);
 
-        // Neither GET nor PUT should accept any query string params.
+        // Should not accept any query string params.
         if(count($this->request->query)>0)
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
         // Get the book and book_id.
         $book_id=$this->get_book_id($this->request->params);
-        $book=$this->Transactions->Books->get($book_id);
+        $book=$this->{'Transactions'}->Books->get($book_id);
 
-        $transaction = $this->Transactions->get($id);
+        $transaction = $this->{'Transactions'}->get($id);
         if ($this->request->is(['put'])) {
-            $transaction = $this->Transactions->patchEntity($transaction, $this->request->data);
-            if ($this->Transactions->save($transaction)) {
-                $this->Flash->success(__(self::TRANSACTION_SAVED));
+            $transaction = $this->{'Transactions'}->patchEntity($transaction, $this->request->data);
+            if ($this->{'Transactions'}->save($transaction)) {
+                $this->Flash->{'success'}(__(self::TRANSACTION_SAVED));
                 return $this->redirect(['action' => 'index','book_id' => $book_id,'_method'=>'GET']);
             } else {
-                $this->Flash->error(__(self::TRANSACTION_NOT_SAVED));
+                $this->Flash->{'error'}(__(self::TRANSACTION_NOT_SAVED));
             }
         }
         $this->set(compact('transaction','book'));
         return null;
     }
 
+    // There's something wrong with my routing because no $id param is passed.
+    // But I can find it as $this->request->params['id']
     // GET /books/:book_id/transactions/:id/editform
-    public function editform($id = null) {
-        $this->request->allowMethod(['get', 'put']);
+    public function editform() {
+        $id=$this->request->params['id'];
+        $this->request->allowMethod(['get']);
 
-        // Neither GET nor PUT should accept any query string params.
+        // Should not accept any query string params.
         if(count($this->request->query)>0)
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
         // Get the book and book_id.
         $book_id=$this->get_book_id($this->request->params);
-        $book=$this->Transactions->Books->get($book_id);
+        $book=$this->{'Transactions'}->Books->get($book_id);
 
-        $transaction = $this->Transactions->get($id);
-        if ($this->request->is(['put'])) {
-            $transaction = $this->Transactions->patchEntity($transaction, $this->request->data);
-            if ($this->Transactions->save($transaction)) {
-                $this->Flash->success(__(self::TRANSACTION_SAVED));
-                return $this->redirect(['action' => 'index','book_id' => $book_id,'_method'=>'GET']);
-            } else {
-                $this->Flash->error(__(self::TRANSACTION_NOT_SAVED));
-            }
-        }
+        $transaction = $this->{'Transactions'}->get($id);
+
         $this->set(compact('transaction','book'));
-        return null;
     }
 
     // GET /books/:book_id/transactions
@@ -191,11 +156,11 @@ class TransactionsController extends AppController {
             throw new BadRequestException(self::THAT_QUERY_PARAMETER_NOT_ALLOWED);
 
         $book_id=$this->get_book_id($this->request->params);
-        $book=$this->Transactions->Books->get($book_id);
+        $book=$this->{'Transactions'}->Books->get($book_id);
 
         $this->request->allowMethod(['get']);
         $this->set(
-            'transactions', $this->Transactions->find()
+            'transactions', $this->{'Transactions'}->find()
             ->contain('Books')
             ->where(['book_id'=>$book_id])
             ->limit(200)
@@ -213,7 +178,7 @@ class TransactionsController extends AppController {
 
         $book_id=$this->get_book_id($this->request->params);
 
-        $transaction = $this->Transactions->get($id,['contain'=>'Books']);
+        $transaction = $this->{'Transactions'}->get($id,['contain'=>'Books']);
         $this->set('transaction', $transaction);
         $this->set('book_id',$book_id);
     }

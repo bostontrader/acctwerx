@@ -1,12 +1,15 @@
 <?php
-namespace App\Test\TestCase\Controller;
+namespace App\Test\TestCase\Controller\Transactions;
 
 use App\Controller\TransactionsController;
 use App\Test\Fixture\FixtureConstants;
 use App\Test\Fixture\TransactionsFixture;
+use App\Test\TestCase\Controller\DMIntegrationTestCase;
+use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
 
-class TransactionsControllerTest extends DMIntegrationTestCase {
+
+class BasicCRUD extends DMIntegrationTestCase {
 
     public $fixtures = [
         'app.books',
@@ -30,12 +33,12 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
         $this->transactionsFixture = new TransactionsFixture();
     }
 
-    public function testGET_add() {
+    public function testGET_newform() {
 
         // 1. GET the url and parse the response.
         $book_id=FixtureConstants::bookTypical;
         $book=$this->Books->get($book_id);
-        $this->get("/books/$book_id/transactions/add");
+        $this->get("/books/$book_id/transactions/newform");
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
         $dom = new \DomDocument();
@@ -43,14 +46,14 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
         $xpath=new \DomXPath($dom);
 
         // 2. Isolate the content produced by this controller method (excluding the layout.)
-        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='TransactionsAdd']");
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='TransactionsNewform']");
 
         // 3. Count the A tags.
         $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
         $this->assertEquals($unknownATagCnt,0);
 
         // 4. Ensure that the expected form exists
-        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='TransactionAddForm']",$content_node);
+        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='TransactionNewformForm']",$content_node);
 
         // 5. Now inspect the legend of the form.
         $this->assertContains($book['title'],$this->getTheOnlyOne($xpath,"//legend",$form_node)->textContent);
@@ -100,7 +103,7 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
         $urlBase='/books/'.FixtureConstants::bookTypical.'/transactions';
         $fromDbRecord=$this->genericPOSTAddProlog(
             null, // no login
-            $urlBase.'/add', $fixtureRecord,
+            $urlBase, $fixtureRecord,
             $urlBase, $this->Transactions,
             true
         );
@@ -109,9 +112,9 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
         $this->assertEquals($fromDbRecord['book_id'],$fixtureRecord['book_id']);
         $this->assertEquals($fromDbRecord['note'],$fixtureRecord['note']);
 
-        $d1=$fromDbRecord->tran_datetime;
+        $d1=$fromDbRecord['tran_datetime'];
         $t=$fixtureRecord['tran_datetime'];
-        $d2=new \Cake\I18n\Time($t['year'].'-'.$t['month'].'-'.$t['day'].' '.$t['hour'].':'.$t['minute']);
+        $d2=new Time($t['year'].'-'.$t['month'].'-'.$t['day'].' '.$t['hour'].':'.$t['minute']);
         $this->assertTrue($d1->eq($d2));
 
         // 3. Can I see the TRANSACTION_SAVED message?
@@ -165,7 +168,7 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
         //);
     //}
 
-    public function testGET_edit() {
+    public function testGET_editform() {
 
         // 1. Obtain the relevant records and verify their referential integrity.
         $transaction_id=FixtureConstants::transactionTypical;
@@ -175,7 +178,7 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
         $this->assertEquals($transaction['book_id'],$book['id']);
 
         // 2. GET the url and parse the response.
-        $this->get('/books/'.$book['id'].'/transactions/edit/' . $transaction_id);
+        $this->get("/books/$book_id/transactions/$transaction_id/editform");
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
         $dom = new \DomDocument();
@@ -183,14 +186,14 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
         $xpath=new \DomXPath($dom);
 
         // 3. Isolate the content produced by this controller method (excluding the layout.)
-        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='TransactionsEdit']");
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='TransactionsEditform']");
 
         // 4. Count the A tags.
         $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
         $this->assertEquals($unknownATagCnt,0);
 
         // 5. Ensure that the expected form exists
-        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='TransactionEditForm']",$content_node);
+        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='TransactionEditformForm']",$content_node);
 
         // 6. Now inspect the legend of the form.
         $this->assertContains($book['title'],$this->getTheOnlyOne($xpath,"//legend",$form_node)->textContent);
@@ -231,7 +234,7 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
         $this->assertEquals(0, $unknownSelectCnt);
     }
 
-    public function testPOST_edit() {
+    public function testPUT_edit() {
 
         // 1. Obtain the relevant records and verify their referential integrity.
         $transaction_id=FixtureConstants::transactionTypical;
@@ -253,7 +256,7 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
 
         $d1=$fromDbRecord->tran_datetime;
         $t=$transactionNew['tran_datetime'];
-        $d2=new \Cake\I18n\Time($t['year'].'-'.$t['month'].'-'.$t['day'].' '.$t['hour'].':'.$t['minute']);
+        $d2=new Time($t['year'].'-'.$t['month'].'-'.$t['day'].' '.$t['hour'].':'.$t['minute']);
         $this->assertTrue($d1->eq($d2));
     }
 
@@ -276,14 +279,14 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
         $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
 
         // 4. Look for the create new transaction link
-        $this->getTheOnlyOne($xpath,"//a[@id='TransactionAdd']",$content_node);
+        $this->getTheOnlyOne($xpath,"//a[@id='TransactionNewform']",$content_node);
         $unknownATagCnt--;
 
         // 5. Ensure that there is a suitably named table to display the results.
         $table_node=$this->getTheOnlyOne($xpath,"//table[@id='TransactionsTable']",$content_node);
 
         // 6. Now inspect the heading of the table.
-        $this->getTheOnlyOne($xpath,"//header[contains(text(),'$book->title')]",$content_node);
+        $this->assertContains($book['title'],$this->getTheOnlyOne($xpath,"caption",$table_node)->textContent);
 
         // 7. Ensure that said table's thead element contains the correct
         //    headings, in the correct order, and nothing else.
@@ -323,7 +326,7 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
             $this->getTheOnlyOne($xpath,"a[@name='TransactionView']",$column_nodes->item(2));
             $unknownATagCnt--;
 
-            $this->getTheOnlyOne($xpath,"a[@name='TransactionEdit']",$column_nodes->item(2));
+            $this->getTheOnlyOne($xpath,"a[@name='TransactionEditform']",$column_nodes->item(2));
             $unknownATagCnt--;
 
             // 9.9 No other columns
@@ -366,6 +369,9 @@ class TransactionsControllerTest extends DMIntegrationTestCase {
 
         // 5. Ensure that there is a suitably named table to display the results.
         $table_node=$this->getTheOnlyOne($xpath,"//table[@id='TransactionViewTable']",$content_node);
+
+        // 5.1 Inspect the caption of the table.
+        $this->assertContains("$transaction_id",$this->getTheOnlyOne($xpath,"caption",$table_node)->textContent);
 
         // 6. Now inspect the fields in the table.  We want to know that:
         // A. The correct fields are there and no other fields.

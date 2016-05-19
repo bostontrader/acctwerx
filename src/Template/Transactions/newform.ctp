@@ -12,9 +12,9 @@
         </ul>
     </nav>
     <div class="transactions form large-9 medium-8 columns content">
-        <?= $this->Form->create($transaction,['id'=>'TransactionNewform','url'=>['book_id'=>$book['id'],'action'=>'add','[method]'=>'post']]) ?>
+        <?= $this->Form->create($transaction,['id'=>'TransactionNewformForm','url'=>['book_id'=>$book['id'],'action'=>'add','[method]'=>'post']]) ?>
         <fieldset>
-            <legend><?= __('Add Transaction for '.$book->title) ?></legend>
+            <legend><?= __('Add Transaction for '.$book['title']) ?></legend>
             <?php
                 echo $this->Form->input('book_id',['id'=>'TransactionBookId','value'=>$book['id'],'type'=>'hidden']);
                 echo $this->Form->input('note',['id'=>'TransactionNote','type'=>'text']);
