@@ -1,9 +1,10 @@
 <?php
-namespace App\Test\TestCase\Controller;
+namespace App\Test\TestCase\Controller\Currencies;
 
 use App\Controller\CurrenciesController;
 use App\Test\Fixture\FixtureConstants;
 use App\Test\Fixture\CurrenciesFixture;
+use App\Test\TestCase\Controller\DMIntegrationTestCase;
 use Cake\ORM\TableRegistry;
 
 class CurrenciesControllerTest extends DMIntegrationTestCase {
