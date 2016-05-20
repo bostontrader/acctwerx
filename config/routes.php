@@ -38,6 +38,7 @@ use Cake\Routing\Router;
  */
 Router::defaultRouteClass('DashedRoute');
 Router::scope('/', function ($routes) {
+
     // By default, resources provides the following routes...
     // GET /recipes.format RecipesController::index()
     // GET /recipes/123.format RecipesController::view(123)
@@ -45,11 +46,14 @@ Router::scope('/', function ($routes) {
     // PUT /recipes/123.format RecipesController::edit(123)
     // PATCH /recipes/123.format RecipesController::edit(123)
     // DELETE /recipes/123.format RecipesController::delete(123)
+
+    // I have removed the PATCH edit default route cuz I don't see the necessity.
+
     // In addition to the standard REST routes, we also need a method to obtain an entry form
     // for a new record and an edited record.
     // GET /recipies/newform.format
     // GET /recipies/123/editform.format
-    // I have removed the PATCH edit default route cuz I don't see the necessity.
+
     //$routes->extensions(['json']);
     // By default, resources wants to set edit/update to accept PUT and PATCH.  But I only
     // want PUT.  That's what the map=>update bit is about.

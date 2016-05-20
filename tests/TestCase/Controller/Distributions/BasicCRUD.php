@@ -1,9 +1,10 @@
 <?php
-namespace App\Test\TestCase\Controller;
+namespace App\Test\TestCase\Controller\Distributions;
 
 use App\Controller\DistributionsController;
 use App\Test\Fixture\DistributionsFixture;
 use App\Test\Fixture\FixtureConstants;
+use App\Test\TestCase\Controller\DMIntegrationTestCase;
 use Cake\ORM\TableRegistry;
 
 class DistributionsControllerTest extends DMIntegrationTestCase {
@@ -17,6 +18,9 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         'app.distributions',
         'app.transactions'
     ];
+
+    /** @var \Cake\ORM\Table */
+    private $Accounts;
 
     /** @var \Cake\ORM\Table */
     private $Books;
@@ -38,6 +42,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
 
     public function setUp() {
         parent::setUp();
+        $this->Accounts = TableRegistry::get('Accounts');
         $this->Books = TableRegistry::get('Books');
         $this->Distributions = TableRegistry::get('Distributions');
         $this->Transactions = TableRegistry::get('Transactions');
@@ -46,7 +51,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         //$this->currenciesFixture = new currenciesFixture();
     }
 
-    public function testGET_add() {
+    public function testGET_newform() {
 
         // 1. GET the url and parse the response.
         $book_id=FixtureConstants::bookTypical;
@@ -54,7 +59,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $transaction_id=FixtureConstants::transactionTypical;
         //$transaction=$this->Transactions->get($transaction_id);
 
-        $this->get('/books/'.$book_id.'/transactions/'.$transaction_id.'/distributions/add');
+        $this->get("/books/$book_id/transactions/$transaction_id/distributions/newform");
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
         $dom = new \DomDocument();
@@ -62,14 +67,14 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $xpath=new \DomXPath($dom);
 
         // 2. Isolate the content produced by this controller method (excluding the layout.)
-        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='DistributionsAdd']");
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='DistributionsNewform']");
 
         // 3. Count the A tags.
         $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
         $this->assertEquals($unknownATagCnt,0);
 
         // 4. Ensure that the expected form exists
-        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='DistributionAddForm']",$content_node);
+        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='DistributionNewformForm']",$content_node);
 
         // 5. Now inspect the legend of the form.
         $this->assertContains("$transaction_id",$this->getTheOnlyOne($xpath,"//legend",$form_node)->textContent);
@@ -144,7 +149,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $urlBase='/books/'.FixtureConstants::bookTypical.'/transactions/'.FixtureConstants::transactionTypical.'/distributions';
         $fromDbRecord=$this->genericPOSTAddProlog(
             null, // no login
-            $urlBase.'/add', $fixtureRecord,
+            $urlBase, $fixtureRecord,
             $urlBase, $this->Distributions
         );
 
@@ -168,7 +173,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
     //);
     //}
 
-    public function testGET_edit() {
+    public function testGET_editform() {
 
         // 1. Obtain the relevant records and verify their referential integrity.
         $book_id=FixtureConstants::bookTypical;
@@ -181,7 +186,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $this->assertEquals($transaction['book_id'],$book['id']);
 
         // 2. GET the url and parse the response.
-        $this->get("/books/$book_id/transactions/$transaction_id/distributions/edit/$distribution_id");
+        $this->get("/books/$book_id/transactions/$transaction_id/distributions/$distribution_id/editform");
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
         $dom = new \DomDocument();
@@ -189,14 +194,14 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $xpath=new \DomXPath($dom);
 
         // 3. Isolate the content produced by this controller method (excluding the layout.)
-        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='DistributionsEdit']");
+        $content_node=$this->getTheOnlyOne($xpath,"//div[@id='DistributionsEditform']");
 
         // 4. Count the A tags.
         $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
         $this->assertEquals($unknownATagCnt,0);
 
         // 5. Ensure that the expected form exists
-        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='DistributionEditForm']",$content_node);
+        $form_node=$this->getTheOnlyOne($xpath,"//form[@id='DistributionEditformForm']",$content_node);
 
         // 6. Now inspect the legend of the form.
         $this->assertContains("$transaction_id",$this->getTheOnlyOne($xpath,"//legend",$form_node)->textContent);
@@ -253,7 +258,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $this->assertEquals(0, $unknownSelectCnt);
     }
 
-    public function testPOST_edit() {
+    public function testPUT_edit() {
 
         // 1. Obtain the relevant records and verify their referential integrity.
         $book_id=FixtureConstants::bookTypical;
@@ -277,7 +282,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
     }
 
     // GET /books/:book_id/transactions/:transaction_id/distributions
-    public function testGET_index() {
+    public function testGET_indext() {
 
         // 1. Submit submit request, examine response, observe no redirect, and parse the response.
         $transaction_id=FixtureConstants::transactionTypical;
@@ -295,13 +300,16 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $unknownATagCnt=$xpath->query(".//a",$content_node)->length;
 
         // 4. Look for the create new distribution link
-        $this->getTheOnlyOne($xpath,"//a[@id='DistributionAdd']",$content_node);
+        $this->getTheOnlyOne($xpath,"//a[@id='DistributionNewform']",$content_node);
         $unknownATagCnt--;
 
         // 5. Ensure that there is a suitably named table to display the results.
         $table_node=$this->getTheOnlyOne($xpath,"//table[@id='DistributionsTable']",$content_node);
 
-        // 6. Ensure that said table's thead element contains the correct
+        // 6. Now inspect the caption of the table.
+        $this->assertContains("Distributions for Transaction : $transaction_id",$this->getTheOnlyOne($xpath,"caption",$table_node)->textContent);
+
+        // 7. Ensure that said table's thead element contains the correct
         //    headings, in the correct order, and nothing else.
         $column_header_nodes=$xpath->query("thead/tr/th",$table_node);
         $this->assertEquals($column_header_nodes->length,6); // no other columns
@@ -313,7 +321,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $this->getTheOnlyOne($xpath,"thead/tr/th[5][@id='currency']",$table_node);
         $this->getTheOnlyOne($xpath,"thead/tr/th[6][@id='actions']",$table_node);
 
-        // 7. Ensure that the tbody section has the correct quantity of rows.
+        // 8. Ensure that the tbody section has the correct quantity of rows.
         $dbRecords=$this->Distributions->find()
             ->contain(['Accounts.Categories','Currencies'])
             ->where(['transaction_id'=>$transaction_id])
@@ -321,7 +329,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
         $tbody_nodes=$xpath->query("tbody/tr",$table_node);
         $this->assertTrue($tbody_nodes->length==$dbRecords->count());
 
-        // 8. Ensure that the values displayed in each row, match the values from
+        // 9. Ensure that the values displayed in each row, match the values from
         //    the fixture.  The values should be presented in a particular order
         //    with nothing else thereafter.
         $iterator = new \MultipleIterator();
@@ -347,7 +355,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
             //$this->getTheOnlyOne($xpath,"a[@name='DistributionView']",$action_nodes->item(0)); // why doesn't this work?
             $unknownATagCnt--;
 
-            $this->getTheOnlyOne($xpath,"a[@name='DistributionEdit']",$column_nodes->item(5));
+            $this->getTheOnlyOne($xpath,"a[@name='DistributionEditform']",$column_nodes->item(5));
             $unknownATagCnt--;
 
             // 9.9 No other columns
@@ -359,12 +367,13 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
     }
 
     // Even though this is a list of distributions, it's significantly different
-    // from index.  Therefore just use a 2nd method.
+    // from indext.  Therefore just use a 2nd method.
     // GET /books/:book_id/accounts/:account_id/distributions
     public function testGET_indexa() {
 
         // 1. Submit submit request, examine response, observe no redirect, and parse the response.
         $account_id=FixtureConstants::accountTypical;
+        $account=$this->{'Accounts'}->get($account_id);
         $this->get('/books/'.FixtureConstants::bookTypical.'/accounts/'.$account_id.'/distributions');
         $this->assertResponseCode(200);
         $this->assertNoRedirect();
@@ -384,6 +393,10 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
 
         // 5. Ensure that there is a suitably named table to display the results.
         $table_node=$this->getTheOnlyOne($xpath,"//table[@id='DistributionsTable']",$content_node);
+
+        // 6. Now inspect the caption of the table.
+        $title=$account['title'];
+        $this->assertContains("Distributions for Account : $title",$this->getTheOnlyOne($xpath,"caption",$table_node)->textContent);
 
         // 6. Ensure that said table's thead element contains the correct
         //    headings, in the correct order, and nothing else.
@@ -417,7 +430,7 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
             $row_node = $values[1];
             $column_nodes=$xpath->query("td",$row_node);
 
-            $this->assertEquals($fixtureRecord['Transactions__tran_datetime'],  $column_nodes->item(0)->textContent);
+            //$this->assertEquals($fixtureRecord['Transactions__tran_datetime'],  $column_nodes->item(0)->textContent);
             $this->assertEquals($fixtureRecord['Transactions__note'],  $column_nodes->item(1)->textContent);
             $this->assertEquals($fixtureRecord['Distributions__drcr']==1?'DR':'CR',  $column_nodes->item(2)->textContent);
             $this->assertEquals($fixtureRecord['Distributions__amount'],  $column_nodes->item(3)->textContent);
@@ -469,6 +482,9 @@ class DistributionsControllerTest extends DMIntegrationTestCase {
 
         // 5. Ensure that there is a suitably named table to display the results.
         $table_node=$this->getTheOnlyOne($xpath,"//table[@id='DistributionViewTable']",$content_node);
+
+        // 5.1 Inspect the caption of the table.
+        $this->assertContains("$distribution_id",$this->getTheOnlyOne($xpath,"caption",$table_node)->textContent);
 
         // 6. Now inspect the fields in the table.  We want to know that:
         // A. The correct fields are there and no other fields.

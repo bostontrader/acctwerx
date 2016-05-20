@@ -5,8 +5,8 @@
         </ul>
     </nav>
     <div class="distributions view large-9 medium-8 columns content">
-        <h3><?= h($distribution->id) ?></h3>
         <table id="DistributionViewTable" class="vertical-table">
+            <caption><h3><?= h($distribution->id) ?></h3></caption>
             <tr id="drcr">
                 <th><?= __('DR/CR') ?></th>
                 <td><?= $distribution->drcr==1?'DR':'CR' ?></td>

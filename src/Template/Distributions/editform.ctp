@@ -1,19 +1,21 @@
 <?php
 /**
  * @var \Cake\ORM\Table $accounts
+ * @var \Cake\ORM\Table $currencies
  * @var \Cake\ORM\Entity $transaction
+ * @var int $transaction_id
  * @var \Cake\ORM\Entity $distribution
  *
  */ ?>
 
-<div id="DistributionsEdit">
+<div id="DistributionsEditform">
     <nav class="large-3 medium-4 columns" id="actions-sidebar">
         <ul class="side-nav">
             <li class="heading"><?= __('Actions') ?></li>
         </ul>
     </nav>
     <div class="distributions form large-9 medium-8 columns content">
-        <?= $this->Form->create($distribution,['id'=>'DistributionEditForm']) ?>
+        <?= $this->Form->create($distribution,['id'=>'DistributionEditformForm']) ?>
         <fieldset>
             <legend><?= __('Edit Distribution for transaction: '.$transaction_id) ?></legend>
             <?php

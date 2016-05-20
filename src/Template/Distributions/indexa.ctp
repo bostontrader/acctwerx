@@ -11,8 +11,8 @@ $this->Breadcrumb->makeTrail('Distributions',$this->Html);
         </ul>
     </nav>
     <div class="distributions index large-9 medium-8 columns content">
-        <h4><header><?= __('Distributions for Account : '.$account['title']) ?></header></h4>
         <table id="DistributionsTable" cellpadding="0" cellspacing="0">
+            <caption><h4><?= __('Distributions for Account : '.$account['title']) ?></h4></caption>
             <thead>
                 <tr>
                     <th id="tran_datetime" ><?= __('Tran Datetime') ?></th>
