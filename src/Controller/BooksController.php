@@ -54,7 +54,10 @@ class BooksController extends AppController {
         return null;
     }
 
+    // There's something wrong with my routing because no $id param is passed.
+    // But I can find it as $this->request->params['id']
     public function balance($id = null) {
+        $id=$this->request->params['id'];
         $this->request->allowMethod(['get']);
 
         // Should not accept any query string params.

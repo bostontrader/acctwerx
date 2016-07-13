@@ -1,5 +1,9 @@
 An accounting engine that supports multiple currencies.
 
+## Non Discrimination Policy
+
+I consider that the "politically correct" attitude that has been infecting society for some time now to be deeply problematic and hereby reject it. In this document I will use "he", "his", or "him" in cases of indefinite gender. If you think gender is a spectrum not a binary choice, that's fine by me but I'll not modify any software to accommodate you. In fact, I'll not modify this software to accommodate anybody, except via polite request, persuasion, and negotiation.  If you're blind, illiterate, or sub-normal you have my sympathy, but you still can't read this.  If you're a person of whatever color, gender, sexual orientation, potatoness, nationality, ethnicity, religion, or whatever, I don't care and I won't bother you.  But don't nag me about any perceived slight.  People are different, sometimes we like to point fingers and laugh at each other, and sometimes this hurts feelings.  Deal with it. Grow a pair and don't be a pussy about this.
+
 ## Installation
 
 This app was developed using CakePHP 3.2.5 served by LEMP on Ubuntu.
